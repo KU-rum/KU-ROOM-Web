@@ -15,26 +15,24 @@ const SignupInfo = () => {
   const navigate = useNavigate();
   const [signupStep, setSignupStep] = useState(0);
   const [signupId, setSignupId] = useState("");
+  const [isAvailableId, setIsAvailableId] = useState<boolean | null>(null);
+  const [isChecked, setIsChecked] = useState(false); // 중복확인 버튼 클릭 여부
+  const [inputPw, setInputPw] = useState("");
+  const [checkPw, setCheckPw] = useState("");
+  const [allowedPw, setAllowedPw] = useState(false); // 비밀번호 설정 관련
+  const [isCheckedPw, setIsCheckedPw] = useState(false);
+  const [isAttemptReset, setIsAttemptReset] = useState(false); // 재설정 시도를 했는지
+
   const handleSignupIdChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value.replace(/[^a-zA-Z0-9]/g, ""); // 영어와 숫자만 허용
     setSignupId(newValue);
   };
-
-  const [isAvailableId, setIsAvailableId] = useState<boolean | null>(null);
-  const [isChecked, setIsChecked] = useState(false); // 중복확인 버튼 클릭 여부
-  const [inputPw, setInputPw] = useState("");
   const handleInputPwChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputPw(e.target.value);
   };
-  const [checkPw, setCheckPw] = useState("");
   const handleCheckPwChange = (e: ChangeEvent<HTMLInputElement>) => {
     setCheckPw(e.target.value);
   };
-  // 비밀번호 설정 관련
-  const [allowedPw, setAllowedPw] = useState(false);
-  const [isCheckedPw, setIsCheckedPw] = useState(false);
-  // 재설정 시도를 했는지
-  const [isAttemptReset, setIsAttemptReset] = useState(false);
 
   // 사용가능 버튼을 눌러서 상태가 변경된 후 아이디를 변경했을 때 다시 상태 변경.
   useEffect(() => {

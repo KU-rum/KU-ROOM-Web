@@ -12,14 +12,12 @@ import { dummyCode } from "../../constants/dummyData";
 const IdentityVerify = () => {
   const navigate = useNavigate();
   const [verifiedEmail, setVerifiedEmail] = useState("");
+  const [isAttemptSend, setIsAttemptSend] = useState(false); // 인증코드 전송을 했는지 여부
+  const [verifyCode, setVerifyCode] = useState("");
+  const [isAttemptVerify, setIsAttemptVerify] = useState(false); // 인증코드를 확인한 적 있는지 여부
   const handleVerifiedEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setVerifiedEmail(e.target.value);
   };
-  // 인증코드 전송을 했는지 여부
-  const [isAttemptSend, setIsAttemptSend] = useState(false);
-  const [verifyCode, setVerifyCode] = useState("");
-  // 인증코드를 확인한 적 있는지 여부
-  const [isAttemptVerify, setIsAttemptVerify] = useState(false);
   const handleVerifyCodeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value.replace(/\D/g, ""); // 숫자만 입력 가능하도록 제한
     if (newValue.length <= 6) {

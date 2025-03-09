@@ -14,18 +14,18 @@ import { dummyLoginInfo } from "../../constants/dummyData";
 const Login = () => {
   const navigate = useNavigate();
   const [inputId, setInputId] = useState("");
+  const [inputPw, setInputPw] = useState("");
+  // 로그인 버튼을 눌렀는지 여부
+  const [isLoginAttempted, setIsLoginAttempted] = useState(false);
+
+  // 상태 변경 함수
   const handleInputIdChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value.replace(/[^a-zA-Z0-9]/g, ""); //영어와 숫자만 허용
     setInputId(newValue);
   };
-  const [inputPw, setInputPw] = useState("");
   const handleInputPwChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputPw(e.target.value);
   };
-
-  // 로그인 버튼을 눌렀는지 여부
-  const [isLoginAttempted, setIsLoginAttempted] = useState(false);
-
   // 테스트용 로그인 로직. 더미 데이터와 맞으면 로그인 성공되게 함.
   const handleLoginTest = () => {
     const isValidUser = dummyLoginInfo.some(
