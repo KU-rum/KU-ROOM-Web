@@ -6,6 +6,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #F8F9FC;
 }
 .header-title {
   color: var(--Black, #1d2228);
