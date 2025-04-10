@@ -14,6 +14,7 @@ interface MapProps {
   setIsTracking?: (value: boolean) => void;
   draggable?: boolean;
   zoomable?: boolean;
+  searchLocation?: string;
 }
 
 // React Strict Mode로 인해 두번 마운트 되어서 하단 왼쪽 로고 두개로 보이는데
@@ -26,6 +27,7 @@ const Map = ({
   setIsTracking,
   draggable = true,
   zoomable = true,
+  searchLocation,
 }: MapProps) => {
   const mapRef = useRef(null);
   const markerRef = useRef<any>(null);
@@ -53,7 +55,7 @@ const Map = ({
 
     const mapOptions = {
       zoom: 16,
-      draggable: draggable,
+      draggable,
       scrollWheel: zoomable,
       pinchZoom: zoomable,
       disableDoubleTapZoom: !zoomable,
@@ -61,29 +63,14 @@ const Map = ({
     };
 
     const map = new window.naver.maps.Map(mapRef.current, mapOptions);
-    mapInstance.current = map; // 지도 인스턴스를 ref에 저장
+    mapInstance.current = map;
 
-    // 마커 렌더링
-    markers.forEach(({ lat, lng, title, onClick }) => {
-      const marker = new window.naver.maps.Marker({
-        position: new window.naver.maps.LatLng(lat, lng),
-        map,
-        title,
-      });
-
-      if (onClick) {
-        window.naver.maps.Event.addListener(marker, "click", onClick);
-      }
-    });
-
-    // 지도 드래그 시 추적 끄기
     if (setIsTracking) {
       window.naver.maps.Event.addListener(map, "drag", () => {
         setIsTracking(false);
       });
     }
 
-    // 현재 위치 정보 가져와서 마커 추가 및 watchPosition으로 따라가기
     if (navigator.geolocation) {
       const watchId = navigator.geolocation.watchPosition(
         (position) => {
@@ -93,13 +80,11 @@ const Map = ({
             longitude
           );
 
-          setCurrentLatLng(currentLocation); // 현재 위치 상태 업데이트
+          setCurrentLatLng(currentLocation);
 
           if (markerRef.current) {
-            // 기존 마커 위치 업데이트
             markerRef.current.setPosition(currentLocation);
           } else {
-            // 최초 마커 생성
             markerRef.current = new window.naver.maps.Marker({
               position: currentLocation,
               map,
@@ -108,36 +93,55 @@ const Map = ({
           }
 
           if (isTrackingRef.current) {
-            // 지도 중심을 내 위치를 기준으로 이동
             map.setCenter(currentLocation);
           }
         },
-        (error) => {
-          console.error("위치 정보를 가져올 수 없습니다:", error);
-
-          if (error.code === 1) {
-            alert("위치 권한이 거부되었습니다.");
-          } else if (error.code === 2) {
-            alert("위치 정보를 사용할 수 없습니다.");
-          } else if (error.code === 3) {
-            alert("위치 정보를 가져오는 데 시간이 초과되었습니다.");
-          }
-        },
+        console.error,
         {
-          enableHighAccuracy: true, // 정확도 향상
-          maximumAge: 0, // 캐시 X
-          timeout: 5000, // 타임아웃 5초
+          enableHighAccuracy: true,
+          maximumAge: 0,
+          timeout: 5000,
         }
       );
 
-      // 언마운트 시 추적 종료
-      return () => {
-        navigator.geolocation.clearWatch(watchId);
-      };
-    } else {
-      alert("이 브라우저는 위치 정보를 지원하지 않습니다.");
+      return () => navigator.geolocation.clearWatch(watchId);
     }
   }, []);
+
+  // 2. searchLocation 바뀔 때 마커 다시 렌더링
+  useEffect(() => {
+    if (!mapInstance.current || !window.naver) return;
+
+    // 이전 검색 마커 제거
+    const currentMarkers = mapInstance.current.searchMarkers || [];
+    currentMarkers.forEach((marker: any) => marker.setMap(null));
+
+    if (!searchLocation || searchLocation.trim() === "") {
+      mapInstance.current.searchMarkers = [];
+      return;
+    }
+
+    const matchedMarkers = markers
+      .filter((m) => m.title.includes(searchLocation)) // 부분 일치 허용
+      .map(({ lat, lng, title, onClick }) => {
+        const marker = new window.naver.maps.Marker({
+          position: new window.naver.maps.LatLng(lat, lng),
+          map: mapInstance.current,
+          title,
+        });
+
+        if (onClick) {
+          window.naver.maps.Event.addListener(marker, "click", onClick);
+        }
+
+        // ✅ 검색된 마커 기준으로 지도 중심 이동
+        mapInstance.current.setCenter(marker.getPosition());
+
+        return marker;
+      });
+
+    mapInstance.current.searchMarkers = matchedMarkers;
+  }, [searchLocation]);
 
   // 추적 모드 활성화 시 현재 위치 중심으로 지도 이동
   useEffect(() => {
