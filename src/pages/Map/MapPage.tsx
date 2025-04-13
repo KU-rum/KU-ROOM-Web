@@ -38,6 +38,8 @@ const MapPage = () => {
   const [searchLocation, setSearchLocation] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
+  const [changeCenter, setChangeCenter] = useState("");
+
   const handleBlurSearch = () => {
     setSearchLocation("");
     setIsSearchFocused(false);
@@ -67,7 +69,10 @@ const MapPage = () => {
               <button
                 className={styles.LocationCategory}
                 key={index}
-                onClick={() => console.log(category.title, " 정보")}
+                onClick={() => {
+                  console.log(category.title, " 정보");
+                  setChangeCenter(category.title);
+                }}
               >
                 <div className={styles.LocationCategoryIcon} />
                 <span className={styles.LocationCategoryTitle}>
@@ -80,6 +85,7 @@ const MapPage = () => {
             height="calc(100vh - 92px)"
             isTracking={isTracking}
             setIsTracking={setIsTracking}
+            changeCenter={changeCenter}
           />
           <button
             className={styles.TrackingIcon}

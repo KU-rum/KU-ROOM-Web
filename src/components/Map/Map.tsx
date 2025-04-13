@@ -14,6 +14,7 @@ interface MapProps {
   setIsTracking?: (value: boolean) => void;
   draggable?: boolean;
   zoomable?: boolean;
+  changeCenter?: string;
 }
 
 // React Strict Mode로 인해 두번 마운트 되어서 하단 왼쪽 로고 두개로 보이는데
@@ -26,6 +27,7 @@ const Map = ({
   setIsTracking,
   draggable = true,
   zoomable = true,
+  changeCenter = "",
 }: MapProps) => {
   const mapRef = useRef(null);
   const markerRef = useRef<any>(null);
@@ -158,9 +160,27 @@ const Map = ({
     }
   }, [isTracking]);
 
+  // 추적 모드 상태 변경에 따라 추적 기능 활성화 상태 변경
   useEffect(() => {
     isTrackingRef.current = isTracking;
   }, [isTracking]);
+
+  // 특정 위치로 센터 변경을 원하는 경우
+  useEffect(() => {
+    if (changeCenter && setIsTracking) {
+      setIsTracking(false);
+    }
+    const searchCenter = markers.find((location) =>
+      location.title.includes(changeCenter)
+    );
+    if (searchCenter && mapInstance.current) {
+      const targetLatLng = new window.naver.maps.LatLng(
+        searchCenter.lat,
+        searchCenter.lng
+      );
+      mapInstance.current.setCenter(targetLatLng);
+    }
+  }, [changeCenter]);
 
   return <div ref={mapRef} style={{ width, height, overflow: "hidden" }} />;
 };

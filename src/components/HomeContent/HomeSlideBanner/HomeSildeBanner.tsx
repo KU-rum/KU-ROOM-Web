@@ -15,7 +15,7 @@ const HomeSildeBanner = () => {
 
   const bannerWidth = 349;
   const getScrollLeft = (index: number) => {
-    const sidePadding = (window.innerWidth - 349) / 2;
+    const sidePadding = (window.innerWidth - bannerWidth) / 2;
     return index * bannerWidth - sidePadding;
   };
 
