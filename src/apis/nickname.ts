@@ -1,9 +1,8 @@
 // 닉네임 관련 api
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
-const CHECK_DUPLICATED_NICKNAME_API =
-  "https://kuroom.shop/api/v1/users/check-nickname?value";
-const CHANGE_NICKNAME_API = "https://kuroom.shop/api/v1/users/nickname";
+const CHECK_DUPLICATED_NICKNAME_API = "/users/check-nickname?value";
+const CHANGE_NICKNAME_API = "/users/nickname";
 
 interface CheckNicknameResponse {
   code: number;
@@ -17,7 +16,7 @@ export const checkDuplictedNickname = async (
   setErrorMsg: (value: string) => void
 ) => {
   try {
-    const response = await axios.get<CheckNicknameResponse>(
+    const response = await axiosInstance.get<CheckNicknameResponse>(
       `${CHECK_DUPLICATED_NICKNAME_API}=${newNickname}`,
       {
         headers: {
@@ -43,16 +42,15 @@ export const changeNicknameApi = async (changeNickname: {
   nickname: string;
 }) => {
   try {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      throw new Error("AccessToken이 없습니다.");
-    }
-    const response = await axios.patch(CHANGE_NICKNAME_API, changeNickname, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axiosInstance.patch(
+      CHANGE_NICKNAME_API,
+      changeNickname,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     console.log(response.data);
     return response.data;
   } catch (error: any) {

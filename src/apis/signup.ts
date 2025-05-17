@@ -1,9 +1,9 @@
 // 회원가입 관련 api
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
-const SIGNUP_API_BASE_URL = "https://kuroom.shop/api/v1/users";
-const VALIDATION_ID_API_URL = "https://kuroom.shop/api/v1/users/check-id?value";
-const VALIDATION_EMAIL_API_URL = "https://kuroom.shop/api/v1/users/validations";
+const SIGNUP_API_BASE_URL = "/users";
+const VALIDATION_ID_API_URL = "/users/check-id?value";
+const VALIDATION_EMAIL_API_URL = "/users/validations";
 
 interface SignUpResponse {
   code: number;
@@ -27,7 +27,7 @@ export const signupApi = async (
   setIsDuplicatedStudentId: (value: boolean) => void
 ) => {
   try {
-    const response = await axios.post<SignUpResponse>(
+    const response = await axiosInstance.post<SignUpResponse>(
       SIGNUP_API_BASE_URL,
       userData,
       {
@@ -65,7 +65,7 @@ interface CheckIdResponse {
 // 아이디 중복확인
 export const checkValidationIdApi = async (newId: string) => {
   try {
-    const response = await axios.get<CheckIdResponse>(
+    const response = await axiosInstance.get<CheckIdResponse>(
       `${VALIDATION_ID_API_URL}=${newId}`,
       {
         headers: {
@@ -97,7 +97,7 @@ export const checkValidationEmailApi = async (
   setModalState: (value: boolean) => void
 ) => {
   try {
-    const response = await axios.post<CheckEmailResponse>(
+    const response = await axiosInstance.post<CheckEmailResponse>(
       VALIDATION_EMAIL_API_URL,
       email,
       {

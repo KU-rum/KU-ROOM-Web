@@ -1,8 +1,8 @@
 // 단과대 및 학과 조회 api
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
-const GET_ALL_COLLEGES = "https://kuroom.shop/api/v1/colleges";
-const GET_DEPARTMENTS = "https://kuroom.shop/api/v1/departments?collegeName";
+const GET_ALL_COLLEGES = "/colleges";
+const GET_DEPARTMENTS = "/departments?collegeName";
 
 // 단과대 조회
 interface GetCollegesDepartmentsResponse {
@@ -13,14 +13,8 @@ interface GetCollegesDepartmentsResponse {
 }
 export const getAllColleges = async () => {
   try {
-    const response = await axios.get<GetCollegesDepartmentsResponse>(
-      GET_ALL_COLLEGES,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response =
+      await axiosInstance.get<GetCollegesDepartmentsResponse>(GET_ALL_COLLEGES);
     // console.log(response.data.data.name);
     return response.data.data.name;
   } catch (error: any) {
@@ -34,13 +28,8 @@ export const getAllColleges = async () => {
 // 해당 단과대 내 학과 조회
 export const getDepartments = async (college: string) => {
   try {
-    const response = await axios.get<GetCollegesDepartmentsResponse>(
-      `${GET_DEPARTMENTS}=${college}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+    const response = await axiosInstance.get<GetCollegesDepartmentsResponse>(
+      `${GET_DEPARTMENTS}=${college}`
     );
     // console.log(response.data.data.name);
     return response.data.data.name;

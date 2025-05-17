@@ -1,15 +1,14 @@
 // 이메일 관련 api
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
-const VERIFY_MAIL_API_URL = "https://kuroom.shop/api/v1/mails/auth-codes";
-const VERIFY_CODE_API_URL =
-  "https://kuroom.shop/api/v1/mails/verification_codes";
-const FIND_ID_API_URL = "https://kuroom.shop/api/v1/users/loginId?email";
+const VERIFY_MAIL_API_URL = "/mails/auth-codes";
+const VERIFY_CODE_API_URL = "/mails/verification_codes";
+const FIND_ID_API_URL = "/users/loginId?email";
 
 // 이메일 전송 요청
 export const sendEmailApi = async (email: { email: string }) => {
   try {
-    const response = await axios.post(VERIFY_MAIL_API_URL, email, {
+    const response = await axiosInstance.post(VERIFY_MAIL_API_URL, email, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -37,7 +36,7 @@ export const verifyCodeApi = async (verifyData: {
   code: string;
 }) => {
   try {
-    const response = await axios.post<VerifyCodeResponse>(
+    const response = await axiosInstance.post<VerifyCodeResponse>(
       VERIFY_CODE_API_URL,
       verifyData,
       {
@@ -67,7 +66,7 @@ interface FindIdResponse {
 
 export const findIdFromEmail = async (email: string) => {
   try {
-    const response = await axios.get<FindIdResponse>(
+    const response = await axiosInstance.get<FindIdResponse>(
       `${FIND_ID_API_URL}=${email}`,
       {
         headers: {

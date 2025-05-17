@@ -1,10 +1,8 @@
 // 비밀번호 변경 관련 api
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
-const CHANGE_PW_BEFORE_LOGIN_URL =
-  "https://kuroom.shop/api/v1/users/password-reset/initiate";
-const CHANGE_PW_AFTER_LOGIN_URL =
-  "https://kuroom.shop/api/v1/users/password-reset";
+const CHANGE_PW_BEFORE_LOGIN_URL = "/users/password-reset/initiate";
+const CHANGE_PW_AFTER_LOGIN_URL = "/users/password-reset";
 
 interface ChangePwResponse {
   code: number;
@@ -23,7 +21,7 @@ export const changePwBeforeLogin = async (userInfo: {
   newPassword: string;
 }) => {
   try {
-    const response = await axios.post<ChangePwResponse>(
+    const response = await axiosInstance.post<ChangePwResponse>(
       CHANGE_PW_BEFORE_LOGIN_URL,
       userInfo,
       {
@@ -46,19 +44,13 @@ export const changePwAfterLogin = async (userInfo: {
   prevPassword: string;
   newPassword: string;
 }) => {
-  const token = localStorage.getItem("accessToken");
-  if (!token) {
-    throw new Error("AccessToken이 없습니다.");
-  }
-
   try {
-    const response = await axios.post<ChangePwResponse>(
+    const response = await axiosInstance.post<ChangePwResponse>(
       CHANGE_PW_AFTER_LOGIN_URL,
       userInfo,
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
       }
     );
