@@ -1,12 +1,20 @@
 import myMarkerIcon from "../../assets/map/mylocationMarker.svg";
 import focusedMarkerIcon from "../../assets/map/focusedMarker.png";
+interface Building {
+  id: number | null;
+  abbreviation: string;
+  name: string;
+  number: number;
+  latitude: number;
+  longitude: number;
+}
 
-// 마커 렌더링 로직
-interface MarkerData {
-  lat: number;
-  lng: number;
-  title: string;
-  icon: string;
+interface Place {
+  placeId: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+  building: Building;
 }
 
 interface KuroomMarker {
@@ -22,28 +30,38 @@ export { renderedMarkers, makeFocusMarker };
 
 export function renderMarkers(
   map: naver.maps.Map,
-  markers: MarkerData[],
+  markers: Place[],
+  selectedCategoryTitle: string,
   setIsTracking: (value: boolean) => void,
   setHasFocusedMarker?: (value: boolean) => void,
   setFocusedMarkerTitle?: (value: string | null) => void
 ): void {
+  if (!Array.isArray(markers)) {
+    console.error("❌ markers가 배열이 아님:", markers);
+    return;
+  }
+
   // 기존 마커 제거
   renderedMarkers.forEach(({ marker }) => marker.setMap(null));
   renderedMarkers = [];
+  // 내 위치 추적 해제
+  setIsTracking(false);
+
+  const markerIcon = makeMarkerIcon(selectedCategoryTitle);
 
   // 마커가 변경될 때마다 건대 중심을 center로 변경하고 줌도 16으로 되게 설정.
   const defaultCenter = new window.naver.maps.LatLng(37.5423, 127.0759);
   map.setCenter(defaultCenter);
   map.setZoom(16);
 
-  markers.forEach(({ lat, lng, title, icon }) => {
+  markers.forEach(({ latitude, longitude, name }) => {
     const marker = new window.naver.maps.Marker({
-      position: new window.naver.maps.LatLng(lat, lng),
+      position: new window.naver.maps.LatLng(latitude, longitude),
       map,
-      title,
+      name,
       icon: {
         // 마커 아이콘 추가
-        url: icon,
+        url: markerIcon,
       },
     });
     window.naver.maps.Event.addListener(marker, "click", () => {
@@ -55,9 +73,7 @@ export function renderMarkers(
         setFocusedMarkerTitle
       );
     });
-
-    setIsTracking(false);
-    renderedMarkers.push({ marker, originalIcon: icon });
+    // renderedMarkers.push({ marker, originalIcon: markerIcon });
   });
 
   // 마커가 하나뿐일 경우 자동 포커스 처리
@@ -91,7 +107,7 @@ export function renderMarkers(
         ({ marker }) => marker === focusedMarker
       );
       if (target) {
-        focusedMarker.setIcon({ url: target.originalIcon }); // ← 여기 수정
+        focusedMarker.setIcon({ url: target.originalIcon });
       }
       focusedMarker = null;
       setHasFocusedMarker?.(false);
@@ -238,4 +254,32 @@ export function noTracking(
 
   // 마우스 휠
   window.naver.maps.Event.addListener(map, "wheel", disableTracking);
+}
+
+// 카테고리 별 마커 아이콘 지정 함수
+function makeMarkerIcon(categoryTitle: string) {
+  switch (categoryTitle) {
+    case "단과대":
+      return "../../assets/map/markers/collegeMarker.svg";
+    case "케이큐브":
+      return "../../assets/map/markers/kcubehubMarker.svg";
+    case "케이허브":
+      return "../../assets/map/markers/kcubehubMarker.svg";
+    case "편의점":
+      return "../../assets/map/markers/storeMarker.svg";
+    case "레스티오":
+      return "../../assets/map/markers/cafeMarker.svg";
+    case "1847":
+      return "../../assets/map/markers/cafeMarker.svg";
+    case "학생식당":
+      return "../../assets/map/markers/restaurant.svg";
+    case "학과사무실":
+      return "../../assets/map/markers/officeMarker.svg";
+    case "기숙사":
+      return "../../assets/map/markers/dormitoryMarker.svg";
+    case "은행":
+      return "../../assets/map/markers/bankMarker.svg";
+    case "우체국":
+      return "../../assets/map/markers/postofficeMarker.svg";
+  }
 }

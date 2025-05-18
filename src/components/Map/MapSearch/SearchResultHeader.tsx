@@ -3,26 +3,44 @@ import styles from "./SearchResultHeader.module.css";
 import arrowBack from "../../../assets/nav/arrowback.svg";
 import deleteIcon from "../../../assets/icon/deleteIcon.svg";
 
-interface MarkerData {
-  lat: number;
-  lng: number;
+interface CategoryChip {
   title: string;
   icon: string;
+  category: number;
+}
+interface Building {
+  id: number | null;
+  abbreviation: string;
+  name: string;
+  number: number;
+  latitude: number;
+  longitude: number;
 }
 
+interface Place {
+  placeId: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+  building: Building;
+}
 interface SearchResultProps {
+  selectedCategory: CategoryChip | null;
   mapSearchResult: string;
   setSearchMode: (value: boolean) => void;
+  setSelectedCategory: (value: CategoryChip | null) => void;
   setMapSearchResult: (value: string) => void;
-  setMarkers: (value: MarkerData[]) => void;
+  setMarkers: (value: Place[]) => void;
   setIsExpandedSheet: (value: boolean) => void;
   setHasFocusedMarker: (value: boolean) => void;
   setIsExpandedFocusedSheet: (value: boolean) => void;
 }
 
 const SearchResult: React.FC<SearchResultProps> = ({
+  selectedCategory,
   mapSearchResult,
   setSearchMode,
+  setSelectedCategory,
   setMapSearchResult,
   setMarkers,
   setIsExpandedSheet,
@@ -38,6 +56,7 @@ const SearchResult: React.FC<SearchResultProps> = ({
           alt="뒤로 가기"
           onClick={() => {
             setSearchMode(false);
+            setSelectedCategory(null);
             setMapSearchResult("");
             setMarkers([]);
             setIsExpandedSheet(false);
@@ -45,7 +64,12 @@ const SearchResult: React.FC<SearchResultProps> = ({
             setIsExpandedFocusedSheet(false);
           }}
         />
-        <span className={styles.ResultTitle}>{mapSearchResult}</span>
+        {selectedCategory && (
+          <span className={styles.ResultTitle}>{selectedCategory.title}</span>
+        )}
+        {mapSearchResult && (
+          <span className={styles.ResultTitle}>{mapSearchResult}</span>
+        )}
       </div>
       <img
         className={styles.DeleteIcon}

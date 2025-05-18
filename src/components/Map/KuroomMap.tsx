@@ -5,17 +5,28 @@ import {
   renderMarkers,
 } from "./kuroomMapUtils";
 
-interface MarkerData {
-  lat: number;
-  lng: number;
-  title: string;
-  icon: string;
+interface Building {
+  id: number | null;
+  abbreviation: string;
+  name: string;
+  number: number;
+  latitude: number;
+  longitude: number;
+}
+
+interface Place {
+  placeId: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+  building: Building;
 }
 
 interface MapProps {
   width?: string;
   height?: string;
-  markers?: MarkerData[];
+  markers?: Place[];
+  selectedCategoryTitle?: string;
   mapRefProp?: React.MutableRefObject<naver.maps.Map | null>;
   isTracking?: boolean;
   setIsTracking?: (value: boolean) => void;
@@ -32,6 +43,7 @@ const KuroomMap = ({
   width = "100%",
   height = "100%",
   markers,
+  selectedCategoryTitle,
   mapRefProp,
   isTracking = true,
   setIsTracking,
@@ -103,10 +115,16 @@ const KuroomMap = ({
 
   // 마커 렌더링. 마커 배열이 변경될 때만 실행되도록
   useEffect(() => {
-    if (mapInstance.current && setIsTracking && markers) {
+    if (
+      mapInstance.current &&
+      setIsTracking &&
+      markers &&
+      selectedCategoryTitle
+    ) {
       renderMarkers(
         mapInstance.current,
         markers,
+        selectedCategoryTitle,
         setIsTracking,
         setHasFocusedMarker,
         setFocusedMarkerTitle

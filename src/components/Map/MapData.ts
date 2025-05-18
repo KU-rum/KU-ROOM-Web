@@ -13,50 +13,62 @@ const CategoryChips = [
   {
     title: "친구",
     icon: friendChip,
+    category: 0,
   },
   {
     title: "단과대",
     icon: collegeChip,
+    category: 1,
   },
   {
     title: "K-Cube",
     icon: kcubehubChip,
+    category: 2,
   },
   {
     title: "K-Hub",
     icon: kcubehubChip,
+    category: 3,
   },
   {
     title: "편의점",
     icon: storeChip,
+    category: 4,
   },
   {
     title: "레스티오",
     icon: cafeChip,
+    category: 5,
   },
   {
     title: "1847",
     icon: cafeChip,
+    category: 6,
   },
   {
     title: "학생식당",
     icon: restaurantChip,
+    category: 7,
   },
   {
     title: "학과사무실",
     icon: officeChip,
+    category: 8,
   },
   {
     title: "기숙사",
     icon: dormitoryChip,
+    category: 9,
   },
   {
     title: "은행",
     icon: bankChip,
+    category: 10,
   },
   {
     title: "우체국",
     icon: postChip,
+    category: 11,
   },
 ];
 

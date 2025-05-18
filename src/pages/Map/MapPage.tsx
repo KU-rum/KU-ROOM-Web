@@ -8,18 +8,17 @@ import MapSearchBar from "../../components/Map/MapSearchBar/MapSearchBar";
 import MapCategoryChip from "../../components/Map/MapCategoryChip/MapCategoryChip";
 import KuroomMap from "../../components/Map/KuroomMap";
 import MapSearch from "../../components/Map/MapSearch/MapSearch";
-import { KuroomMarkers } from "../../components/Map/MapData";
 import SearchResultHeader from "../../components/Map/MapSearch/SearchResultHeader";
 import LocationsBottomSheet from "../../components/Map/LocationsBottomSheet/LocationsBottomSheet";
 import FocusedLocationBottomSheet from "../../components/Map/FocusedLocationBottomSheet/FocusedLocationBottomSheet";
-import { isMyLocationInSchool } from "../../utils/mapRangeUtils";
 import ShareLocationModal from "../../components/Map/ShareLocationModal/ShareLocationModal";
+import { getCategoryLocations } from "../../apis/map";
+import { isMyLocationInSchool } from "../../utils/mapRangeUtils";
 
-interface MarkerData {
-  lat: number;
-  lng: number;
+interface CategoryChip {
   title: string;
   icon: string;
+  category: number;
 }
 
 interface LocationData {
@@ -27,9 +26,34 @@ interface LocationData {
   userLng: number;
 }
 
+interface Building {
+  id: number | null;
+  abbreviation: string;
+  name: string;
+  number: number;
+  latitude: number;
+  longitude: number;
+}
+
+interface Place {
+  placeId: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+  building: Building;
+}
+
 const MapPage = () => {
   const [isTracking, setIsTracking] = useState(true); // 내 현재 위치를 따라가는지 상태
   const [searchMode, setSearchMode] = useState(false);
+  // 선택된 카테고리 칩 상태
+  const [selectedCategory, setSelectedCategory] = useState<CategoryChip | null>(
+    null
+  );
+  // 선택된 카테고리 내의 위치 배열
+  const [selectedCategoryLocations, setSelectedCategoryLocations] = useState<
+    Place[]
+  >([]);
   const [mapSearchResult, setMapSearchResult] = useState("");
   const [isInSchool, setIsInSchool] = useState(false);
   const [isSharedLocation, setIsSharedLocation] = useState(false);
@@ -40,11 +64,7 @@ const MapPage = () => {
     null
   ); // 현재 위치
 
-  if (isInSchool) {
-    // vercel 배포 오류 해결 위해.
-  }
-
-  const [markers, setMarkers] = useState<MarkerData[]>([]);
+  const [markers, setMarkers] = useState<Place[]>([]);
   const mapInstanceRef = useRef<naver.maps.Map | null>(null);
 
   // 검색 또는 칩 클릭 시 바텀 시트
@@ -58,24 +78,52 @@ const MapPage = () => {
     null
   );
 
-  // 요청의 응답값을 markers배열에 저장. 바텀 시트 조작. 이부분은 테스트용 로직
+  // 칩을 선택했을 때 해당하는 위치 정보들 마커에 저장. 서버에 요청
   useEffect(() => {
-    if (!mapSearchResult) {
+    if (selectedCategory) {
+      console.log("선택된 카테고리 명: ", selectedCategory.title);
+      const fetchCategoryLocations = async () => {
+        try {
+          const response = await getCategoryLocations(selectedCategory.title);
+          console.log(response);
+          setSelectedCategoryLocations(response);
+        } catch (error) {
+          console.error("카테고리 별 위치 정보 가져오기 실패 :", error);
+        }
+      };
+
+      fetchCategoryLocations();
+      setVisibleBottomSheet(true);
+    } else {
       setMarkers([]);
       setVisibleBottomSheet(false);
       return;
     }
-    setVisibleBottomSheet(true);
-    const categoryMatch = KuroomMarkers.find(
-      (item) => item.category === mapSearchResult
-    );
-
-    if (categoryMatch) {
-      setMarkers(categoryMatch.markers);
-    } else {
-      setMarkers([]); // 해당 카테고리 없으면 빈 배열로
+  }, [selectedCategory]);
+  useEffect(() => {
+    if (selectedCategoryLocations) {
+      setMarkers(selectedCategoryLocations);
     }
-  }, [mapSearchResult]);
+  }, [selectedCategoryLocations]);
+
+  // 검색을 했을 때 해당하는 위치 정보 하나 마커에 저장
+  // useEffect(() => {
+  //   if (!mapSearchResult) {
+  //     setMarkers([]);
+  //     setVisibleBottomSheet(false);
+  //     return;
+  //   }
+  //   setVisibleBottomSheet(true);
+  //   const categoryMatch = KuroomMarkers.find(
+  //     (item) => item.category === mapSearchResult
+  //   );
+
+  //   if (categoryMatch) {
+  //     setMarkers(categoryMatch.markers);
+  //   } else {
+  //     setMarkers([]); // 해당 카테고리 없으면 빈 배열로
+  //   }
+  // }, [mapSearchResult]);
 
   useEffect(() => {
     console.log("현재 포커된 상태: ", hasFocusedMarker);
@@ -98,6 +146,7 @@ const MapPage = () => {
       <KuroomMap
         height={mapSearchResult === "친구" ? "100vh" : "calc(100vh - 92px)"}
         markers={markers}
+        selectedCategoryTitle={selectedCategory?.title}
         mapRefProp={mapInstanceRef}
         isTracking={isTracking}
         setIsTracking={setIsTracking}
@@ -117,11 +166,13 @@ const MapPage = () => {
       ) : (
         // 검색 결과가 있을 때 상단 바, 바텀시트, (2개 이상일 때 목록보기) 보여주기
         <>
-          {mapSearchResult ? (
+          {mapSearchResult || selectedCategory ? (
             <>
               <SearchResultHeader
+                selectedCategory={selectedCategory}
                 mapSearchResult={mapSearchResult}
                 setSearchMode={setSearchMode}
+                setSelectedCategory={setSelectedCategory}
                 setMapSearchResult={setMapSearchResult}
                 setMarkers={setMarkers}
                 setIsExpandedSheet={setIsExpandedSheet}
@@ -141,7 +192,7 @@ const MapPage = () => {
               >
                 <MapSearchBar />
               </button>
-              <MapCategoryChip setMapSearchResult={setMapSearchResult} />
+              <MapCategoryChip setSelectedCategory={setSelectedCategory} />
               {/* 내 위치 추적 아이콘 */}
               <button
                 className={styles.TrackingIcon}
@@ -155,7 +206,7 @@ const MapPage = () => {
               </button>
               {/* 학교 내부에서만 보이도록 하기! */}
               {/* 내 위치 공유 버튼 */}
-              {/* {isInSchool && (
+              {isInSchool && (
                 <button
                   className={styles.SharedLocationButton}
                   onClick={handleShareLocation}
@@ -167,8 +218,8 @@ const MapPage = () => {
                     <span className={styles.SharingText}>내 위치 공유</span>
                   )}
                 </button>
-              )} */}
-              <button
+              )}
+              {/* <button
                 className={styles.SharedLocationButton}
                 onClick={handleShareLocation}
               >
@@ -178,7 +229,7 @@ const MapPage = () => {
                 ) : (
                   <span className={styles.SharingText}>내 위치 공유</span>
                 )}
-              </button>
+              </button> */}
             </>
           )}
         </>
