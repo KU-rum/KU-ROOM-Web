@@ -44,13 +44,13 @@ const KuroomMap = ({
   const markerRef = useRef<naver.maps.Marker | null>(null);
   const mapInstance = useRef<naver.maps.Map | null>(null); // 지도 객체를 저장할 ref
   const [currentLatLng, setCurrentLatLng] = useState<any>(null); // 현재 위치를 기억
-  const isTrackingRef = useRef(true); // 추적 상태 최신값을 유지할 ref
+  const isTrackingRef = useRef(true); // 추적 상태 최신값을 유지할 refㅇㅇ
 
   useEffect(() => {
     if (!window.naver) return;
 
     const mapOptions = {
-      center: new naver.maps.LatLng(37.5423, 127.0759), // 건국대학교 중심
+      center: new naver.maps.LatLng(37.5423, 127.0768), // 건국대학교 중심
       zoom: 17,
       draggable: draggable,
       scrollWheel: zoomable,

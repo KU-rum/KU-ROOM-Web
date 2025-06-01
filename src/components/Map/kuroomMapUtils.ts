@@ -32,7 +32,7 @@ export function renderMarkers(
   renderedMarkers = [];
 
   // 마커가 변경될 때마다 건대 중심을 center로 변경하고 줌도 16으로 되게 설정.
-  const defaultCenter = new window.naver.maps.LatLng(37.5423, 127.0759);
+  const defaultCenter = new window.naver.maps.LatLng(37.5423, 127.0768);
   map.setCenter(defaultCenter);
   map.setZoom(16);
 
