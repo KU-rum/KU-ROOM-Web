@@ -33,6 +33,34 @@ interface LoginResponse {
   };
 }
 
+interface OAuthLoginResponse {
+  code: number;
+  status: string;
+  message: string;
+  data: {
+    tokenResponse: {
+      accessToken: string;
+      refreshToken: string;
+      accessExpireIn: number;
+      refreshExpireIn: number;
+    };
+    userResponse: {
+      id: number;
+      oauthId: string | null;
+      loginId: string;
+      email: string;
+      nickname: string;
+      studentId: string;
+      imageUrl: string | null;
+      departmentResponse: {
+        departmentId: number;
+        departmentName: string;
+      }[];
+    };
+    isFirstLogin: boolean; // OAuth에서 추가된 필드
+  };
+}
+
 export const loginApi = async (userData: {
   loginId: string;
   password: string;
@@ -125,7 +153,7 @@ export const reissueTokenApi = async () => {
 // 임시 토큰(authCode)으로 실제 토큰 발급받는 API
 export const getTokenByAuthCode = async (authCode: string) => {
   try {
-    const response = await axiosInstance.post<LoginResponse>(
+    const response = await axiosInstance.post<OAuthLoginResponse>(
       OAUTH_TOKEN_API_URL,
       null,
       {
