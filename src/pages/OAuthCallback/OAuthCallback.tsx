@@ -28,7 +28,6 @@ const OAuthCallback = () => {
           "사용 가능한 파라미터들:",
           Array.from(searchParams.keys())
         );
-        // 로그인 페이지로 이동하지 말고 일단 대기
         alert(
           "AuthCode를 찾을 수 없습니다. 개발자 도구 Console을 확인해주세요."
         );
@@ -47,6 +46,7 @@ const OAuthCallback = () => {
           const {
             tokenResponse: { accessToken, refreshToken },
             userResponse,
+            isFirstLogin,
           } = response.data;
 
           // 토큰 저장
@@ -57,11 +57,19 @@ const OAuthCallback = () => {
           setUser(userResponse);
 
           console.log("OAuth 로그인 성공!");
+          console.log("첫 로그인 여부:", isFirstLogin);
 
-          // 홈으로 이동 (또는 이전 페이지로)
-          const redirectUrl = sessionStorage.getItem("redirectUrl") || "/";
-          sessionStorage.removeItem("redirectUrl");
-          navigate(redirectUrl);
+          // 첫 로그인인지 여부에 따라 페이지 이동
+          if (isFirstLogin) {
+            // 첫 로그인이면 동의 페이지로 이동
+            navigate("/agreement");
+          } else {
+            // 기존 로그인이면 홈으로 이동 (또는 이전 페이지로)
+            console.log("기존 로그인 - 홈으로 이동");
+            const redirectUrl = sessionStorage.getItem("redirectUrl") || "/";
+            sessionStorage.removeItem("redirectUrl");
+            navigate(redirectUrl);
+          }
         } else {
           console.error("토큰 교환 실패:", response);
           navigate("/login");
