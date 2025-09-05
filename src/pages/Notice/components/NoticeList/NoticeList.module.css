@@ -1,0 +1,8 @@
+.notice-list-container {
+  width: 100%;
+}
+
+.notice-list {
+  display: flex;
+  flex-direction: column;
+}

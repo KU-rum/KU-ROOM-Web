@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 import Header from "@components/Header/Header";
 
@@ -9,15 +8,14 @@ import { TagButtons } from "./Components/TagButtons";
 import { NoticeList } from "./Components/NoticeList";
 import { SearchResult } from "./Components/SearchResult";
 import { NotificationBadge } from "./Components/NotificationBadge";
-import { getAllNotices } from "../utils/noticeUtils";
-import type { NoticeItem } from "../types/noticeTypes";
+import { getNotices } from "../../../apis/notice";
+import type { NoticeResponse } from "@apis/notice";
 import styles from "./Search.module.css";
 
 const Search: React.FC = () => {
-  const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
-  const [notices, setNotices] = useState<NoticeItem[]>([]);
-  const [filteredNotices, setFilteredNotices] = useState<NoticeItem[]>([]);
+  const [notices, setNotices] = useState<NoticeResponse[]>([]);
+  const [filteredNotices, setFilteredNotices] = useState<NoticeResponse[]>([]);
   const [searchHistory, setSearchHistory] = useState<string[]>([
     "입학식",
     "수강 신청",
@@ -27,10 +25,23 @@ const Search: React.FC = () => {
   const [isHistoryEnabled, setIsHistoryEnabled] = useState(true);
 
   useEffect(() => {
-    // 모든 공지사항 가져오기
-    const allNotices = getAllNotices();
-    setNotices(allNotices);
-    setFilteredNotices(allNotices);
+    const loadAllNotices = async () => {
+      try {
+        // 여러 카테고리에서 공지사항 가져오기
+        const categories = [234, 235, 237, 238, 240, 4083, 4214, 4274];
+        const allNoticesPromises = categories.map(categoryId => 
+          getNotices({ categoryId, size: 5 })
+        );
+        const responses = await Promise.all(allNoticesPromises);
+        const allNotices = responses.flat();
+        setNotices(allNotices);
+        setFilteredNotices(allNotices);
+      } catch (error) {
+        console.error('공지사항 로드 실패:', error);
+      }
+    };
+
+    loadAllNotices();
   }, []);
 
   useEffect(() => {
@@ -73,11 +84,11 @@ const Search: React.FC = () => {
     }
   };
 
-  const navigateToNoticeDetail = (noticeId: string) => {
-    // 검색 결과에서 어떤 카테고리로 이동할지 결정
-    const notice = notices.find((n) => n.id === noticeId);
-    const category = notice?.category || "학사";
-    navigate(`/notice/${category}/${noticeId}`);
+  const navigateToNoticeDetail = (noticeId: number) => {
+    const notice = notices.find(n => n.id === noticeId);
+    if (notice?.link) {
+      window.open(notice.link, '_blank');
+    }
   };
 
   const handleToggleNotification = (keyword: string) => {
@@ -138,13 +149,13 @@ const Search: React.FC = () => {
           <h2 className={styles.sectionTitle}>인기 공지</h2>
           <NoticeList
             notices={notices.slice(0, 3)}
-            onItemClick={(noticeId: string) => navigateToNoticeDetail(noticeId)}
+            onItemClick={(noticeId: number) => navigateToNoticeDetail(noticeId)}
           />
 
           <h2 className={styles.sectionTitle}>주요 공지</h2>
           <NoticeList
             notices={notices.slice(5, 8)}
-            onItemClick={(noticeId: string) => navigateToNoticeDetail(noticeId)}
+            onItemClick={(noticeId: number) => navigateToNoticeDetail(noticeId)}
           />
         </>
       ) : (

@@ -1,0 +1,13 @@
+.empty-notices {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #9eaab5;
+  font-size: 16px;
+  text-align: center;
+}
+
+.empty-notices p {
+  margin: 0;
+}

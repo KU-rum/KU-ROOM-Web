@@ -2,13 +2,13 @@ import React from "react";
 
 import searchresultIcon from "@assets/icon/notice/search/searchresult.svg";
 
-import type { NoticeItem } from "../../../types/noticeTypes";
+import type { NoticeResponse } from "@apis/notice";
 import { NoticeList } from "../NoticeList";
 import styles from "./SearchResult.module.css";
 
 interface SearchResultProps {
-  filteredNotices: NoticeItem[];
-  onItemClick: (noticeId: string) => void;
+  filteredNotices: NoticeResponse[];
+  onItemClick: (noticeId: number) => void;
 }
 
 export const SearchResult: React.FC<SearchResultProps> = ({

@@ -79,6 +79,10 @@ function App() {
           element: <Notice />,
         },
         {
+          path: "notice/:id",
+          element: <NoticeDetail />,
+        },
+        {
           path: "notice/:category/:id",
           element: <NoticeDetail />,
         },

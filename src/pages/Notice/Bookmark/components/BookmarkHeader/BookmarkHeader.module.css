@@ -1,0 +1,31 @@
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: #f8f9fc;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-button {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  z-index: 101;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  width: 24px;
+  height: 24px;
+  background-image: url('@assets/nav/arrowback.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}

@@ -1,11 +1,11 @@
 import React from "react";
 
-import type { NoticeItem } from "../../../types/noticeTypes";
+import type { NoticeResponse } from "@apis/notice";
 import styles from "./NoticeList.module.css";
 
 interface NoticeListProps {
-  notices: NoticeItem[];
-  onItemClick?: (noticeId: string) => void;
+  notices: NoticeResponse[];
+  onItemClick?: (noticeId: number) => void;
 }
 
 export const NoticeList: React.FC<NoticeListProps> = ({
