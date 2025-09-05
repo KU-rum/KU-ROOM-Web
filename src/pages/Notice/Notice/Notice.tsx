@@ -1,28 +1,15 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 
 import chatbot from "@assets/icon/chat-bot.svg";
 import Header from "@components/Header/Header";
 import BottomBar from "@components/BottomBar/BottomBar";
-import { departments, colleges } from "@constant/dummyData";
+import { getCategoryId } from "@constant/categoryMapping";
 
-import Select from "../../ProfileSetting/components/Select/Select";
-import BottomSheet from "../../ProfileSetting/components/BottomSheet/BottomSheet";
-import {
-  getNoticesByCategory,
-  getNoticesByDepartment,
-  getNoticesByExternalSource,
-  initializeBookmarks,
-} from "../utils/noticeUtils";
+import { getNotices } from "../../../apis/notice";
 import { NoticeItem } from "../types/noticeTypes";
 import styles from "./Notice.module.css";
 
-type DepartmentsType = {
-  [key: string]: string[];
-};
-
 const Notice = () => {
-  const navigate = useNavigate();
   const tabs = useMemo(
     () => [
       "학사",
@@ -33,38 +20,12 @@ const Notice = () => {
       "일반",
       "신학",
       "도서관",
-      "학과",
-      "외부",
     ],
     []
   );
   const [activeTab, setActiveTab] = useState("학사");
-  const [selectedDepartment, setSelectedDepartment] = useState("국어국문학과");
-  const [isDepartmentBottomSheetOpen, setIsDepartmentBottomSheetOpen] =
-    useState(false);
   const [notices, setNotices] = useState<NoticeItem[]>([]);
-
-  // 외부 탭을 위한 카테고리 상태
-  const externalCategories = useMemo(() => ["사람인", "원티드"], []);
-  const [selectedExternalCategory, setSelectedExternalCategory] = useState(
-    externalCategories[0]
-  );
-  const [
-    isExternalCategoryBottomSheetOpen,
-    setIsExternalCategoryBottomSheetOpen,
-  ] = useState(false);
-
-  const typedDepartments = departments as DepartmentsType;
-
-  const allDepartments = useMemo(() => {
-    const allDepts: string[] = [];
-    for (const college of colleges) {
-      if (typedDepartments[college]) {
-        allDepts.push(...typedDepartments[college]);
-      }
-    }
-    return allDepts;
-  }, [typedDepartments]);
+  const [loading, setLoading] = useState(false);
 
   const tabsRef = useRef<Array<HTMLButtonElement | null>>([]);
   const [indicatorStyle, setIndicatorStyle] = useState({
@@ -72,31 +33,28 @@ const Notice = () => {
     width: 0,
   });
 
-  // 북마크 데이터 초기화
-  useEffect(() => {
-    initializeBookmarks();
-  }, []);
+  const loadNoticesByCategory = useCallback(async () => {
+    const categoryId = getCategoryId(activeTab);
+    if (!categoryId) return;
 
-  // 카테고리에 따른 공지사항 로드 함수
-  const loadNoticesByCategory = useCallback(() => {
-    if (activeTab === "학과") {
-      // 학과 공지사항은 선택된 학과에 맞게 필터링
-      const departmentNotices = getNoticesByDepartment(selectedDepartment);
-      setNotices(departmentNotices.length > 0 ? departmentNotices : []);
-    } else if (activeTab === "외부") {
-      // 외부 공지사항은 선택된 카테고리에 맞게 필터링
-      const externalNotices = getNoticesByExternalSource(
-        selectedExternalCategory
-      );
-      setNotices(externalNotices.length > 0 ? externalNotices : []);
-    } else {
-      // 해당 카테고리 공지사항 필터링
-      const categoryNotices = getNoticesByCategory(activeTab);
-      setNotices(categoryNotices);
+    setLoading(true);
+    try {
+      const response = await getNotices({
+        categoryId,
+        size: 20,
+      });
+      console.log("API 응답:", response);
+      console.log("응답 타입:", typeof response);
+      console.log("배열 여부:", Array.isArray(response));
+      setNotices(response);
+    } catch (error) {
+      console.error("공지사항 로드 실패:", error);
+      setNotices([]);
+    } finally {
+      setLoading(false);
     }
-  }, [activeTab, selectedDepartment, selectedExternalCategory]);
+  }, [activeTab]);
 
-  // 탭이 변경될 때마다 해당 카테고리의 공지사항 로드
   useEffect(() => {
     loadNoticesByCategory();
   }, [loadNoticesByCategory]);
@@ -113,38 +71,17 @@ const Notice = () => {
     }
   }, [activeTab, tabs]);
 
-  const handleDepartmentSelect = (department: string) => {
-    setSelectedDepartment(department);
-    setIsDepartmentBottomSheetOpen(false);
-  };
-
-  const handleOpenDepartmentBottomSheet = () => {
-    setIsDepartmentBottomSheetOpen(true);
-  };
-
-  const handleExternalCategorySelect = (category: string) => {
-    setSelectedExternalCategory(category);
-    setIsExternalCategoryBottomSheetOpen(false);
-  };
-
-  const handleOpenExternalCategoryBottomSheet = () => {
-    setIsExternalCategoryBottomSheetOpen(true);
-  };
-
-  const navigateToNoticeDetail = (noticeId: string) => {
-    navigate(`/notice/${activeTab}/${noticeId}`);
+  const navigateToNoticeDetail = (noticeId: number) => {
+    const notice = notices.find(n => n.id === noticeId);
+    if (notice?.link) {
+      window.open(notice.link, '_blank');
+    }
   };
 
   useEffect(() => {
     tabsRef.current = Array(tabs.length).fill(null);
   }, [tabs]);
 
-  const handleSelectKeyDown = (e: React.KeyboardEvent, action: () => void) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      action();
-    }
-  };
 
   return (
     <div className={styles["notice-container"]}>
@@ -181,63 +118,25 @@ const Notice = () => {
       </div>
 
       <div className={styles["scrollable-content"]}>
-        {activeTab === "학과" && (
-          <div className={styles["department-selector"]}>
-            <button
-              className={styles["select-wrapper"]}
-              onClick={handleOpenDepartmentBottomSheet}
-              onKeyDown={(e) =>
-                handleSelectKeyDown(e, handleOpenDepartmentBottomSheet)
-              }
-              type="button"
-              aria-label="학과 선택 메뉴 열기"
-            >
-              <Select
-                label=""
-                value={selectedDepartment}
-                placeholder="학과 선택"
-                onClick={handleOpenDepartmentBottomSheet}
-              />
-            </button>
-          </div>
-        )}
-
-        {activeTab === "외부" && (
-          <div className={styles["department-selector"]}>
-            <button
-              className={styles["select-wrapper"]}
-              onClick={handleOpenExternalCategoryBottomSheet}
-              onKeyDown={(e) =>
-                handleSelectKeyDown(e, handleOpenExternalCategoryBottomSheet)
-              }
-              type="button"
-              aria-label="카테고리 선택 메뉴 열기"
-            >
-              <Select
-                label=""
-                value={selectedExternalCategory}
-                placeholder="카테고리 선택"
-                onClick={handleOpenExternalCategoryBottomSheet}
-              />
-            </button>
-          </div>
-        )}
-
         <div className={styles["notice-list"]}>
-          {notices.length > 0 ? (
+          {loading ? (
+            <div className={styles["loading"]}>
+              <p>로딩 중...</p>
+            </div>
+          ) : notices.length > 0 ? (
             notices.map((notice) => (
               <button
                 key={notice.id}
                 className={styles["notice-item"]}
                 onClick={() => navigateToNoticeDetail(notice.id)}
                 type="button"
-                aria-label={`공지사항: ${notice.title}, 날짜: ${notice.date}`}
+                aria-label={`공지사항: ${notice.title}, 날짜: ${notice.pubDate}`}
               >
                 <div className={styles["notice-content"]}>
                   <h3 className={styles["notice-item-title"]}>
                     {notice.title}
                   </h3>
-                  <p className={styles["notice-item-date"]}>{notice.date}</p>
+                  <p className={styles["notice-item-date"]}>{notice.pubDate.split(' ')[0]}</p>
                 </div>
               </button>
             ))
@@ -248,50 +147,6 @@ const Notice = () => {
           )}
         </div>
       </div>
-
-      <BottomSheet
-        isOpen={isDepartmentBottomSheetOpen}
-        onClose={() => setIsDepartmentBottomSheetOpen(false)}
-        onApply={() => handleDepartmentSelect(selectedDepartment)}
-        title="학과 선택"
-        selectedItem={selectedDepartment}
-      >
-        <div className={styles["bottom-sheet-list"]}>
-          {allDepartments.map((department) => (
-            <button
-              type="button"
-              key={department}
-              className={`${styles["bottom-sheet-item"]} ${selectedDepartment === department ? styles.selected : ""}`}
-              onClick={() => setSelectedDepartment(department)}
-              aria-label={`${department} 선택`}
-            >
-              {department}
-            </button>
-          ))}
-        </div>
-      </BottomSheet>
-
-      <BottomSheet
-        isOpen={isExternalCategoryBottomSheetOpen}
-        onClose={() => setIsExternalCategoryBottomSheetOpen(false)}
-        onApply={() => handleExternalCategorySelect(selectedExternalCategory)}
-        title="카테고리 선택"
-        selectedItem={selectedExternalCategory}
-      >
-        <div className={styles["bottom-sheet-list"]}>
-          {externalCategories.map((category) => (
-            <button
-              type="button"
-              key={category}
-              className={`${styles["bottom-sheet-item"]} ${selectedExternalCategory === category ? styles.selected : ""}`}
-              onClick={() => setSelectedExternalCategory(category)}
-              aria-label={`${category} 선택`}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-      </BottomSheet>
 
       <button
         className={styles["chat-button"]}

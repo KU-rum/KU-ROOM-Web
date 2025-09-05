@@ -8,7 +8,7 @@ import styles from "./SearchResult.module.css";
 
 interface SearchResultProps {
   filteredNotices: NoticeItem[];
-  onItemClick: (noticeId: string) => void;
+  onItemClick: (noticeId: number) => void;
 }
 
 export const SearchResult: React.FC<SearchResultProps> = ({

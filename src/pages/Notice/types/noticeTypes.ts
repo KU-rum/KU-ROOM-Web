@@ -1,11 +1,13 @@
 export interface NoticeItem {
-  id: string;
-  category: string;
+  id: number;
+  categoryId: number;
+  categoryName: string;
   title: string;
-  date: string;
-  content?: string; // 상세 내용은 선택적으로 포함
-  department?: string; // 학과 정보는 선택적으로 포함
-  externalSource?: string; // 외부 소스 정보는 선택적으로 포함
+  link: string;
+  pubDate: string;
+  author: string;
+  description: string;
+  isBookMarked: boolean;
 }
 
 // 북마크 인터페이스 정의

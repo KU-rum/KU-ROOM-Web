@@ -5,7 +5,7 @@ import styles from "./NoticeList.module.css";
 
 interface NoticeListProps {
   notices: NoticeItem[];
-  onItemClick?: (noticeId: string) => void;
+  onItemClick?: (noticeId: number) => void;
 }
 
 export const NoticeList: React.FC<NoticeListProps> = ({
