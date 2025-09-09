@@ -83,11 +83,8 @@ const Login = () => {
     // 현재 페이지 저장 (로그인 후 돌아올 위치)
     sessionStorage.setItem("redirectUrl", "/");
 
-    // 현재 도메인을 기반으로 리다이렉트 URI 생성
-    const redirectUri = `${window.location.origin}/oauth/callback`;
-
-    // 구글 OAuth2 엔드포인트로 리다이렉트 (redirect_uri 파라미터 추가)
-    window.location.href = `https://kuroom.shop/oauth2/authorization/google?redirect_uri=${redirectUri}`;
+    // 구글 OAuth2 엔드포인트로 리다이렉트
+    window.location.href = `https://kuroom.shop/oauth2/authorization/google`;
   };
 
   // 카카오 로그인 처리 함수
@@ -95,11 +92,8 @@ const Login = () => {
     // 현재 페이지 저장 (로그인 후 돌아올 위치)
     sessionStorage.setItem("redirectUrl", "/");
 
-    // 현재 도메인을 기반으로 리다이렉트 URI 생성
-    const redirectUri = `${window.location.origin}/oauth/callback`;
-
     // 카카오 OAuth2 엔드포인트로 리다이렉트
-    window.location.href = `https://kuroom.shop/oauth2/authorization/kakao?redirect_uri=${redirectUri}`;
+    window.location.href = `https://kuroom.shop/oauth2/authorization/kakao`;
   };
 
   // 네이버 로그인 처리 함수
@@ -107,11 +101,8 @@ const Login = () => {
     // 현재 페이지 저장 (로그인 후 돌아올 위치)
     sessionStorage.setItem("redirectUrl", "/");
 
-    // 현재 도메인을 기반으로 리다이렉트 URI 생성
-    const redirectUri = `${window.location.origin}/oauth/callback`;
-
     // 네이버 OAuth2 엔드포인트로 리다이렉트
-    window.location.href = `https://kuroom.shop/oauth2/authorization/naver?redirect_uri=${redirectUri}`;
+    window.location.href = `https://kuroom.shop/oauth2/authorization/naver`;
   };
 
   // 로그인 실패 시 2초 간 보여줌
