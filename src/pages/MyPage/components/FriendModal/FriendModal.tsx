@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactModal from "react-modal";
 
 import {
@@ -32,9 +32,17 @@ const FriendModal: React.FC<FriendModalProps> = ({
   setRefreshList,
   filteringSearch,
 }) => {
-  const handleCloseModal = () => setModalState(false);
+  const [reportReason, setReportReason] = useState("");
 
-  // 서버에 각각에 대해 요청
+  const handleInputReportReason = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setReportReason(e.target.value);
+  };
+
+  const handleCloseModal = () => {
+    setModalState(false);
+    setReportReason("");
+  };
+
   const handleEditFriend = async () => {
     try {
       switch (modalType) {
@@ -51,17 +59,17 @@ const FriendModal: React.FC<FriendModalProps> = ({
           await friendBlock(editFriendId);
           break;
         case "report":
-          await friendReport(editFriendId, "아직 모릅니다 ㅎㅎ..");
+          await friendReport(editFriendId, reportReason);
           break;
       }
-
-      console.log(`${editFriend}의 ${modalType} 완료`);
     } catch (error) {
       console.error(`친구 ${modalType} 중 오류:`, error);
     } finally {
       setModalState(false);
       setRefreshList((prev) => !prev);
-      if (filteringSearch) await filteringSearch(); // UI 재반영
+      setReportReason("");
+
+      if (filteringSearch) await filteringSearch();
     }
   };
 
@@ -90,9 +98,18 @@ const FriendModal: React.FC<FriendModalProps> = ({
         );
       case "report":
         return (
-          <span className={styles.InformText}>
-            {nicknameSpan} 님을 신고하시겠습니까?
-          </span>
+          <div className={styles.ReportWrapper}>
+            <span className={styles.InformText}>
+              {nicknameSpan} 님을 신고하시겠습니까?
+            </span>
+            <input
+              className={styles.ReportReasonInput}
+              type="text"
+              value={reportReason}
+              onChange={(e) => handleInputReportReason(e)}
+              placeholder="신고이유를 작성해주세요."
+            />
+          </div>
         );
       case "accept":
         return (
@@ -120,7 +137,11 @@ const FriendModal: React.FC<FriendModalProps> = ({
         <Button variant="tertiary" onClick={handleCloseModal} size="sm">
           취소
         </Button>
-        <Button onClick={handleEditFriend} size="sm">
+        <Button
+          onClick={handleEditFriend}
+          size="sm"
+          disabled={modalType === "report" && reportReason.trim() === ""}
+        >
           확인
         </Button>
       </div>
