@@ -5,6 +5,7 @@ import arrowRight from "@assets/nav/arrowRight.svg";
 import rank1Icon from "@assets/icon/ranking/rank1.png";
 import rank2Icon from "@assets/icon/ranking/rank2.png";
 import rank3Icon from "@assets/icon/ranking/rank3.png";
+import kuroomEmptyIcon from "@assets/icon/kuroom-icon/kuroom-gray.svg";
 import { getSharingRanking } from "@apis/home";
 import { RankListType } from "@/shared/types";
 
@@ -38,24 +39,23 @@ const MyLocationRanking = ({ updateTrigger }: Props) => {
   }, [updateTrigger]);
 
   return (
-    // TODO: 공유 횟수가 모두 0이면 "아직 아무것도 공유하지 않았습니다." 등의 화면으로 보여주기 (10/13)
-    myRankData.length > 0 && (
-      <div className={styles.MyLocationRankingBackground}>
-        <div className={styles.MyLocationRankingWrapper}>
-          <div className={styles.MyLocationRankingSectionTitle}>
-            <div className={styles.TitleWrapper}>
-              <h1 className={styles.SectionTitleBold}>내 장소 랭킹</h1>
-              <span className={styles.NormalText}>
-                내가 자주 간 장소를 모아 보여드려요 :)
-              </span>
-            </div>
-            <img
-              className={styles.ArrowButton}
-              src={arrowRight}
-              alt="자세히 보기"
-              onClick={goToMyLocationRankingPage}
-            />
+    <div className={styles.MyLocationRankingBackground}>
+      <div className={styles.MyLocationRankingWrapper}>
+        <div className={styles.MyLocationRankingSectionTitle}>
+          <div className={styles.TitleWrapper}>
+            <h1 className={styles.SectionTitleBold}>내 장소 랭킹</h1>
+            <span className={styles.NormalText}>
+              내가 자주 간 장소를 모아 보여드려요 :)
+            </span>
           </div>
+          <img
+            className={styles.ArrowButton}
+            src={arrowRight}
+            alt="자세히 보기"
+            onClick={goToMyLocationRankingPage}
+          />
+        </div>
+        {myRankData.length > 0 ? (
           <div className={styles.RankingContentWrapper}>
             {myRankData.map((item, index) => (
               <div
@@ -98,9 +98,17 @@ const MyLocationRanking = ({ updateTrigger }: Props) => {
               </div>
             ))}
           </div>
-        </div>
+        ) : (
+          <div className={styles.EmptyViewContainer}>
+            <img src={kuroomEmptyIcon} className={styles.EmptyIcon} />
+            <span className={styles.EmptyText}>
+              아직 위치를 공유하지 않았어요.
+              <br /> 1시간 이상 위치 공유를 유지해야 1회로 인정됩니다.
+            </span>
+          </div>
+        )}
       </div>
-    )
+    </div>
   );
 };
 

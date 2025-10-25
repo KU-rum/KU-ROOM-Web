@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { Tooltip } from "react-tooltip";
 
 import bookmarkIcon from "@/assets/headericon/bookmark.svg";
 import bookmarkFillIcon from "@/assets/headericon/bookmark-fill.svg";
@@ -7,6 +8,7 @@ import searchIcon from "@/assets/headericon/search.svg";
 import arrowBackIcon from "@/assets/nav/arrowback.svg";
 import kuroomIcon from "@/assets/icon/cloud.svg";
 import homeAlarmIcon from "@/assets/icon/homealarm.svg";
+import infoButtonIcon from "@/assets/icon/info-button.svg";
 
 import "./Header.css";
 
@@ -24,7 +26,6 @@ const renderHeaderContent = (
   onBookmarkClick?: () => void,
   isBookmarked?: boolean
 ) => {
-
   switch (children) {
     case "홈":
       return (
@@ -54,6 +55,39 @@ const renderHeaderContent = (
             onClick={() => navigate("/search")}
           />
         </div>
+      );
+    case "내 장소 랭킹":
+      return (
+        <>
+          <img
+            className="profilechange-header-content"
+            src={arrowBackIcon}
+            alt="뒤로가기"
+            onClick={() => navigate(-1)}
+          />
+          <img
+            className="header-info-button-icon"
+            src={infoButtonIcon}
+            alt="툴팁 트리거 버튼"
+            data-tooltip-id="my-location-ranking"
+            data-tooltip-place="bottom-end"
+          />
+          <Tooltip
+            id="my-location-ranking"
+            content={`1시간 이상 위치 공유를 유지해야\n1회로 인정됩니다.`}
+            place="bottom-end"
+            offset={10}
+            style={{
+              background: "#1D2228",
+              padding: "10px 17px",
+              borderRadius: "12px",
+              fontSize: "14px",
+              fontWeight: "500",
+              lineHeight: "140%",
+              whiteSpace: "break-spaces",
+            }}
+          />
+        </>
       );
     case "":
       return (
@@ -91,7 +125,7 @@ const renderHeaderContent = (
           </>
         );
       }
-      
+
       return (
         <img
           className="profilechange-header-content"
@@ -103,11 +137,11 @@ const renderHeaderContent = (
   }
 };
 
-const Header: React.FC<HeaderProps> = ({ 
-  children = "", 
-  hasNewAlarm, 
-  onBookmarkClick, 
-  isBookmarked 
+const Header: React.FC<HeaderProps> = ({
+  children = "",
+  hasNewAlarm,
+  onBookmarkClick,
+  isBookmarked,
 }) => {
   const navigate = useNavigate();
   const newAlarmState = children === "홈" && hasNewAlarm === true;
@@ -120,7 +154,13 @@ const Header: React.FC<HeaderProps> = ({
         ) : (
           <span className="header-title">{children}</span>
         )}
-        {renderHeaderContent(children, newAlarmState, navigate, onBookmarkClick, isBookmarked)}
+        {renderHeaderContent(
+          children,
+          newAlarmState,
+          navigate,
+          onBookmarkClick,
+          isBookmarked
+        )}
       </header>
     </>
   );
