@@ -1,11 +1,14 @@
 import Header from "@components/Header/Header";
 
+import AlarmItem from "@pages/Alarm/components/alarm-item/AlarmItem";
+import { useAlarmList } from "@pages/Alarm/hooks/use-alarm-list";
+import MarkAsReadButton from "@pages/Alarm/components/mark-as-read-button/MarkAsReadButton";
+
 import styles from "./Alarm.module.css";
-import AlarmItem from "./components/alarm-item/AlarmItem";
-import { useAlarmList } from "./hooks/use-alarm-list";
 
 const Alarm = () => {
-  const { listBottomRef, alarmList, isPending } = useAlarmList();
+  const { listBottomRef, alarmList, unreadAlarmList, isPending } =
+    useAlarmList();
 
   return (
     <>
@@ -23,6 +26,7 @@ const Alarm = () => {
           }}
         />
       </div>
+      {unreadAlarmList.length !== 0 && <MarkAsReadButton />}
     </>
   );
 };

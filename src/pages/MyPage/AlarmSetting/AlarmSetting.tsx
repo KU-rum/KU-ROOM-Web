@@ -1,16 +1,24 @@
 import { useEffect, useState, useRef } from "react";
 
 import Header from "@components/Header/Header";
-import { AlarmSectionData } from "@constant/sectionDatas";
 import { getKeywords, toggleKeyword } from "@apis/notice";
-import useToast from "@/shared/hooks/use-toast";
+import useToast from "@hooks/use-toast";
 
-import ProfileSection from "../components/ProfileSection/ProfileSection";
+import ProfileSection from "@pages/MyPage/components/ProfileSection/ProfileSection";
+import ToggleAlarmButton from "@pages/MyPage/components/ToggleAlarmButton";
+
+import { ALARM_SECTION_DATA } from "./constant/alarm";
+import useAlarmSettingQuery from "./hooks/use-alarm-setting-query";
+import useAlarmSettingMutation from "./hooks/use-alarm-setting-mutation";
+import styles from "./AlarmSetting.module.css";
 
 const AlarmSetting = () => {
   const toast = useToast();
   const [keywords, setKeywords] = useState<{ keyword: string }[]>([]);
   const hasLoadedKeywords = useRef(false);
+
+  const { toggleStates, isPending } = useAlarmSettingQuery();
+  const { updateAlarmActiveStatus } = useAlarmSettingMutation();
 
   useEffect(() => {
     const loadKeywords = async () => {
@@ -32,52 +40,49 @@ const AlarmSetting = () => {
     try {
       await toggleKeyword(target);
       setKeywords((prev) => prev.filter((k) => k.keyword !== target));
-      toast.info('키워드가 삭제되었어요');
+      toast.info("키워드가 삭제되었어요");
     } catch (error) {
       console.error("키워드 삭제 실패:", error);
-      toast.error('키워드 삭제에 실패했어요');
+      toast.error("키워드 삭제에 실패했어요");
     }
   };
 
-  // 각 알림 상태
-  const [toggleStates, setToggleStates] = useState(() => {
-    const initialState: Record<string, boolean> = {};
-    AlarmSectionData.forEach((section) =>
-      section.contents.forEach((item) => {
-        initialState[item] = true;
-      })
-    );
-    return initialState;
-  });
   const handleToggle = (item: string) => {
-    setToggleStates((prev) => ({
-      ...prev,
-      [item]: !prev[item],
-    }));
-    if (item === "새로운 공지 업로드") {
-      window.ReactNativeWebView?.postMessage(
-        JSON.stringify({
-          type: "UNSUBSCRIBE_DEV",
-          topic: "dev",
-          isSubscribe: false,
-        })
-      );
+    const category = ALARM_SECTION_DATA.flatMap(
+      (section) => section.contents
+    ).find((content) => content.name === item)?.category;
+
+    if (!category) {
+      console.error(`Unknown alarm item: ${item}`);
+      return;
     }
+    updateAlarmActiveStatus(category);
   };
 
-  useEffect(() => {
-    console.log(toggleStates);
-  }, [toggleStates]);
+  if (isPending) {
+    // TODO: 로딩 화면 보여주기
+    return <div>로딩중...</div>;
+  }
 
   return (
     <div>
       <Header>알림 설정</Header>
-      <div style={{ marginTop: "56px" }}>
-        {AlarmSectionData.map((data, index) => (
+      <div className={styles.AlarmSettingPage}>
+        <div className={styles.EntireAlarmToggleSection}>
+          <span className={styles.SectionTitle}>전체</span>
+          <div className={styles.ContentWrapper}>
+            <span className={styles.ContentName}>전체 알림</span>
+            <ToggleAlarmButton isOn={false} onToggle={() => {}} />
+          </div>
+        </div>
+        {ALARM_SECTION_DATA.map((data, index) => (
           <ProfileSection
             key={index}
-            sectionData={data}
-            isLastSection={index === AlarmSectionData.length - 1}
+            sectionData={{
+              title: data.title,
+              contents: data.contents.map((item) => item.name),
+            }}
+            isLastSection={index === ALARM_SECTION_DATA.length - 1}
             isToggle={true}
             toggleStates={toggleStates}
             onToggle={handleToggle}

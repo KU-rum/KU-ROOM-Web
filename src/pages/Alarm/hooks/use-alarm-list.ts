@@ -39,6 +39,8 @@ export const useAlarmList = () => {
   const alarmList =
     rowAlarmDatas?.pages.flatMap((page) => page?.alarms || []) || [];
 
+  const unreadAlarmList = alarmList.filter((alarm) => alarm.isChecked !== true);
+
   if (isError) {
     toast.error(error.message);
     navigate("/");
@@ -53,6 +55,7 @@ export const useAlarmList = () => {
   return {
     listBottomRef,
     alarmList,
+    unreadAlarmList,
     isPending,
   };
 };

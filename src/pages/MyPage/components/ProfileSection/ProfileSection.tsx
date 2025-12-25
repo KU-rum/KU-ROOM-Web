@@ -79,7 +79,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
               {isToggle && (
                 <ToggleAlarmButton
                   isOn={toggleStates?.[item] ?? false} // undefined면 false로 처리
-                  onToggle={() => onToggle?.(item)} // onToggle이 있을 때만 실행
+                  onToggle={() => onToggle?.(item)}
                 />
               )}
             </button>

@@ -6,6 +6,7 @@ import { PAGE_SIZE } from "@/shared/constant/page";
 const ALARM_API_URL = {
   BASE: "/alarm",
   UNREAD_STATUS: "/alarm/unread",
+  CHECK_ALL: "/alarm/read-all",
 };
 
 export interface AlarmListResponseData extends ApiResponse {
@@ -56,4 +57,12 @@ export const getAlarmReadStatus = async () => {
   );
 
   return response.data.data;
+};
+
+export const checkAllAlarmsApi = async () => {
+  const response = await axiosInstance.patch<ApiResponse>(
+    ALARM_API_URL.CHECK_ALL
+  );
+
+  return response.data;
 };

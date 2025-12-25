@@ -1,0 +1,29 @@
+.AlarmSettingPage {
+  margin-top: 56px;
+  height: calc(100dvh - 90px);
+  overflow-y: auto;
+  padding-bottom: 34px;
+}
+.EntireAlarmToggleSection {
+  padding: 40px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+
+  border-bottom: 10px solid rgba(227, 231, 235, 0.3);
+}
+.SectionTitle {
+  color: #9eaab5;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 120%; /* 19.2px */
+}
+.ContentWrapper {
+  position: relative;
+  color: #000;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 120%; /* 19.2px */
+  padding: 15px 0;
+}

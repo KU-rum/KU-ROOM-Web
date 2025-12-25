@@ -15,22 +15,6 @@ const MyPageSectionData: { title: string; contents: string[] }[] = [
   },
 ];
 
-const AlarmSectionData: { title: string; contents: string[] }[] = [
-  {
-    // TODO: 친구 신청 없애기 (10/13)
-    title: "친구",
-    contents: ["친구 신청", "친구 위치 공유"],
-  },
-  {
-    title: "공지사항",
-    contents: ["새로운 공지 업로드", "공지 키워드 알림"],
-  },
-  {
-    title: "내 장소 랭킹",
-    contents: ["순위 변동 알림"],
-  },
-];
-
 const getProfileChangeSectionData = (loginType: LoginType) => {
   return [
     {
@@ -48,4 +32,4 @@ const getProfileChangeSectionData = (loginType: LoginType) => {
   ];
 };
 
-export { MyPageSectionData, AlarmSectionData, getProfileChangeSectionData };
+export { MyPageSectionData, getProfileChangeSectionData };

@@ -1,0 +1,20 @@
+.ButtonContainer {
+  position: absolute;
+  bottom: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 13px 23px;
+  box-sizing: border-box;
+
+  border-radius: 22.5px;
+  border: 1px solid #009733;
+  background: #fff;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.25);
+}
+
+.MarkAsReadText {
+  color: #009733;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 120%;
+}

@@ -1,6 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import useToast from "@/shared/hooks/use-toast";
-import { checkAlarmApi, CheckAlarmParams } from "@pages/Alarm/api";
+import useToast from "@hooks/use-toast";
+
+import {
+  checkAlarmApi,
+  CheckAlarmParams,
+  checkAllAlarmsApi,
+} from "@pages/Alarm/api";
 import { ALARM_QUERY_KEY } from "@pages/Alarm/querykey/alarm";
 
 export const useCheckAlarm = () => {
@@ -18,5 +23,18 @@ export const useCheckAlarm = () => {
     },
   });
 
-  return { checkAlarm };
+  const { mutate: checkAllAlarms } = useMutation({
+    mutationFn: () => checkAllAlarmsApi(),
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: ALARM_QUERY_KEY.ALARM_LIST,
+      });
+      toast.info("모두 읽음 처리되었습니다.");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  return { checkAlarm, checkAllAlarms };
 };
