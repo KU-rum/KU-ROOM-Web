@@ -4,17 +4,24 @@ import searchresultIcon from "@assets/icon/notice/search/searchresult.svg";
 
 import type { NoticeResponse } from "@apis/notice";
 import { NoticeList } from "../NoticeList";
+import { LoadingState } from "../../../components/NoticeList/components/LoadingState/LoadingState";
 import styles from "./SearchResult.module.css";
 
 interface SearchResultProps {
   filteredNotices: NoticeResponse[];
   onItemClick: (noticeId: number) => void;
+  isLoading?: boolean;
 }
 
 export const SearchResult: React.FC<SearchResultProps> = ({
   filteredNotices,
   onItemClick,
+  isLoading = false,
 }) => {
+  if (isLoading) {
+    return <LoadingState />;
+  }
+
   if (filteredNotices.length === 0) {
     return (
       <div className={styles.noResultContainer}>

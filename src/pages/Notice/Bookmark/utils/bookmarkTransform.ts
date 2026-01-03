@@ -1,4 +1,5 @@
-import type { BookmarkResponse, NoticeResponse } from "@apis/notice";
+import type { BookmarkResponse } from "@apis/bookmark";
+import type { NoticeResponse } from "@apis/notice";
 
 export const transformBookmarkToNotice = (apiData: BookmarkResponse[] | undefined): NoticeResponse[] => {
   if (!apiData || !Array.isArray(apiData)) {
@@ -16,5 +17,6 @@ export const transformBookmarkToNotice = (apiData: BookmarkResponse[] | undefine
     author: "",
     description: "",
     isBookMarked: true,
+    bookmarkId: item.bookmarkId,
   }));
 };

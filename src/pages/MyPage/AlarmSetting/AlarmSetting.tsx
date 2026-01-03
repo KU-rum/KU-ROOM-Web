@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 
 import Header from "@components/Header/Header";
-import { getKeywords, toggleKeyword } from "@apis/notice";
-import useToast from "@hooks/use-toast";
+import { AlarmSectionData } from "@constant/sectionDatas";
+import { getKeywords, registerKeyword } from "@apis/search";
+import useToast from "@/shared/hooks/use-toast";
 
 import ProfileSection from "@pages/MyPage/components/ProfileSection/ProfileSection";
 import ToggleAlarmButton from "@pages/MyPage/components/ToggleAlarmButton";
@@ -38,7 +39,7 @@ const AlarmSetting = () => {
 
   const handleDeleteKeyword = async (target: string) => {
     try {
-      await toggleKeyword(target);
+      await registerKeyword(target);
       setKeywords((prev) => prev.filter((k) => k.keyword !== target));
       toast.info("키워드가 삭제되었어요");
     } catch (error) {

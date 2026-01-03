@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import type { NoticeResponse } from "@apis/notice";
-import { getBookmarks as getBookmarksAPI } from "@apis/notice";
+import { getBookmarks as getBookmarksAPI } from "@apis/bookmark";
 import { transformBookmarkToNotice } from "../utils/bookmarkTransform";
 
 export const useBookmarks = () => {

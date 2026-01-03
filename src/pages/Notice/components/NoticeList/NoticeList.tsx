@@ -33,11 +33,12 @@ const NoticeList = ({
     handleSortOptionClick,
   } = useNoticeListSort(notices);
 
-  const handleNoticeClick = (noticeId: number) => {
-    if (category) {
-      navigate(`/notice/${category}/${noticeId}`);
+  const handleNoticeClick = (notice: typeof notices[0]) => {
+    const categoryName = notice.categoryName || category;
+    if (categoryName) {
+      navigate(`/notice/${categoryName}/${notice.id}`);
     } else {
-      navigate(`/notice/${noticeId}`);
+      navigate(`/notice/${notice.id}`);
     }
   };
 
@@ -84,7 +85,7 @@ const NoticeList = ({
                 key={notice.id}
                 notice={notice}
                 showBookmarkButton={showBookmarkButton}
-                onClick={() => handleNoticeClick(notice.id)}
+                onClick={() => handleNoticeClick(notice)}
                 onBookmarkClick={
                   showBookmarkButton
                     ? (e) => handleBookmarkClick(e, notice.id)

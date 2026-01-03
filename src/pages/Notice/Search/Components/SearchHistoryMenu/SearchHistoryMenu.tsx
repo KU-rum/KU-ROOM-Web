@@ -25,7 +25,7 @@ export const SearchHistoryMenu: React.FC<SearchHistoryMenuProps> = ({
 
   return (
     <div>
-      <button
+      <div
         className={styles.menuOverlay}
         onClick={onClose}
         onKeyDown={(e) => {
@@ -33,7 +33,8 @@ export const SearchHistoryMenu: React.FC<SearchHistoryMenuProps> = ({
             onClose();
           }
         }}
-        type="button"
+        role="button"
+        tabIndex={0}
       >
         <div
           className={styles.menuContainer}
@@ -67,7 +68,7 @@ export const SearchHistoryMenu: React.FC<SearchHistoryMenuProps> = ({
             </div>
           </button>
         </div>
-      </button>
+      </div>
     </div>
   );
 };

@@ -60,14 +60,21 @@ export const SearchHistory: React.FC<SearchHistoryProps> = ({
         <div className={styles.searchHistory}>
           <div className={styles.tagContainer}>
             {searchTerms.map((term) => (
-              <button
+              <div
                 key={term}
-                type="button"
+                role="button"
+                tabIndex={0}
                 onClick={() => onSelectTerm(term)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onSelectTerm(term);
+                  }
+                }}
                 className={styles.searchButton}
               >
                 <SearchTag text={term} onRemove={() => onRemoveTerm(term)} />
-              </button>
+              </div>
             ))}
           </div>
         </div>

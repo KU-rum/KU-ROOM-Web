@@ -11,6 +11,7 @@ export interface NoticeResponse {
   author: string;
   description: string;
   isBookMarked: boolean;
+  bookmarkId?: number;
 }
 
 export interface PageableSort {
@@ -50,33 +51,14 @@ export interface NoticeListParams {
   sort?: string[];
 }
 
-export interface BookmarkResponse {
-  bookmarkId: number;
-  noticeId: number;
-  noticeName: string;
-  noticePubDate: string;
-  bookmarkDate: string;
-}
-
-export interface BookmarkApiResponse {
-  code: number;
-  status: string;
-  message: string;
-  data: BookmarkResponse[];
-}
-
-export interface BookmarkListParams {
-  page?: number;
-  size?: number;
-  sort?: string[];
-}
-
 export interface NoticeDetailData {
   id: number;
   content: string;
   link: string;
   title: string;
   pubdate: string;
+  isBookmark: boolean;
+  bookmarkId?: number;
 }
 
 export interface NoticeDetailApiResponse {
@@ -86,7 +68,7 @@ export interface NoticeDetailApiResponse {
   data: NoticeDetailData;
 }
 
-const NOTICE_BASE_URL = "https://kuroom.shop";
+const NOTICE_BASE_URL = "https://kuroom.shop/api/v1";
 
 const noticeAxiosInstance = axios.create({
   baseURL: NOTICE_BASE_URL,
@@ -116,7 +98,7 @@ export const getNotices = async (
   params: NoticeListParams = {}
 ): Promise<NoticeListResponse> => {
   const response = await noticeAxiosInstance.get<NoticeListResponse>(
-    "/api/v1/notices",
+    "/notices",
     {
       params: {
         category: params.category,
@@ -130,25 +112,12 @@ export const getNotices = async (
   return response.data;
 };
 
-export const getBookmarks = async (): Promise<BookmarkResponse[]> => {
-  const response = await noticeAxiosInstance.get<BookmarkApiResponse>(
-    "/api/v1/bookmark"
-  );
-  return response.data.data;
-};
-
-export const addBookmark = async (noticeId: number): Promise<void> => {
-  await noticeAxiosInstance.post(`/api/v1/notices/${noticeId}/bookmark`);
-};
-
-export const removeBookmark = async (noticeId: number): Promise<void> => {
-  await noticeAxiosInstance.delete(`/api/v1/notices/${noticeId}/bookmark`);
-};
-
-export const getNoticeDetail = async (noticeId: string): Promise<NoticeDetailData> => {
+export const getNoticeDetail = async (
+  noticeId: string
+): Promise<NoticeDetailData> => {
   try {
     const response = await noticeAxiosInstance.get<NoticeDetailApiResponse>(
-      `/api/v1/notices/${noticeId}`
+      `/notices/${noticeId}`
     );
     return response.data.data;
   } catch (error: any) {
@@ -157,38 +126,30 @@ export const getNoticeDetail = async (noticeId: string): Promise<NoticeDetailDat
   }
 };
 
-export interface KeywordToggleRequest {
-  keyword: string;
-}
-
-export interface KeywordToggleResponse {
+export interface PopularNoticeResponse {
   code: number;
   status: string;
   message: string;
+  data: NoticeResponse[];
 }
 
-export const toggleKeyword = async (keyword: string): Promise<KeywordToggleResponse> => {
-  const response = await noticeAxiosInstance.post<KeywordToggleResponse>(
-    "/api/v1/notices/keyword",
-    {
-      keyword,
-    }
+export const getPopularNotices = async (): Promise<NoticeResponse[]> => {
+  const response = await noticeAxiosInstance.get<PopularNoticeResponse>(
+    "/notices/popular"
   );
-  return response.data;
+  return response.data.data;
 };
 
-export interface KeywordListResponse {
+export interface PrimaryNoticeResponse {
   code: number;
   status: string;
   message: string;
-  data: {
-    keywords: string[];
-  };
+  data: NoticeResponse[];
 }
 
-export const getKeywords = async (): Promise<string[]> => {
-  const response = await noticeAxiosInstance.get<KeywordListResponse>(
-    "/api/v1/notices/keyword"
+export const getPrimaryNotices = async (): Promise<NoticeResponse[]> => {
+  const response = await noticeAxiosInstance.get<PrimaryNoticeResponse>(
+    "/notices/primary"
   );
-  return response.data.data.keywords;
+  return response.data.data;
 };
