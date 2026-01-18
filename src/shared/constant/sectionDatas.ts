@@ -22,7 +22,7 @@ const getProfileChangeSectionData = (loginType: LoginType) => {
       title: "프로필",
       contents:
         loginType === "social"
-          ? ["이메일"]
+          ? ["이메일", "닉네임 변경하기"]
           : ["이메일", "아이디", "비밀번호 변경하기", "닉네임 변경하기"],
     },
     {
