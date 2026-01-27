@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Header from "@components/Header/Header";
 import useToast from "@/shared/hooks/use-toast";
@@ -26,6 +27,7 @@ import type { NoticeResponse } from "@apis/notice";
 import styles from "./Search.module.css";
 
 const Search: React.FC = () => {
+  const navigate = useNavigate();
   const toast = useToast();
   const [searchText, setSearchText] = useState("");
   const [popularNotices, setPopularNotices] = useState<NoticeResponse[]>([]);
@@ -153,8 +155,8 @@ const Search: React.FC = () => {
       ...filteredNotices,
     ];
     const notice = allNotices.find((n) => n.id === noticeId);
-    if (notice?.link) {
-      window.open(notice.link, "_blank");
+    if (notice) {
+      navigate(`/notice/${notice.categoryName}/${notice.id}`);
     }
   };
 
