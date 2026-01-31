@@ -51,7 +51,7 @@ const HomeMiniMap: React.FC<HomeMiniMapProps> = ({
     ? "장소를 이동할 땐 위치 공유를 해제해주세요 :)"
     : isInSchool
       ? "내 위치를 친구들에게 공유해보세요!"
-      : "학교 내부에서 위치를 공유할 수 있습니다!";
+      : "학교 내부에서 위치를 공유해주세요!";
 
   const buttonText = isSharedLocation
     ? "위치 공유 해제하기"
