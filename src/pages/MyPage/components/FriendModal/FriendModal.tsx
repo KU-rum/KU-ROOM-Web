@@ -1,13 +1,8 @@
 import React, { useState } from "react";
 import ReactModal from "react-modal";
 
-import {
-  acceptRequest,
-  friendBlock,
-  friendDelete,
-  friendReport,
-  rejectRequest,
-} from "@apis/friend";
+import { friendBlock, friendDelete, friendReport } from "@apis/friend";
+import { acceptRequest, rejectRequest } from "@apis/user-list";
 import cautionIcon from "@assets/icon/editFriend/cautionIcon.svg";
 import Button from "@components/Button/Button";
 

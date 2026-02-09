@@ -1,13 +1,15 @@
+import { useQuery } from "@tanstack/react-query";
+
+import useDebounce from "@hooks/use-debounce";
+import { USER_LIST_QUERY_KEY } from "@/queryKey";
+
 import {
   GetFriendRequestReceivedListResponse,
   getReceivedRequestList,
   getSearchedUserListApi,
   getSentRequestList,
   SearchedUserListResponse,
-} from "@/apis/friend";
-import { USER_LIST_QUERY_KEY } from "@/queryKey";
-import useDebounce from "@/shared/hooks/use-debounce";
-import { useQuery } from "@tanstack/react-query";
+} from "@/apis/user-list";
 
 export const useSearchedUserListQuery = (nickname: string) => {
   const debouncedText = useDebounce(nickname, 300);
@@ -20,7 +22,7 @@ export const useSearchedUserListQuery = (nickname: string) => {
     queryKey: USER_LIST_QUERY_KEY.SEARCHED_USER(debouncedText),
     queryFn: () => getSearchedUserListApi(debouncedText),
     enabled: !!debouncedText.trim(),
-    staleTime: 1000 * 30,
+    staleTime: 1000 * 60,
   });
 
   const searchedUserList = data?.data;
@@ -38,8 +40,9 @@ export const useSentRequestListQuery = () => {
     isPending: isPendingSentRequestList,
     isError: isErrorSentRequestList,
   } = useQuery<GetFriendRequestReceivedListResponse>({
-    queryKey: USER_LIST_QUERY_KEY.DEFAULT,
+    queryKey: USER_LIST_QUERY_KEY.REQUEST(),
     queryFn: () => getSentRequestList(),
+    staleTime: 1000 * 60 * 3,
   });
 
   const sentRequestList = data?.data;
@@ -57,7 +60,7 @@ export const useReceivedRequestListQuery = () => {
     isPending: isPendingReceivedRequestList,
     isError: isErrorReceivedRequestList,
   } = useQuery<GetFriendRequestReceivedListResponse>({
-    queryKey: USER_LIST_QUERY_KEY.DEFAULT,
+    queryKey: USER_LIST_QUERY_KEY.RECEIVED(),
     queryFn: () => getReceivedRequestList(),
   });
 

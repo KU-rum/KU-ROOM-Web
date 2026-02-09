@@ -1,4 +1,4 @@
-import { cancelRequest, requestFriend } from "@apis/friend";
+import { cancelRequest, requestFriend } from "@apis/user-list";
 import Header from "@components/Header/Header";
 
 import FriendSearch from "../components/FriendSearch/FriendSearch";
