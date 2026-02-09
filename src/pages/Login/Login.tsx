@@ -91,7 +91,7 @@ const Login = () => {
     const redirectUri =
       import.meta.env.VITE_REDIRECT_URI ||
       window.location.origin + "/social/callback";
-    window.location.href = `https://kuroom.shop/oauth2/authorization/google?redirect_uri=${encodeURIComponent(redirectUri)}`;
+    window.location.href = `https://kuroom.store/oauth2/authorization/google?redirect_uri=${encodeURIComponent(redirectUri)}`;
   };
 
   // 카카오 로그인 처리 함수
@@ -99,7 +99,7 @@ const Login = () => {
     const redirectUri =
       import.meta.env.VITE_REDIRECT_URI ||
       window.location.origin + "/social/callback";
-    window.location.href = `https://kuroom.shop/oauth2/authorization/kakao?redirect_uri=${encodeURIComponent(redirectUri)}`;
+    window.location.href = `https://kuroom.store/oauth2/authorization/kakao?redirect_uri=${encodeURIComponent(redirectUri)}`;
   };
 
   // 애플 로그인 처리 함수
@@ -107,7 +107,7 @@ const Login = () => {
     const redirectUri =
       import.meta.env.VITE_REDIRECT_URI ||
       window.location.origin + "/social/callback";
-    window.location.href = `https://kuroom.shop/oauth2/authorization/apple?redirect_uri=${encodeURIComponent(redirectUri)}`;
+    window.location.href = `https://kuroom.store/oauth2/authorization/apple?redirect_uri=${encodeURIComponent(redirectUri)}`;
   };
 
   // 로그인 실패 시 2초 간 보여줌

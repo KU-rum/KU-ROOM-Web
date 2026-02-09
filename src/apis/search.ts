@@ -59,7 +59,7 @@ export interface SaveRecentSearchResponse {
   message: string;
 }
 
-const SEARCH_BASE_URL = "https://kuroom.shop/api/v1";
+const SEARCH_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const searchAxiosInstance = axios.create({
   baseURL: SEARCH_BASE_URL,
@@ -82,11 +82,11 @@ searchAxiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 export const searchNotices = async (
-  params: SearchNoticesParams
+  params: SearchNoticesParams,
 ): Promise<NoticeListResponse> => {
   const response = await searchAxiosInstance.get<NoticeListResponse>(
     "/notices/search",
@@ -96,67 +96,68 @@ export const searchNotices = async (
         page: params.page || 0,
         size: params.size || 20,
       },
-    }
+    },
   );
   return response.data;
 };
 
 export const registerKeyword = async (
-  keyword: string
+  keyword: string,
 ): Promise<KeywordRegisterResponse> => {
   const response = await searchAxiosInstance.post<KeywordRegisterResponse>(
     "/notices/keyword",
     {
       keyword,
-    }
+    },
   );
   return response.data;
 };
 
 export const getKeywords = async (): Promise<string[]> => {
-  const response = await searchAxiosInstance.get<KeywordListResponse>(
-    "/notices/keyword"
-  );
+  const response =
+    await searchAxiosInstance.get<KeywordListResponse>("/notices/keyword");
   return response.data.data.keywords;
 };
 
 export const getRecentSearches = async (
-  limit: number = 20
+  limit: number = 20,
 ): Promise<RecentSearch[]> => {
   const response = await searchAxiosInstance.get<RecentSearchListResponse>(
     "/notices/searches/recent",
     {
       params: { limit },
-    }
+    },
   );
   return response.data.data;
 };
 
 export const deleteRecentSearch = async (
-  id: number
+  id: number,
 ): Promise<DeleteRecentSearchResponse> => {
   const response = await searchAxiosInstance.delete<DeleteRecentSearchResponse>(
-    `/notices/searches/recent/${id}`
+    `/notices/searches/recent/${id}`,
   );
   return response.data;
 };
 
-export const deleteAllRecentSearches = async (): Promise<DeleteAllRecentSearchesResponse> => {
-  const response = await searchAxiosInstance.delete<DeleteAllRecentSearchesResponse>(
-    "/notices/searches/recent/all"
-  );
-  return response.data;
-};
+export const deleteAllRecentSearches =
+  async (): Promise<DeleteAllRecentSearchesResponse> => {
+    const response =
+      await searchAxiosInstance.delete<DeleteAllRecentSearchesResponse>(
+        "/notices/searches/recent/all",
+      );
+    return response.data;
+  };
 
 export const saveRecentSearch = async (
-  keyword: string
+  keyword: string,
 ): Promise<SaveRecentSearchResponse> => {
   const response = await searchAxiosInstance.post<SaveRecentSearchResponse>(
     "/notices/searches/recent",
     null,
     {
       params: { keyword },
-    }
+    },
   );
   return response.data;
 };
