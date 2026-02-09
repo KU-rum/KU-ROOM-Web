@@ -1,7 +1,6 @@
 // 친구 관련 api
-// Todo: Tanstack Query 리팩토링
 import { ApiResponse, RankListType } from "@/shared/types";
-import axiosInstance from "./axiosInstance"; // axiosInstance import
+import axiosInstance from "./axiosInstance";
 
 const GET_ALL_FRIENDS = "/friends/list";
 const SEARCH_NEW_FRIENDS = "/friends/search?nickname=";
@@ -21,47 +20,69 @@ interface UserFriendData {
   imageUrl: string;
 }
 // 친구 목록 조회 api
-export interface GetAllFriendsResponse extends ApiResponse {
+export interface GetUserFriendListResponse extends ApiResponse {
   data: UserFriendData[];
 }
 
-export const getAllFriends = async () => {
+export const getFriendListApi = async () => {
   const response =
-    await axiosInstance.get<GetAllFriendsResponse>(GET_ALL_FRIENDS);
+    await axiosInstance.get<GetUserFriendListResponse>(GET_ALL_FRIENDS);
   return response.data;
 };
 
-// 친구 요청할 친구 닉네임 검색 api
-interface NewFriendsSearchResponse extends ApiResponse {
-  data: {
-    userId: number;
-    nickname: string;
-    imageUrl: string;
-    requestSent: boolean;
-    requestReceived: boolean;
-    isFriend: boolean;
-  }[];
+export interface SearchedUserData {
+  userId: number;
+  nickname: string;
+  imageUrl: string;
+  requestSent: boolean;
+  requestReceived: boolean;
+  isFriend: boolean;
 }
-export const getSearchedNewFriends = async (nickname: string) => {
-  try {
-    const response = await axiosInstance.get<NewFriendsSearchResponse>(
-      SEARCH_NEW_FRIENDS + nickname,
-    );
-    console.log(response.data.data);
-    return response.data.data;
-  } catch (error: any) {
-    console.error(
-      "추가할 친구 닉네임 검색 실패:",
-      error.response?.data || error.message,
-    );
-    throw new Error(
-      error.response?.data?.message || "추가할 친구 닉네임 검색 중 오류 발생",
-    );
-  }
+
+// 친구 요청할 닉네임 검색 api
+export interface SearchedUserListResponse extends ApiResponse {
+  data: SearchedUserData[];
+}
+export const getSearchedUserListApi = async (nickname: string) => {
+  const response = await axiosInstance.get<SearchedUserListResponse>(
+    SEARCH_NEW_FRIENDS + nickname,
+  );
+
+  return response.data;
 };
+
+export interface FriendRequestReceivedData {
+  requestId: number;
+  fromUserId: number;
+  fromUserNickname: string;
+  imageUrl: string;
+}
+
+// 보낸 요청 목록 조회 api
+export interface GetFriendRequestReceivedListResponse extends ApiResponse {
+  data: FriendRequestReceivedData[];
+}
+export const getSentRequestList = async () => {
+  const response =
+    await axiosInstance.get<GetFriendRequestReceivedListResponse>(
+      GET_SENT_REQUESTS,
+    );
+  return response.data;
+};
+
+// 받은 요청 목록 조회 api
+export const getReceivedRequestList = async () => {
+  const response =
+    await axiosInstance.get<GetFriendRequestReceivedListResponse>(
+      GET_RECEIVED_REQUESTS,
+    );
+  return response.data;
+};
+
+// ------------------- 완료선 -----------------------
+
 // 친구 요청 api
 export const requestFriend = async (receiverId: number) => {
-  console.log("요청할 친구 id : ", receiverId);
   try {
     const response = await axiosInstance.post<ApiResponse>(
       REQUEST_FRIEND,
@@ -82,53 +103,6 @@ export const requestFriend = async (receiverId: number) => {
   } catch (error: any) {
     console.error("친구 요청 실패:", error.response?.data || error.message);
     throw new Error(error.response?.data?.message || "친구 요청 중 오류 발생");
-  }
-};
-
-// 보낸 요청 목록 조회 api
-interface GetRequests {
-  code: number;
-  status: string;
-  message: string;
-  data: {
-    requestId: number;
-    fromUserId: number;
-    fromUserNickname: string;
-    imageUrl: string;
-  }[];
-}
-export const getSentRequests = async () => {
-  try {
-    const response = await axiosInstance.get<GetRequests>(GET_SENT_REQUESTS);
-    console.log("보낸 요청: ", response.data);
-    return response.data.data;
-  } catch (error: any) {
-    console.error(error);
-    console.error(
-      "보낸 요청 조회 실패:",
-      error.response?.data || error.message,
-    );
-    throw new Error(
-      error.response?.data?.message || "보낸 요청 조회 중 오류 발생",
-    );
-  }
-};
-// 받은 요청 목록 조회 api
-export const getReceivedRequests = async () => {
-  try {
-    const response = await axiosInstance.get<GetRequests>(
-      GET_RECEIVED_REQUESTS,
-    );
-    console.log("받은 요청: ", response.data);
-    return response.data.data;
-  } catch (error: any) {
-    console.error(
-      "받은 요청 조회 실패:",
-      error.response?.data || error.message,
-    );
-    throw new Error(
-      error.response?.data?.message || "받은 요청 조회 중 오류 발생",
-    );
   }
 };
 

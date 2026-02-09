@@ -1,10 +1,4 @@
-import { useEffect, useState } from "react";
-
-import {
-  cancelRequest,
-  getSearchedNewFriends,
-  requestFriend,
-} from "@apis/friend";
+import { cancelRequest, requestFriend } from "@apis/friend";
 import Header from "@components/Header/Header";
 
 import FriendSearch from "../components/FriendSearch/FriendSearch";
@@ -13,87 +7,37 @@ import RequestedFriend from "./components/RequestedFriend/RequestedFriend";
 import ReceivedFriend from "./components/ReceivedFriend/ReceivedFriend";
 import SearchAddFriend from "./components/SearchAddFriend/SearchAddFriend";
 import styles from "./FriendAdd.module.css";
-
-interface SearchedFriend {
-  userId: number;
-  nickname: string;
-  imageUrl: string;
-  requestSent: boolean;
-  requestReceived: boolean;
-  isFriend: boolean;
-}
+import useFriendAdd from "./hooks";
+import useToast from "@/shared/hooks/use-toast";
+import LoadingSpinner from "@/shared/components/LoadingSpinner/LoadingSpinner";
 
 const FriendAdd = () => {
-  const [searchTarget, setSearchTarget] = useState("");
+  const toast = useToast();
 
-  const [refreshList, setRefreshList] = useState(false);
-
-  const [filteredUsers, setFilteredUsers] = useState<SearchedFriend[]>([]);
-  const [trySearch, setTrySearch] = useState(false);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-
-  const [hasRequested, setHasRequested] = useState(false);
-  const [hasReceived, setHasReceived] = useState(false);
-
-  const [acceptReceiveFriend, setAcceptReceiveFriend] = useState("");
-  const [acceptReceiveFriendId, setAcceptReceiveFriendId] = useState(0);
-  const [modalState, setModalState] = useState(false);
-  const [modalType, setModalType] = useState("");
-
-  useEffect(() => {
-    setTrySearch(false);
-    setFilteredUsers([]);
-  }, [searchTarget]);
-
-  // 검색 시 로직. 서버에 요청해야함.
-  const filteringSearch = async () => {
-    try {
-      const response = await getSearchedNewFriends(searchTarget);
-      // console.log(response);
-      // 이미 친구인 유저 제외
-      const filtered = response.filter(
-        (user: SearchedFriend) => !user.isFriend
-      );
-      setFilteredUsers(filtered);
-    } catch (error) {
-      console.error("친구 검색 실패 : ", error);
-    }
-  };
-
-  // 엔터 시 검색 로직
-  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      setTrySearch(true);
-      if (searchTarget.trim() === "") {
-        setSearchTarget("");
-        setIsSearchFocused(false);
-        setFilteredUsers([]);
-      } else {
-        filteringSearch();
-      }
-    }
-  };
-
-  // 검색창에 입력 후 다른 곳 클릭했을 때(포커스 잃을 때) 검색되도록
-  const handleBlurSearch = () => {
-    setTrySearch(true);
-    if (searchTarget.trim() === "") {
-      setSearchTarget("");
-      setIsSearchFocused(false);
-      setFilteredUsers([]);
-    } else {
-      // 포커스를 잃었지만 검색 결과가 아직 없으면 자동 필터링
-      filteringSearch();
-    }
-  };
+  const {
+    sentRequestList,
+    receivedRequestList,
+    searchNickname,
+    searchedUserList,
+    isPendingRequestList,
+    isPendingSearchedUserList,
+    isErrorRequestList,
+    isErrorSearchedUserList,
+    acceptReceiveFriend,
+    acceptReceiveFriendId,
+    modalState,
+    modalType,
+    setSearchNickname,
+    setAcceptReceiveFriend,
+    setAcceptReceiveFriendId,
+    setModalState,
+    setModalType,
+  } = useFriendAdd();
 
   // 친구 요청 취소
   const handleDeleteRequest = async (id: number) => {
     try {
-      const response = await cancelRequest(id);
-      console.log(response);
-      setRefreshList((prev) => !prev);
-      if (filteredUsers.length > 0) await filteringSearch();
+      await cancelRequest(id);
     } catch (error) {
       console.error("친구요청 취소 실패 :", error);
     }
@@ -104,12 +48,19 @@ const FriendAdd = () => {
     try {
       const response = await requestFriend(id);
       console.log(response);
-      setRefreshList((prev) => !prev);
-      await filteringSearch();
     } catch (error) {
       console.error("친구요청 실패 :", error);
     }
   };
+
+  if (isErrorSearchedUserList || isErrorRequestList) {
+    toast.error("친구 목록을 불러오는 중 에러가 발생했습니다.");
+    return;
+  }
+
+  if (isPendingRequestList) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <>
@@ -117,49 +68,45 @@ const FriendAdd = () => {
       <div className={styles.FriendAddPageWrapper}>
         <div className={styles.SearchBarContainer}>
           <FriendSearch
-            searchTarget={searchTarget}
+            searchTarget={searchNickname}
             setSearchTarget={(value) => {
-              setSearchTarget(value);
-              setFilteredUsers([]);
+              setSearchNickname(value);
             }}
-            onFocus={() => setIsSearchFocused(true)}
-            onBlur={handleBlurSearch}
-            onKeyDown={handleSearchKeyDown}
           />
         </div>
-        {isSearchFocused ? (
+        {searchNickname.trim() !== "" ? (
           // 검색 결과 렌더링
           <SearchAddFriend
-            searchTarget={searchTarget}
-            trySearch={trySearch}
-            filteredUsers={filteredUsers}
+            searchNickname={searchNickname}
+            searchedUserList={searchedUserList}
+            isPendingSearchedUserList={isPendingSearchedUserList}
             handleSendRequest={handleSendRequest}
             handleDeleteRequest={handleDeleteRequest}
             setAcceptReceiveFriend={setAcceptReceiveFriend}
             setAcceptReceiveFriendId={setAcceptReceiveFriendId}
             setModalType={setModalType}
             setModalState={setModalState}
-            refreshList={refreshList}
           />
         ) : (
           <div className={styles.FriendAddListWrapper}>
             {/* 보낸 요청 */}
             <RequestedFriend
+              sentRequestList={sentRequestList}
               handleDeleteRequest={handleDeleteRequest}
-              refreshList={refreshList}
-              setHasRequested={setHasRequested}
             />
-            {hasRequested && hasReceived && (
-              <div className={styles.separator} />
-            )}
+            {sentRequestList &&
+              receivedRequestList &&
+              sentRequestList.length > 0 &&
+              receivedRequestList.length > 0 && (
+                <div className={styles.separator} />
+              )}
             {/* 받은 요청 */}
             <ReceivedFriend
+              receivedRequestList={receivedRequestList}
               setAcceptReceiveFriend={setAcceptReceiveFriend}
               setAcceptReceiveFriendId={setAcceptReceiveFriendId}
               setModalType={setModalType}
               setModalState={setModalState}
-              refreshList={refreshList}
-              setHasReceived={setHasReceived}
             />
           </div>
         )}
@@ -172,7 +119,6 @@ const FriendAdd = () => {
         modalState={modalState}
         modalType={modalType}
         setModalState={setModalState}
-        setRefreshList={setRefreshList}
       />
     </>
   );

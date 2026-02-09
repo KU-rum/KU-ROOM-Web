@@ -1,3 +1,3 @@
 export const FRIEND_QUERY_KEY = {
-  LIST: ["friend-list"],
+  FRIEND_LIST: ["friend-list"],
 };

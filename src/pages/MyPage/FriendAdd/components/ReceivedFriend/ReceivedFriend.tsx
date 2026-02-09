@@ -1,63 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-import { getReceivedRequests } from "@apis/friend";
+import { FriendRequestReceivedData } from "@apis/friend";
 import defaultImg from "@assets/defaultProfileImg.svg";
 import Button from "@components/Button/Button";
 
 import styles from "./ReceivedFriend.module.css";
 
-interface Friend {
-  requestId: number;
-  fromUserId: number;
-  fromUserNickname: string;
-  imageUrl: string;
-}
-
 interface ReceivedFriendProps {
+  receivedRequestList: FriendRequestReceivedData[] | undefined;
   setAcceptReceiveFriend: (value: string) => void;
   setAcceptReceiveFriendId: (value: number) => void;
   setModalType: (value: string) => void;
   setModalState: (value: boolean) => void;
-  refreshList: boolean;
-  setHasReceived: (value: boolean) => void;
 }
 
 const ReceivedFriend: React.FC<ReceivedFriendProps> = ({
+  receivedRequestList,
   setAcceptReceiveFriend,
   setAcceptReceiveFriendId,
   setModalType,
   setModalState,
-  refreshList,
-  setHasReceived,
 }) => {
-  const [receivedList, setReceivedList] = useState<Friend[]>([]);
-
-  // 초기 요청. 서버에서 받은 요청 데이터 불러오기
-  useEffect(() => {
-    const fetchReceivedRequests = async () => {
-      try {
-        const response = await getReceivedRequests();
-        console.log(response);
-        const friends = response ?? [];
-        if (!Array.isArray(friends)) {
-          setReceivedList([]);
-          return [];
-        }
-        setReceivedList(friends);
-        return friends;
-      } catch (error) {
-        console.error("받은 요청 목록 조회 실패:", error);
-      }
-    };
-    fetchReceivedRequests();
-  }, [refreshList]);
-
-  useEffect(() => {
-    setHasReceived(receivedList.length > 0);
-  }, [receivedList.length, setHasReceived]);
-
   // 친구 요청 수락
-  const handleAcceptRequest = (friend: Friend) => {
+  const handleAcceptRequest = (friend: FriendRequestReceivedData) => {
     setAcceptReceiveFriend(friend.fromUserNickname);
     setAcceptReceiveFriendId(friend.fromUserId);
     setModalType("accept");
@@ -65,17 +30,20 @@ const ReceivedFriend: React.FC<ReceivedFriendProps> = ({
   };
 
   // 친구 요청 거절
-  const handleRefuseRequest = (friend: Friend) => {
+  const handleRefuseRequest = (friend: FriendRequestReceivedData) => {
     setAcceptReceiveFriend(friend.fromUserNickname);
     setAcceptReceiveFriendId(friend.fromUserId);
     setModalType("refuse");
     setModalState(true);
   };
+  if (!receivedRequestList) {
+    return;
+  }
   return (
-    !(receivedList.length === 0) && (
+    !(receivedRequestList.length === 0) && (
       <div className={styles.ReceivedList}>
         <span className={styles.ReceivedTitle}>받은 요청</span>
-        {receivedList.map((friend, index) => (
+        {receivedRequestList.map((friend, index) => (
           <div key={index} className={styles.EachFriendContainer}>
             <div className={styles.FriendProfileWrapper}>
               {friend.imageUrl ? (

@@ -19,7 +19,6 @@ interface FriendModalProps {
   modalState: boolean;
   modalType: string;
   setModalState: React.Dispatch<React.SetStateAction<boolean>>;
-  setRefreshList?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const FriendModal: React.FC<FriendModalProps> = ({
@@ -28,7 +27,6 @@ const FriendModal: React.FC<FriendModalProps> = ({
   modalState,
   modalType,
   setModalState,
-  setRefreshList,
 }) => {
   const [reportReason, setReportReason] = useState("");
 
@@ -64,7 +62,6 @@ const FriendModal: React.FC<FriendModalProps> = ({
       console.error(`친구 ${modalType} 중 오류:`, error);
     } finally {
       setModalState(false);
-      if (setRefreshList) setRefreshList((prev) => !prev);
       setReportReason("");
     }
   };
