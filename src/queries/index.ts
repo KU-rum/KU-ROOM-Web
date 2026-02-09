@@ -1,0 +1,1 @@
+export { useFriendListQuery } from "./friend";

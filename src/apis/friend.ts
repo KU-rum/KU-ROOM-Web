@@ -15,41 +15,24 @@ const BLOCK_FRIEND = "/friends/block";
 const REPORT_FRIEND = "/friends/report";
 const FRIEND_RANKING = (friendId: string) => `/places/users/${friendId}/ranks`;
 
-interface DefaultResponse {
-  code: number;
-  status: string;
-  message: string;
+interface UserFriendData {
+  id: number;
+  nickname: string;
+  imageUrl: string;
 }
-
 // 친구 목록 조회 api
-interface GetAllFriendsResponse {
-  code: number;
-  status: string;
-  message: string;
-  data: { id: number; nickname: string; imageUrl: string }[];
+export interface GetAllFriendsResponse extends ApiResponse {
+  data: UserFriendData[];
 }
 
 export const getAllFriends = async () => {
-  try {
-    const response =
-      await axiosInstance.get<GetAllFriendsResponse>(GET_ALL_FRIENDS);
-    console.log(response);
-    return response.data.data;
-  } catch (error: any) {
-    console.error(
-      "친구 목록 조회 실패:",
-      error.response?.data || error.message,
-    );
-    throw new Error(
-      error.response?.data?.message || "친구 목록 조회 중 오류 발생",
-    );
-  }
+  const response =
+    await axiosInstance.get<GetAllFriendsResponse>(GET_ALL_FRIENDS);
+  return response.data;
 };
+
 // 친구 요청할 친구 닉네임 검색 api
-interface NewFriendsSearchResponse {
-  code: number;
-  status: string;
-  message: string;
+interface NewFriendsSearchResponse extends ApiResponse {
   data: {
     userId: number;
     nickname: string;
@@ -80,7 +63,7 @@ export const getSearchedNewFriends = async (nickname: string) => {
 export const requestFriend = async (receiverId: number) => {
   console.log("요청할 친구 id : ", receiverId);
   try {
-    const response = await axiosInstance.post<DefaultResponse>(
+    const response = await axiosInstance.post<ApiResponse>(
       REQUEST_FRIEND,
       {
         receiverId: receiverId,
