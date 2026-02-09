@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllFriends } from "@apis/friend";
 import { getSharingRanking } from "@apis/home";
 import useToast from "@hooks/use-toast";
-import { FRIEND_QUERY_KEY, RANKING_QUERY_KEY } from "@/shared/queryKey";
+import { FRIEND_QUERY_KEY, RANKING_QUERY_KEY } from "@/queryKey";
 
 export default function useLocationRanking() {
   const toast = useToast();

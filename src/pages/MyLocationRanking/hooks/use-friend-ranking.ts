@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getFriendRankingData } from "@apis/friend";
 import useToast from "@hooks/use-toast";
 
-import { RANKING_QUERY_KEY } from "@/shared/queryKey";
+import { RANKING_QUERY_KEY } from "@/queryKey";
 import { RankListType } from "@/shared/types";
 
 export default function useFriendRanking(friendId: string) {
