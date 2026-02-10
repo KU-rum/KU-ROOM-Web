@@ -1,10 +1,12 @@
-import { useFriendListQuery } from "@/queries";
-import { handleOutsideClick } from "@/shared/utils/friendUtils";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useFriendListQuery } from "@/queries";
+import useToast from "@hooks/use-toast";
+import { handleOutsideClick } from "@utils/friendUtils";
 
 export default function useFriendList() {
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [searchNickname, setSearchNickname] = useState("");
 
@@ -30,7 +32,7 @@ export default function useFriendList() {
 
   // 팝업 외부 클릭 시 닫기
   useEffect(() => {
-    handleOutsideClick(popupRef, editPopupState.isPopupOpen, () => {
+    return handleOutsideClick(popupRef, editPopupState.isPopupOpen, () => {
       setEditPopupState((prev) => ({
         ...prev,
         isPopupOpen: false,
@@ -62,6 +64,13 @@ export default function useFriendList() {
       isPopupOpen: false,
     }));
   };
+
+  useEffect(() => {
+    if (isErrorFriendList) {
+      toast.error("친구 목록을 불러오는 중 에러가 발생했습니다.");
+      return;
+    }
+  }, [isErrorFriendList, toast]);
 
   return {
     friendListData,

@@ -1,7 +1,7 @@
 import axiosInstance from "./axiosInstance";
 import { ApiResponse } from "@/shared/types";
 
-const SEARCH_NEW_FRIENDS = "/friends/search?nickname=";
+const SEARCH_NEW_FRIENDS = "/friends/search";
 const REQUEST_FRIEND = "/friends/request";
 const GET_SENT_REQUESTS = "/friends/requests/sent";
 const GET_RECEIVED_REQUESTS = "/friends/requests/received";
@@ -23,7 +23,12 @@ export interface SearchedUserListResponse extends ApiResponse {
 }
 export const getSearchedUserListApi = async (nickname: string) => {
   const response = await axiosInstance.get<SearchedUserListResponse>(
-    SEARCH_NEW_FRIENDS + nickname,
+    SEARCH_NEW_FRIENDS,
+    {
+      params: {
+        nickname,
+      },
+    },
   );
 
   return response.data;

@@ -1,4 +1,3 @@
-import useToast from "@/shared/hooks/use-toast";
 import Header from "@components/Header/Header";
 import LoadingSpinner from "@components/LoadingSpinner/LoadingSpinner";
 import FriendContainer from "@components/FriendContainer/FriendContainer";
@@ -11,13 +10,10 @@ import useFriendList from "./hooks";
 import styles from "./FriendList.module.css";
 
 const FriendList = () => {
-  const toast = useToast();
-
   const {
     friendListData,
     searchNickname,
     filteredFriends,
-    isErrorFriendList,
     isPendingFriendList,
     editPopupState,
     popupRef,
@@ -30,11 +26,6 @@ const FriendList = () => {
     handleToFriendAdd,
     handleClosePopup,
   } = useFriendList();
-
-  if (isErrorFriendList) {
-    toast.error("친구 목록을 불러오는 중 에러가 발생했습니다.");
-    return;
-  }
 
   if (isPendingFriendList) {
     return <LoadingSpinner />;

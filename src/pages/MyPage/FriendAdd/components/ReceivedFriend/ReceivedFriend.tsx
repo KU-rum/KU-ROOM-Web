@@ -37,14 +37,14 @@ const ReceivedFriend: React.FC<ReceivedFriendProps> = ({
     setModalState(true);
   };
   if (!receivedRequestList) {
-    return;
+    return null;
   }
   return (
     !(receivedRequestList.length === 0) && (
       <div className={styles.ReceivedList}>
         <span className={styles.ReceivedTitle}>받은 요청</span>
-        {receivedRequestList.map((friend, index) => (
-          <div key={index} className={styles.EachFriendContainer}>
+        {receivedRequestList.map((friend) => (
+          <div key={friend.requestId} className={styles.EachFriendContainer}>
             <div className={styles.FriendProfileWrapper}>
               {friend.imageUrl ? (
                 <img

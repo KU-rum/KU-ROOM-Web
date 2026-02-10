@@ -4,6 +4,7 @@ import { getSharingRanking } from "@apis/home";
 import useToast from "@hooks/use-toast";
 import { RANKING_QUERY_KEY } from "@/queryKey";
 import { useFriendListQuery } from "@/queries";
+import { useEffect } from "react";
 
 export default function useLocationRanking() {
   const toast = useToast();
@@ -22,9 +23,12 @@ export default function useLocationRanking() {
     useFriendListQuery();
 
   const isError = isErrorUserRanking || isErrorFriendList;
-  if (isError) {
-    toast.error("페이지 조회에 실패했습니다. 다시 시도해주세요.");
-  }
+
+  useEffect(() => {
+    if (isError) {
+      toast.error("페이지 조회에 실패했습니다. 다시 시도해주세요.");
+    }
+  }, [isError, toast]);
 
   return {
     userRankingData,

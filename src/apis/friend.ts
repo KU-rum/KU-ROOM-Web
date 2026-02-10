@@ -34,14 +34,14 @@ export const friendDeleteApi = async (friendId: string) => {
 
 // 친구 차단 api
 export const friendBlockApi = async (reportId: number) => {
-  const response = await axiosInstance.patch(BLOCK_FRIEND, {
+  const response = await axiosInstance.patch<ApiResponse>(BLOCK_FRIEND, {
     reportId: reportId,
   });
   return response.data;
 };
 // 친구 신고 api
 export const friendReportApi = async (reportId: number, reason: string) => {
-  const response = await axiosInstance.patch(REPORT_FRIEND, {
+  const response = await axiosInstance.patch<ApiResponse>(REPORT_FRIEND, {
     reportId: reportId,
     reason: reason,
   });

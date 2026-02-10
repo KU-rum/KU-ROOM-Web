@@ -1,18 +1,16 @@
 import Header from "@components/Header/Header";
+import LoadingSpinner from "@components/LoadingSpinner/LoadingSpinner";
 
 import FriendSearch from "../components/FriendSearch/FriendSearch";
 import FriendModal from "../components/FriendModal/FriendModal";
 import RequestedFriend from "./components/RequestedFriend/RequestedFriend";
 import ReceivedFriend from "./components/ReceivedFriend/ReceivedFriend";
 import SearchAddFriend from "./components/SearchAddFriend/SearchAddFriend";
-import styles from "./FriendAdd.module.css";
 import useFriendAdd from "./hooks";
-import useToast from "@/shared/hooks/use-toast";
-import LoadingSpinner from "@/shared/components/LoadingSpinner/LoadingSpinner";
+
+import styles from "./FriendAdd.module.css";
 
 const FriendAdd = () => {
-  const toast = useToast();
-
   const {
     sentRequestList,
     receivedRequestList,
@@ -20,8 +18,6 @@ const FriendAdd = () => {
     searchedUserList,
     isPendingRequestList,
     isPendingSearchedUserList,
-    isErrorRequestList,
-    isErrorSearchedUserList,
     acceptReceiveFriend,
     acceptReceiveFriendId,
     modalState,
@@ -34,11 +30,6 @@ const FriendAdd = () => {
     setModalState,
     setModalType,
   } = useFriendAdd();
-
-  if (isErrorSearchedUserList || isErrorRequestList) {
-    toast.error("친구 목록을 불러오는 중 에러가 발생했습니다.");
-    return;
-  }
 
   if (isPendingRequestList) {
     return <LoadingSpinner />;

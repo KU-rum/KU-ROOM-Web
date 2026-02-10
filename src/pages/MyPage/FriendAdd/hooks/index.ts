@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   useReceivedRequestListQuery,
@@ -6,8 +6,10 @@ import {
   useSentRequestListQuery,
 } from "@/queries";
 import { useFriendRequestMutation } from "@/queries/user-list";
+import useToast from "@hooks/use-toast";
 
 export default function useFriendAdd() {
+  const toast = useToast();
   const [searchNickname, setSearchNickname] = useState("");
 
   const [acceptReceiveFriend, setAcceptReceiveFriend] = useState("");
@@ -42,6 +44,17 @@ export default function useFriendAdd() {
   const isErrorRequestList =
     isErrorSentRequestList || isErrorReceivedRequestList;
 
+  useEffect(() => {
+    if (isErrorRequestList) {
+      toast.error("요청 목록을 불러오는 중 에러가 발생했습니다.");
+      return;
+    }
+
+    if (isErrorSearchedUserList) {
+      toast.error("검색 중 오류가 발생했습니다.");
+    }
+  }, [isErrorSearchedUserList, isErrorRequestList, toast]);
+
   return {
     sentRequestList,
     receivedRequestList,
@@ -50,7 +63,6 @@ export default function useFriendAdd() {
     isPendingRequestList,
     isPendingSearchedUserList,
     isErrorRequestList,
-    isErrorSearchedUserList,
     acceptReceiveFriend,
     acceptReceiveFriendId,
     modalState,

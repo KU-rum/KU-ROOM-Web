@@ -3,7 +3,6 @@
   height: 100vh;
   max-width: var(--custom-max-width);
   background: rgba(227, 231, 235, 0.3);
-  opacity: 0.8;
   display: flex;
   justify-content: center;
   align-items: center;

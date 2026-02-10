@@ -14,15 +14,15 @@ const RequestedFriend = ({
   handleDeleteRequest,
 }: RequestedFriendProps) => {
   if (!sentRequestList) {
-    return;
+    return null;
   }
 
   return (
     !(sentRequestList.length === 0) && (
       <div className={styles.RequestList}>
         <span className={styles.RequestTitle}>보낸 요청</span>
-        {sentRequestList.map((friend, index) => (
-          <div key={index} className={styles.EachFriendContainer}>
+        {sentRequestList.map((friend) => (
+          <div key={friend.requestId} className={styles.EachFriendContainer}>
             <div className={styles.FriendProfileWrapper}>
               {friend.imageUrl ? (
                 <img
