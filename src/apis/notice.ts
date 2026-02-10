@@ -70,7 +70,7 @@ export interface NoticeDetailApiResponse {
   data: NoticeDetailData;
 }
 
-const NOTICE_BASE_URL = "https://kuroom.shop/api/v1";
+const NOTICE_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const noticeAxiosInstance = axios.create({
   baseURL: NOTICE_BASE_URL,

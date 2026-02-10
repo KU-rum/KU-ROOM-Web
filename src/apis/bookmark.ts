@@ -43,7 +43,7 @@ export interface RemoveBookmarkApiResponse {
   message: string;
 }
 
-const BOOKMARK_BASE_URL = "https://kuroom.shop/api/v1";
+const BOOKMARK_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const bookmarkAxiosInstance = axios.create({
   baseURL: BOOKMARK_BASE_URL,
@@ -66,13 +66,12 @@ bookmarkAxiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 export const getBookmarks = async (): Promise<BookmarkResponse[]> => {
-  const response = await bookmarkAxiosInstance.get<BookmarkApiResponse>(
-    "/bookmark"
-  );
+  const response =
+    await bookmarkAxiosInstance.get<BookmarkApiResponse>("/bookmark");
   return response.data.data;
 };
 
@@ -81,13 +80,13 @@ export const addBookmark = async (noticeId: number): Promise<number> => {
     "/bookmark",
     {
       noticeId,
-    }
+    },
   );
   return response.data.data.bookmarkId;
 };
 
 export const removeBookmark = async (bookmarkId: number): Promise<void> => {
   await bookmarkAxiosInstance.delete<RemoveBookmarkApiResponse>(
-    `/bookmark/${bookmarkId}`
+    `/bookmark/${bookmarkId}`,
   );
 };

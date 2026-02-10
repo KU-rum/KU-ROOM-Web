@@ -1,17 +1,12 @@
 import React, { useState } from "react";
 import ReactModal from "react-modal";
 
-import {
-  acceptRequest,
-  friendBlock,
-  friendDelete,
-  friendReport,
-  rejectRequest,
-} from "@apis/friend";
 import cautionIcon from "@assets/icon/editFriend/cautionIcon.svg";
 import Button from "@components/Button/Button";
+import { useEditFriendMutation } from "@/queries";
 
 import styles from "./FriendModal.module.css";
+import { useRespondToRequestMutation } from "@/queries/user-list";
 
 interface FriendModalProps {
   editFriend: string;
@@ -19,7 +14,6 @@ interface FriendModalProps {
   modalState: boolean;
   modalType: string;
   setModalState: React.Dispatch<React.SetStateAction<boolean>>;
-  setRefreshList: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const FriendModal: React.FC<FriendModalProps> = ({
@@ -28,9 +22,11 @@ const FriendModal: React.FC<FriendModalProps> = ({
   modalState,
   modalType,
   setModalState,
-  setRefreshList,
 }) => {
   const [reportReason, setReportReason] = useState("");
+
+  const { deleteFriend, blockFriend, reportFriend } = useEditFriendMutation();
+  const { acceptRequest, rejectRequest } = useRespondToRequestMutation();
 
   const handleInputReportReason = (e: React.ChangeEvent<HTMLInputElement>) => {
     setReportReason(e.target.value);
@@ -41,32 +37,26 @@ const FriendModal: React.FC<FriendModalProps> = ({
     setReportReason("");
   };
 
-  const handleEditFriend = async () => {
-    try {
-      switch (modalType) {
-        case "accept":
-          await acceptRequest(editFriendId);
-          break;
-        case "refuse":
-          await rejectRequest(editFriendId);
-          break;
-        case "delete":
-          await friendDelete(editFriendId.toString());
-          break;
-        case "block":
-          await friendBlock(editFriendId);
-          break;
-        case "report":
-          await friendReport(editFriendId, reportReason);
-          break;
-      }
-    } catch (error) {
-      console.error(`친구 ${modalType} 중 오류:`, error);
-    } finally {
-      setModalState(false);
-      setRefreshList((prev) => !prev);
-      setReportReason("");
+  const handleEditFriend = () => {
+    switch (modalType) {
+      case "accept":
+        acceptRequest(editFriendId);
+        break;
+      case "refuse":
+        rejectRequest(editFriendId);
+        break;
+      case "delete":
+        deleteFriend(editFriendId.toString());
+        break;
+      case "block":
+        blockFriend(editFriendId);
+        break;
+      case "report":
+        reportFriend({ reportId: editFriendId, reason: reportReason });
+        break;
     }
+    setModalState(false);
+    setReportReason("");
   };
 
   const renderModalContent = () => {

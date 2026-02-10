@@ -5,45 +5,35 @@ import defaultImg from "@assets/defaultProfileImg.svg";
 import Button from "@components/Button/Button";
 
 import styles from "./SearchAddFriend.module.css";
+import { SearchedUserData } from "@/apis/user-list";
 
-// 검색 결과 렌더링
-interface SearchedFriend {
-  userId: number;
-  nickname: string;
-  imageUrl: string;
-  requestSent: boolean;
-  requestReceived: boolean;
-  isFriend: boolean;
-}
 interface SearchAddFriendProps {
-  searchTarget: string;
-  trySearch: boolean;
-  filteredUsers: SearchedFriend[];
+  searchNickname: string;
+  searchedUserList: SearchedUserData[] | undefined;
+  isPendingSearchedUserList: boolean;
   handleSendRequest: (id: number) => void;
   handleDeleteRequest: (id: number) => void;
   setAcceptReceiveFriend: (value: string) => void;
   setAcceptReceiveFriendId: (value: number) => void;
   setModalType: (value: string) => void;
   setModalState: (value: boolean) => void;
-  refreshList: boolean;
 }
 
 const SearchAddFriend: React.FC<SearchAddFriendProps> = ({
-  searchTarget,
-  trySearch,
-  filteredUsers,
+  searchNickname,
+  searchedUserList,
+  isPendingSearchedUserList,
   handleSendRequest,
   handleDeleteRequest,
   setAcceptReceiveFriend,
   setAcceptReceiveFriendId,
   setModalType,
   setModalState,
-  refreshList,
 }) => {
-  if (!searchTarget || !trySearch) return null;
+  if (!searchNickname) return null;
 
   // 친구 요청 수락
-  const handleAcceptRequest = (friend: SearchedFriend) => {
+  const handleAcceptRequest = (friend: SearchedUserData) => {
     setAcceptReceiveFriend(friend.nickname);
     setAcceptReceiveFriendId(friend.userId);
     setModalType("accept");
@@ -51,7 +41,7 @@ const SearchAddFriend: React.FC<SearchAddFriendProps> = ({
   };
 
   // 친구 요청 거절
-  const handleRefuseRequest = (friend: SearchedFriend) => {
+  const handleRefuseRequest = (friend: SearchedUserData) => {
     setAcceptReceiveFriend(friend.nickname);
     setAcceptReceiveFriendId(friend.userId);
     setModalType("refuse");
@@ -60,13 +50,10 @@ const SearchAddFriend: React.FC<SearchAddFriendProps> = ({
 
   return (
     <div className={styles.SearchResultContainer}>
-      {filteredUsers.length > 0 ? (
-        filteredUsers.map((user) => {
+      {searchedUserList && searchedUserList.length > 0 ? (
+        searchedUserList.map((user) => {
           return (
-            <div
-              key={`${user.userId}-${refreshList}`}
-              className={styles.EachFriendContainer}
-            >
+            <div key={user.userId} className={styles.EachFriendContainer}>
               <div className={styles.FriendProfileWrapper}>
                 {user.imageUrl ? (
                   <img
@@ -81,10 +68,15 @@ const SearchAddFriend: React.FC<SearchAddFriendProps> = ({
                     alt="프로필 사진"
                   />
                 )}
-
                 <span className={styles.Nickname}>{user.nickname}</span>
               </div>
-              {user.requestReceived ? (
+              {user.isFriend ? (
+                <div className={styles.SendRequestBtnWrapper}>
+                  <Button onClick={() => {}} size="xs" disabled={true}>
+                    친구
+                  </Button>
+                </div>
+              ) : user.requestReceived ? (
                 <div className={styles.AcceptRefuseBtnWrapper}>
                   <Button onClick={() => handleAcceptRequest(user)} size="xs">
                     수락
@@ -128,7 +120,11 @@ const SearchAddFriend: React.FC<SearchAddFriendProps> = ({
             src={noResultIcon}
             alt="검색 결과 없음"
           />
-          <span className={styles.NoSearchResultText}>검색 결과가 없어요!</span>
+          <span className={styles.NoSearchResultText}>
+            {isPendingSearchedUserList
+              ? "검색 중입니다..."
+              : "검색 결과가 없어요!"}
+          </span>
         </div>
       )}
     </div>

@@ -19,7 +19,7 @@ const MyLocationRanking = () => {
     userRankingData,
     friendListData,
     isPendingUserRanking,
-    isPendingFriend,
+    isPendingFriendList,
   } = useLocationRanking();
 
   const handleNavToFriendRanking = (nickname: string, friendId: number) => {
@@ -58,7 +58,7 @@ const MyLocationRanking = () => {
   //   setTimeout(() => setIsSheetVisible(false), 300); // 0.3초 후 제거
   // };
 
-  if (isPendingFriend || isPendingUserRanking) {
+  if (isPendingFriendList || isPendingUserRanking) {
     return <div>불러오는 중...</div>;
   }
 
