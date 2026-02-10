@@ -1,4 +1,4 @@
-export { useFriendListQuery } from "./friend";
+export { useFriendListQuery, useEditFriendMutation } from "./friend";
 export {
   useSearchedUserListQuery,
   useSentRequestListQuery,

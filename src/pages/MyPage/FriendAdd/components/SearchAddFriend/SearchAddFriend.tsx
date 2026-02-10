@@ -68,7 +68,6 @@ const SearchAddFriend: React.FC<SearchAddFriendProps> = ({
                     alt="프로필 사진"
                   />
                 )}
-
                 <span className={styles.Nickname}>{user.nickname}</span>
               </div>
               {user.requestReceived ? (

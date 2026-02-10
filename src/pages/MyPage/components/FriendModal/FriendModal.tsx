@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import ReactModal from "react-modal";
 
-import { friendBlock, friendDelete, friendReport } from "@apis/friend";
 import { acceptRequest, rejectRequest } from "@apis/user-list";
 import cautionIcon from "@assets/icon/editFriend/cautionIcon.svg";
 import Button from "@components/Button/Button";
+import { useEditFriendMutation } from "@/queries";
 
 import styles from "./FriendModal.module.css";
 
@@ -25,6 +25,8 @@ const FriendModal: React.FC<FriendModalProps> = ({
 }) => {
   const [reportReason, setReportReason] = useState("");
 
+  const { deleteFriend, blockFriend, reportFriend } = useEditFriendMutation();
+
   const handleInputReportReason = (e: React.ChangeEvent<HTMLInputElement>) => {
     setReportReason(e.target.value);
   };
@@ -44,13 +46,13 @@ const FriendModal: React.FC<FriendModalProps> = ({
           await rejectRequest(editFriendId);
           break;
         case "delete":
-          await friendDelete(editFriendId.toString());
+          deleteFriend(editFriendId.toString());
           break;
         case "block":
-          await friendBlock(editFriendId);
+          blockFriend(editFriendId);
           break;
         case "report":
-          await friendReport(editFriendId, reportReason);
+          reportFriend({ reportId: editFriendId, reason: reportReason });
           break;
       }
     } catch (error) {
