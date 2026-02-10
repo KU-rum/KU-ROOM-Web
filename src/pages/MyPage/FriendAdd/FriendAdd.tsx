@@ -1,4 +1,3 @@
-import { cancelRequest, requestFriend } from "@apis/user-list";
 import Header from "@components/Header/Header";
 
 import FriendSearch from "../components/FriendSearch/FriendSearch";
@@ -27,31 +26,14 @@ const FriendAdd = () => {
     acceptReceiveFriendId,
     modalState,
     modalType,
+    requestFriend,
+    cancelRequest,
     setSearchNickname,
     setAcceptReceiveFriend,
     setAcceptReceiveFriendId,
     setModalState,
     setModalType,
   } = useFriendAdd();
-
-  // 친구 요청 취소
-  const handleDeleteRequest = async (id: number) => {
-    try {
-      await cancelRequest(id);
-    } catch (error) {
-      console.error("친구요청 취소 실패 :", error);
-    }
-  };
-
-  // 검색 결과에서 친구 신청/취소. 서버에 데이터 요청 필요함. 서버와 연계 시 로직 변경 예정.
-  const handleSendRequest = async (id: number) => {
-    try {
-      const response = await requestFriend(id);
-      console.log(response);
-    } catch (error) {
-      console.error("친구요청 실패 :", error);
-    }
-  };
 
   if (isErrorSearchedUserList || isErrorRequestList) {
     toast.error("친구 목록을 불러오는 중 에러가 발생했습니다.");
@@ -80,8 +62,8 @@ const FriendAdd = () => {
             searchNickname={searchNickname}
             searchedUserList={searchedUserList}
             isPendingSearchedUserList={isPendingSearchedUserList}
-            handleSendRequest={handleSendRequest}
-            handleDeleteRequest={handleDeleteRequest}
+            handleSendRequest={requestFriend}
+            handleDeleteRequest={cancelRequest}
             setAcceptReceiveFriend={setAcceptReceiveFriend}
             setAcceptReceiveFriendId={setAcceptReceiveFriendId}
             setModalType={setModalType}
@@ -92,7 +74,7 @@ const FriendAdd = () => {
             {/* 보낸 요청 */}
             <RequestedFriend
               sentRequestList={sentRequestList}
-              handleDeleteRequest={handleDeleteRequest}
+              handleDeleteRequest={cancelRequest}
             />
             {sentRequestList &&
               receivedRequestList &&

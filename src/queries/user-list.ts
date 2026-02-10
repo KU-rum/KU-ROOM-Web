@@ -1,15 +1,20 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import useDebounce from "@hooks/use-debounce";
-import { USER_LIST_QUERY_KEY } from "@/queryKey";
+import { FRIEND_QUERY_KEY, USER_LIST_QUERY_KEY } from "@/queryKey";
 
 import {
+  acceptRequestApi,
+  cancelRequestApi,
   GetFriendRequestReceivedListResponse,
-  getReceivedRequestList,
+  getReceivedRequestListApi,
   getSearchedUserListApi,
-  getSentRequestList,
+  getSentRequestListApi,
+  rejectRequestApi,
+  requestFriendApi,
   SearchedUserListResponse,
 } from "@/apis/user-list";
+import useToast from "@/shared/hooks/use-toast";
 
 export const useSearchedUserListQuery = (nickname: string) => {
   const debouncedText = useDebounce(nickname, 300);
@@ -41,7 +46,7 @@ export const useSentRequestListQuery = () => {
     isError: isErrorSentRequestList,
   } = useQuery<GetFriendRequestReceivedListResponse>({
     queryKey: USER_LIST_QUERY_KEY.REQUEST(),
-    queryFn: () => getSentRequestList(),
+    queryFn: () => getSentRequestListApi(),
     staleTime: 1000 * 60 * 3,
   });
 
@@ -61,7 +66,7 @@ export const useReceivedRequestListQuery = () => {
     isError: isErrorReceivedRequestList,
   } = useQuery<GetFriendRequestReceivedListResponse>({
     queryKey: USER_LIST_QUERY_KEY.RECEIVED(),
-    queryFn: () => getReceivedRequestList(),
+    queryFn: () => getReceivedRequestListApi(),
   });
 
   const receivedRequestList = data?.data;
@@ -70,5 +75,79 @@ export const useReceivedRequestListQuery = () => {
     receivedRequestList,
     isPendingReceivedRequestList,
     isErrorReceivedRequestList,
+  };
+};
+
+export const useFriendRequestMutation = () => {
+  const toast = useToast();
+  const qc = useQueryClient();
+
+  const { mutate: requestFriend } = useMutation({
+    mutationFn: (receiverId: number) => requestFriendApi(receiverId),
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: USER_LIST_QUERY_KEY.ALL,
+      });
+    },
+    onError: () => {
+      toast.error("친구 요청에 실패했습니다.");
+    },
+  });
+
+  const { mutate: cancelRequest } = useMutation({
+    mutationFn: (receiverId: number) => cancelRequestApi(receiverId),
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: USER_LIST_QUERY_KEY.ALL,
+      });
+    },
+    onError: () => {
+      toast.error("친구 요청 취소 실패");
+    },
+  });
+
+  return {
+    requestFriend,
+    cancelRequest,
+  };
+};
+
+export const useRespondToRequestMutation = () => {
+  const toast = useToast();
+  const qc = useQueryClient();
+
+  const { mutate: acceptRequest } = useMutation({
+    mutationFn: (receiverId: number) => acceptRequestApi(receiverId),
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: USER_LIST_QUERY_KEY.ALL,
+      });
+      qc.invalidateQueries({
+        queryKey: FRIEND_QUERY_KEY.FRIEND_LIST,
+      });
+    },
+    onError: () => {
+      toast.error("친구 요청 수락 실패");
+    },
+  });
+
+  const { mutate: rejectRequest } = useMutation({
+    mutationFn: (receiverId: number) => rejectRequestApi(receiverId),
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: USER_LIST_QUERY_KEY.ALL,
+      });
+      qc.invalidateQueries({
+        queryKey: FRIEND_QUERY_KEY.FRIEND_LIST,
+      });
+    },
+    onError: () => {
+      toast.error("친구 요청 거절 실패");
+    },
+  });
+
+  return {
+    acceptRequest,
+    rejectRequest,
   };
 };

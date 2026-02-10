@@ -40,7 +40,7 @@ export interface FriendRequestReceivedData {
 export interface GetFriendRequestReceivedListResponse extends ApiResponse {
   data: FriendRequestReceivedData[];
 }
-export const getSentRequestList = async () => {
+export const getSentRequestListApi = async () => {
   const response =
     await axiosInstance.get<GetFriendRequestReceivedListResponse>(
       GET_SENT_REQUESTS,
@@ -49,7 +49,7 @@ export const getSentRequestList = async () => {
 };
 
 // 받은 요청 목록 조회 api
-export const getReceivedRequestList = async () => {
+export const getReceivedRequestListApi = async () => {
   const response =
     await axiosInstance.get<GetFriendRequestReceivedListResponse>(
       GET_RECEIVED_REQUESTS,
@@ -57,92 +57,35 @@ export const getReceivedRequestList = async () => {
   return response.data;
 };
 
-// ------------------- 완료선 -----------------------
-
 // 친구 요청 api
-export const requestFriend = async (receiverId: number) => {
-  try {
-    const response = await axiosInstance.post<ApiResponse>(
-      REQUEST_FRIEND,
-      {
-        receiverId: receiverId,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-    if (response.data.code === 304) {
-      throw response.data;
-    } else {
-      return response.data;
-    }
-  } catch (error: any) {
-    console.error("친구 요청 실패:", error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || "친구 요청 중 오류 발생");
-  }
-};
-
-// 친구 요청 수락 api
-export const acceptRequest = async (receiverId: number) => {
-  try {
-    const response = await axiosInstance.put(
-      ACCEPT_REQUEST,
-      {
-        receiverId: receiverId,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-    console.log("요청 수락 결과 : ", response.data);
-    return response.data;
-  } catch (error: any) {
-    console.error("요청 수락 실패:", error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || "요청 수락 중 오류 발생");
-  }
-};
-// 친구 요청 거절 api
-export const rejectRequest = async (receiverId: number) => {
-  try {
-    const response = await axiosInstance.put(
-      REJECT_REQUEST,
-      {
-        receiverId,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-    console.log("요청 거절 결과 : ", response.data);
-    return response.data;
-  } catch (error: any) {
-    console.error("요청 거절 실패:", error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || "요청 거절 중 오류 발생");
-  }
+export const requestFriendApi = async (receiverId: number) => {
+  const response = await axiosInstance.post<ApiResponse>(REQUEST_FRIEND, {
+    receiverId: receiverId,
+  });
+  return response.data;
 };
 
 // 보낸 요청 취소 api
-export const cancelRequest = async (receiverId: number) => {
-  try {
-    // delete 요청에 body가 필요할 때 아래와 같이 사용한다.
-    const response = await axiosInstance.request({
-      url: REQUEST_FRIEND,
-      method: "DELETE",
-      data: { receiverId },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log("요청 취소 결과 : ", response);
-    return response.data;
-  } catch (error: any) {
-    console.error("요청 취소 실패:", error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || "요청 취소 중 오류 발생");
-  }
+export const cancelRequestApi = async (receiverId: number) => {
+  const response = await axiosInstance.delete<ApiResponse>(REQUEST_FRIEND, {
+    data: { receiverId },
+  });
+
+  return response.data;
+};
+
+// 친구 요청 수락 api
+export const acceptRequestApi = async (receiverId: number) => {
+  const response = await axiosInstance.put<ApiResponse>(ACCEPT_REQUEST, {
+    receiverId: receiverId,
+  });
+  return response.data;
+};
+
+// 친구 요청 거절 api
+export const rejectRequestApi = async (receiverId: number) => {
+  const response = await axiosInstance.put<ApiResponse>(REJECT_REQUEST, {
+    receiverId,
+  });
+  return response.data;
 };

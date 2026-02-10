@@ -70,7 +70,13 @@ const SearchAddFriend: React.FC<SearchAddFriendProps> = ({
                 )}
                 <span className={styles.Nickname}>{user.nickname}</span>
               </div>
-              {user.requestReceived ? (
+              {user.isFriend ? (
+                <div className={styles.SendRequestBtnWrapper}>
+                  <Button onClick={() => {}} size="xs" disabled={true}>
+                    친구
+                  </Button>
+                </div>
+              ) : user.requestReceived ? (
                 <div className={styles.AcceptRefuseBtnWrapper}>
                   <Button onClick={() => handleAcceptRequest(user)} size="xs">
                     수락
