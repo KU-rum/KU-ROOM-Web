@@ -1,6 +1,6 @@
 import Header from "@components/Header/Header";
-import LoadingSpinner from "@components/LoadingSpinner/LoadingSpinner";
 import FriendContainer from "@components/FriendContainer/FriendContainer";
+import Loading from "@components/Loading/Loading";
 
 import FriendEdit from "./components/FriendEdit/FriendEdit";
 import FriendSearch from "../components/FriendSearch/FriendSearch";
@@ -28,7 +28,7 @@ const FriendList = () => {
   } = useFriendList();
 
   if (isPendingFriendList) {
-    return <LoadingSpinner />;
+    return <Loading />;
   }
 
   return (

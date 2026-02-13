@@ -1,5 +1,5 @@
 import Header from "@components/Header/Header";
-import LoadingSpinner from "@components/LoadingSpinner/LoadingSpinner";
+import Loading from "@components/Loading/Loading";
 
 import FriendSearch from "../components/FriendSearch/FriendSearch";
 import FriendModal from "../components/FriendModal/FriendModal";
@@ -32,7 +32,7 @@ const FriendAdd = () => {
   } = useFriendAdd();
 
   if (isPendingRequestList) {
-    return <LoadingSpinner />;
+    return <Loading />;
   }
 
   return (
