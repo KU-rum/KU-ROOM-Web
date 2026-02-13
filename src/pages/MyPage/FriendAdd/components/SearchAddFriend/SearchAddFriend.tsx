@@ -40,14 +40,6 @@ const SearchAddFriend: React.FC<SearchAddFriendProps> = ({
     setModalState(true);
   };
 
-  // 친구 요청 거절
-  const handleRefuseRequest = (friend: SearchedUserData) => {
-    setAcceptReceiveFriend(friend.nickname);
-    setAcceptReceiveFriendId(friend.userId);
-    setModalType("refuse");
-    setModalState(true);
-  };
-
   return (
     <div className={styles.SearchResultContainer}>
       {searchedUserList && searchedUserList.length > 0 ? (
@@ -71,26 +63,19 @@ const SearchAddFriend: React.FC<SearchAddFriendProps> = ({
                 <span className={styles.Nickname}>{user.nickname}</span>
               </div>
               {user.isFriend ? (
-                <div className={styles.SendRequestBtnWrapper}>
+                <div className={styles.BtnWrapper}>
                   <Button onClick={() => {}} size="xs" disabled={true}>
                     친구
                   </Button>
                 </div>
               ) : user.requestReceived ? (
-                <div className={styles.AcceptRefuseBtnWrapper}>
+                <div className={styles.BtnWrapper}>
                   <Button onClick={() => handleAcceptRequest(user)} size="xs">
                     수락
                   </Button>
-                  <Button
-                    onClick={() => handleRefuseRequest(user)}
-                    size="xs"
-                    variant="quaternary"
-                  >
-                    거절
-                  </Button>
                 </div>
               ) : (
-                <div className={styles.SendRequestBtnWrapper}>
+                <div className={styles.BtnWrapper}>
                   {user.requestSent ? (
                     <Button
                       onClick={() => handleDeleteRequest(user.userId)}
