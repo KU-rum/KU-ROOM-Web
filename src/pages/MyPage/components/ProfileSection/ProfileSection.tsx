@@ -37,87 +37,81 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
   setModalType,
   setModalState,
 }) => {
-  const { userProfileData, isPendingUserProfile } = useUserProfile();
+  const { userProfileData } = useUserProfile();
 
   const handleSectionClick = useHandleSectionClick(setModalType, setModalState);
   return (
-    !isPendingUserProfile && (
-      <>
-        <div className={styles.SectionContainer}>
-          <span className={styles.SectionTitle}>{sectionData.title}</span>
-          {sectionData.contents.map((item, index) => (
-            <React.Fragment key={item + index}>
-              <button
-                key={index}
-                className={`${styles.SectionContentButton} ${
-                  isToggle && styles.ToggleButtonStyle
-                }`}
-                onClick={() => !isToggle && handleSectionClick(item)}
-                disabled={
-                  item === "이메일" ||
-                  item === "아이디" ||
-                  item === "학번" ||
-                  item === "앱버전"
-                }
-              >
-                {item}
-                {item === "이메일" && (
-                  <span className={styles.ExtraInfoText}>
-                    {userProfileData?.email}
-                  </span>
-                )}
-                {item === "아이디" && (
-                  <span className={styles.ExtraInfoText}>
-                    {userProfileData?.loginId}
-                  </span>
-                )}
-                {item === "학번" && (
-                  <span className={styles.ExtraInfoText}>
-                    {userProfileData?.studentId}
-                  </span>
-                )}
-                {item === "학과" && (
-                  <img
-                    className={styles.ArrowIcon}
-                    src={arrowRight}
-                    alt="학과"
-                  />
-                )}
-                {item === "앱버전" && (
-                  <span className={styles.ExtraInfoText}>{AppVersion}</span>
-                )}
-                {isToggle && (
-                  <ToggleAlarmButton
-                    isOn={toggleStates?.[item] ?? false} // undefined면 false로 처리
-                    onToggle={() => onToggle?.(item)}
-                  />
-                )}
-              </button>
-              {item === "공지 키워드 알림" &&
-                toggleStates?.[item] &&
-                keywordData && (
-                  <div className={styles.KeywordButtonWrapper} style={{}}>
-                    {keywordData.length === 0 ? (
-                      <div className={styles.EmptyWrapper}>
-                        <EmptyState message="등록된 키워드가 없어요" />
-                      </div>
-                    ) : (
-                      keywordData.map((item, index) => (
-                        <KeywordButton
-                          key={index}
-                          keyword={item.keyword}
-                          handleDelete={() => onDeleteKeyword?.(item.keyword)}
-                        />
-                      ))
-                    )}
-                  </div>
-                )}
-            </React.Fragment>
-          ))}
-        </div>
-        {!isLastSection && <div className={styles.DivideSectionThin} />}
-      </>
-    )
+    <>
+      <div className={styles.SectionContainer}>
+        <span className={styles.SectionTitle}>{sectionData.title}</span>
+        {sectionData.contents.map((item, index) => (
+          <React.Fragment key={item + index}>
+            <button
+              key={index}
+              className={`${styles.SectionContentButton} ${
+                isToggle ? styles.ToggleButtonStyle : ""
+              }`}
+              onClick={() => !isToggle && handleSectionClick(item)}
+              disabled={
+                item === "이메일" ||
+                item === "아이디" ||
+                item === "학번" ||
+                item === "앱버전"
+              }
+            >
+              {item}
+              {item === "이메일" && (
+                <span className={styles.ExtraInfoText}>
+                  {userProfileData?.email}
+                </span>
+              )}
+              {item === "아이디" && (
+                <span className={styles.ExtraInfoText}>
+                  {userProfileData?.loginId}
+                </span>
+              )}
+              {item === "학번" && (
+                <span className={styles.ExtraInfoText}>
+                  {userProfileData?.studentId}
+                </span>
+              )}
+              {item === "학과" && (
+                <img className={styles.ArrowIcon} src={arrowRight} alt="학과" />
+              )}
+              {item === "앱버전" && (
+                <span className={styles.ExtraInfoText}>{AppVersion}</span>
+              )}
+              {isToggle && (
+                <ToggleAlarmButton
+                  isOn={toggleStates?.[item] ?? false} // undefined면 false로 처리
+                  onToggle={() => onToggle?.(item)}
+                />
+              )}
+            </button>
+            {item === "공지 키워드 알림" &&
+              toggleStates?.[item] &&
+              keywordData && (
+                <div className={styles.KeywordButtonWrapper} style={{}}>
+                  {keywordData.length === 0 ? (
+                    <div className={styles.EmptyWrapper}>
+                      <EmptyState message="등록된 키워드가 없어요" />
+                    </div>
+                  ) : (
+                    keywordData.map((item, index) => (
+                      <KeywordButton
+                        key={index}
+                        keyword={item.keyword}
+                        handleDelete={() => onDeleteKeyword?.(item.keyword)}
+                      />
+                    ))
+                  )}
+                </div>
+              )}
+          </React.Fragment>
+        ))}
+      </div>
+      {!isLastSection && <div className={styles.DivideSectionThin} />}
+    </>
   );
 };
 

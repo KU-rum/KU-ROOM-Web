@@ -3,6 +3,8 @@
   flex-direction: column;
   padding: 32px 28.5px;
   gap: 29px;
+  width: 100%;
+  box-sizing: border-box;
 }
 .MyProfileInfoWrapper {
   display: flex;

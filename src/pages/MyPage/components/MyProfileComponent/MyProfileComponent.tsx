@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom";
 import defaultProfileImg from "@assets/defaultProfileImg.svg";
 import editIcon from "@assets/icon/editpencil.svg";
 import Button from "@components/Button/Button";
+import Loading from "@components/Loading/Loading";
+import BottomSheet from "@components/BottomSheet/BottomSheet";
 
 import { useUserProfile } from "../../hooks/use-user-profile";
+import useProfileImage from "../../hooks/use-profile-image";
 
 import styles from "./MyProfileComponent.module.css";
-import BottomSheet from "@/shared/components/BottomSheet/BottomSheet";
-import useProfileImage from "../../hooks/use-profile-image";
 
 interface MyProfileComponentProps {
   isChangeProfile: boolean;
@@ -45,16 +46,9 @@ const MyProfileComponent: React.FC<MyProfileComponentProps> = ({
   return (
     <>
       {isPendingUserProfile ? (
-        <div>로딩중...</div>
+        <Loading type="section" sectionHeight={213} />
       ) : (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            padding: "32px 28.5px",
-            gap: "29px",
-          }}
-        >
+        <div className={styles.MyProfileContainer}>
           <div className={styles.MyProfileInfoWrapper}>
             <div className={styles.ImgWrapper}>
               {isChangeProfile ? (

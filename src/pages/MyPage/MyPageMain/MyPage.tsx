@@ -9,6 +9,7 @@ import { MyPageSectionData } from "@constant/sectionDatas";
 import ProfileSection from "../components/ProfileSection/ProfileSection";
 import ProfileModal from "./components/ProfileModal/ProfileModal";
 import MyProfileComponent from "../components/MyProfileComponent/MyProfileComponent";
+
 import styles from "./MyPage.module.css";
 
 const MyPage = () => {
@@ -37,14 +38,6 @@ const MyPage = () => {
 
     // return () => clearTimeout(timeout);
   }, []);
-
-  // if (isLoading) {
-  //   return (
-  //     <div className={styles.MyPageLoadingWrapper}>
-  //       <BeatLoader color="#009733" size={18} margin={4} />
-  //     </div>
-  //   );
-  // }
 
   return (
     <>
