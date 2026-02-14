@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { changePwAfterLogin } from "@apis/changePw";
+import { changePwAfterLoginApi } from "@apis/profile";
 import InputBar from "@components/InputBar/InputBar";
 import Button from "@components/Button/Button";
 import InformModal from "@components/InformModal/InformModal";
@@ -62,7 +62,7 @@ const ChangePw = () => {
     if (isValidOriginalPw && isAllowedPw && isPwMatched) {
       try {
         try {
-          const result = await changePwAfterLogin(userInfo);
+          const result = await changePwAfterLoginApi(userInfo);
 
           if (!result.success) {
             if (result.code === 310 || result.code === 311) {

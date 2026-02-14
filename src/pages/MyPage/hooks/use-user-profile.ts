@@ -2,8 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import useToast from "@hooks/use-toast";
+import { getUserProfileApi, UserProfileResponseData } from "@/apis/profile";
 
-import { getUserProfileApi, UserProfileResponseData } from "../api";
 import { MYPAGE_QUERY_KEY } from "../querykey";
 
 export const useUserProfile = () => {

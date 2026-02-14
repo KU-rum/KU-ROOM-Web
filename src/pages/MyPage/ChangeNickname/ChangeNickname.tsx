@@ -1,7 +1,8 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { changeNicknameApi, checkDuplictedNickname } from "@apis/nickname";
+import { checkDuplictedNickname } from "@/apis/signup";
+import { changeNicknameApi } from "@/apis/profile";
 import InputBar from "@components/InputBar/InputBar";
 import Button from "@components/Button/Button";
 import InformModal from "@components/InformModal/InformModal";

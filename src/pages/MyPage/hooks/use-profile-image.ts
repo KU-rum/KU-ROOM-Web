@@ -1,13 +1,14 @@
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import useToast from "@hooks/use-toast";
 
+import useToast from "@hooks/use-toast";
 import {
   getPresignedUrlApi,
   updateProfileImageApi,
   uploadToPresignedUrlApi,
-} from "../api";
+} from "@/apis/profile";
+
 import { MYPAGE_QUERY_KEY } from "../querykey";
-import { useState } from "react";
 
 const ALLOWED_MIME = new Set(["image/png", "image/jpeg", "image/webp"]);
 const ALLOWED_EXT = new Set(["png", "jpg", "jpeg", "webp"]);

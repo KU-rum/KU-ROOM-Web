@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import useToast from "@hooks/use-toast";
+import { addDepartmentApi, deleteDepartmentApi } from "@/apis/profile";
 
-import { addDepartmentApi, deleteDepartmentApi } from "../../api";
 import { MYPAGE_QUERY_KEY } from "../../querykey";
 
 export default function useMutationDepartment() {
