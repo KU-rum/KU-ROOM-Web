@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ReactModal from "react-modal";
 
 import { logoutApi } from "@apis/auth";
+import { clearAuthStorage } from "@utils/storageUtils";
 import cloudIcon from "@assets/icon/cloud.svg";
 
 import Button from "../Button/Button";
@@ -59,7 +60,7 @@ const InformModal = ({
         if (localStorage.getItem("accessToken")) {
           const logoutResponse = await logoutApi();
           console.log(logoutResponse);
-          localStorage.clear();
+          clearAuthStorage();
         }
         navigate("/login");
       },

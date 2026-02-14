@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { checkIsSharedApi } from "@apis/map";
+import { clearAuthStorage } from "@utils/storageUtils";
 // import Splash from "@components/Splash";
 import BottomBar from "@components/BottomBar/BottomBar";
 import Header from "@components/Header/Header";
@@ -53,7 +54,7 @@ const Home = () => {
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     if (!accessToken) {
-      localStorage.clear();
+      clearAuthStorage();
       navigate("/login");
       return;
     }
