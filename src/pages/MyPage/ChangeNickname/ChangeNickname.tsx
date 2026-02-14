@@ -1,20 +1,17 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 
-import { checkDuplictedNickname } from "@/apis/signup";
-import { changeNicknameApi } from "@/apis/profile";
+import { checkDuplictedNickname } from "@apis/signup";
+import { useChangeNicknameMutation, useUserProfileQuery } from "@/queries";
 import InputBar from "@components/InputBar/InputBar";
 import Button from "@components/Button/Button";
 import InformModal from "@components/InformModal/InformModal";
 import Header from "@components/Header/Header";
 
-import { useUserProfile } from "../hooks/use-user-profile";
 import styles from "./ChangeNickname.module.css";
-import { MYPAGE_QUERY_KEY } from "../querykey";
 
 const ChangeNickname = () => {
-  const { userProfileData } = useUserProfile();
-  const qc = useQueryClient();
+  const { userProfileData } = useUserProfileQuery();
+  const { changeNickname } = useChangeNicknameMutation();
 
   const [newNickname, setNewNickname] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -39,17 +36,14 @@ const ChangeNickname = () => {
     );
     if (!checkResponse) return;
     // 서버에 닉네임 변경 요청
-    const changeNickname = { nickname: newNickname };
-    const changeResponse = await changeNicknameApi(changeNickname);
-    console.log(changeResponse);
 
-    qc.invalidateQueries({
-      queryKey: MYPAGE_QUERY_KEY.USER_PROFILE,
+    changeNickname(newNickname, {
+      onSuccess: () => {
+        // 닉네임 변경 모달 생성
+        setModalType("NicknameChange");
+        setModalState(true);
+      },
     });
-
-    // 닉네임 변경 모달 생성
-    setModalType("NicknameChange");
-    setModalState(true);
   };
 
   useEffect(() => {

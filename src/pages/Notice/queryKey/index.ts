@@ -1,5 +1,5 @@
-import { MYPAGE_QUERY_KEY } from "@pages/MyPage/querykey";
+import { PROFILE_QUERY_KEY } from "@/queryKey/profile";
 
 export const NOTICE_QUERY_KEY = {
-  OTHERS: [...MYPAGE_QUERY_KEY.USER_PROFILE, "departments"],
+  OTHERS: [...PROFILE_QUERY_KEY.DEFAULT, "departments"],
 } as const;

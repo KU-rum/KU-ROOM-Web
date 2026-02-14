@@ -7,9 +7,9 @@ import { EmptyState } from "@pages/Notice/components/NoticeList/components/Empty
 import ToggleAlarmButton from "../ToggleAlarmButton";
 import KeywordButton from "../KeywordButton/KeywordButton";
 import { useHandleSectionClick } from "../../hooks/use-handle-section-click";
-import { useUserProfile } from "../../hooks/use-user-profile";
 
 import styles from "./ProfileSection.module.css";
+import { useUserProfileQuery } from "@/queries";
 
 interface ProfileSectionProps {
   sectionData: {
@@ -37,7 +37,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
   setModalType,
   setModalState,
 }) => {
-  const { userProfileData } = useUserProfile();
+  const { userProfileData } = useUserProfileQuery();
 
   const handleSectionClick = useHandleSectionClick(setModalType, setModalState);
   return (

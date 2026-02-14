@@ -4,12 +4,12 @@ import { findIdFromEmail, sendEmailApi, verifyCodeApi } from "@apis/mails";
 import InformModal from "@components/InformModal/InformModal";
 import Header from "@components/Header/Header";
 import { isValidPassword } from "@utils/validations";
+import { useChangePwMutation } from "@/queries";
 
 import FindStep0 from "./FindStep0";
 import FindStep1 from "./FindStep1";
 import FindStep2 from "./FindStep2";
 import styles from "./FindIdPw.module.css";
-import { changePwBeforeLoginApi } from "@/apis/profile";
 
 // 상태 정의
 type State = {
@@ -88,6 +88,8 @@ const FindIdPw = () => {
   const [findStep, setFindStep] = useState(0); // 아이디/비밀번호 찾기 프로세스 스텝
   const [modalState, setModalState] = useState(false); // 모달창 on/off 상태
   const [modalType, setModalType] = useState(""); // 모달창 종류
+
+  const { changePwBeforeLogin } = useChangePwMutation();
 
   // 상태 변경 함수들
   const handleInformEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -186,15 +188,17 @@ const FindIdPw = () => {
         loginId: state.userId,
         newPassword: state.newPw,
       };
-      const response = await changePwBeforeLoginApi(userInfo);
-      console.log(response);
-      if (response.code === 311) {
-        dispatch({ type: "SET_ERROR_CODE", payload: 311 });
-      } else {
-        console.log("재설정 성공!");
-        setModalType("NewPassword");
-        setModalState(true);
-      }
+      changePwBeforeLogin(userInfo, {
+        onSuccess: (response) => {
+          if (response.code === 311) {
+            dispatch({ type: "SET_ERROR_CODE", payload: 311 });
+          } else {
+            console.log("재설정 성공!");
+            setModalType("NewPassword");
+            setModalState(true);
+          }
+        },
+      });
     } else {
       console.log("재설정 실패: 조건을 다시 확인하세요.");
     }

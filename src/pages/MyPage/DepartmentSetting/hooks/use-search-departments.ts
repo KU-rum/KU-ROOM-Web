@@ -21,6 +21,7 @@ export const useSearchDepartments = (searchText: string) => {
     queryFn: () => getSearchedDepartmentsApi(debouncedText),
     enabled: !!debouncedText.trim(),
     staleTime: 1000 * 60 * 3,
+    retry: 3,
   });
 
   useEffect(() => {

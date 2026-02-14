@@ -1,3 +1,3 @@
 export const FRIEND_QUERY_KEY = {
-  FRIEND_LIST: ["friend-list"],
-};
+  DEFAULT: ["friend-list"],
+} as const;
