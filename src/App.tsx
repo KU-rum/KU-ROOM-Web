@@ -7,6 +7,7 @@ import {
 import { shouldShowPwaGuide } from "@utils/pwaUtils";
 
 import { reissueTokenApi } from "@apis/axiosInstance";
+import { RootLayout } from "@/shared/components/RootLayout";
 import Home from "@pages/Home/Home";
 import Notice from "@pages/Notice/Notice/Notice";
 import NoticeDetail from "@pages/Notice/NoticeDetail/NoticeDetail";
@@ -86,6 +87,7 @@ function App() {
   const router = createBrowserRouter([
     {
       path: "/",
+      element: <RootLayout />,
       children: [
         {
           index: true,
