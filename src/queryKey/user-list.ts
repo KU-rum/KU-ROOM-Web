@@ -7,4 +7,4 @@ export const USER_LIST_QUERY_KEY = {
     "search",
     nickname,
   ],
-};
+} as const;
