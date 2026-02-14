@@ -4,6 +4,8 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 
+import { clearAuthStorage } from "@utils/storageUtils";
+
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: {
@@ -99,7 +101,7 @@ export const reissueTokenApi = async (): Promise<string> => {
     // refresh token에 문제가 있는 경우에는 로그인 화면으로 리다이렉트 해야한다.
     if (!tokenData || !tokenData.accessToken) {
       console.error(" refreshToken 만료 또는 재발급 실패 → 로그인 이동");
-      localStorage.clear();
+      clearAuthStorage();
       window.location.href = "/login";
       throw new Error("refreshToken 만료");
     }
@@ -112,7 +114,7 @@ export const reissueTokenApi = async (): Promise<string> => {
     return tokenData.accessToken;
   } catch (err: any) {
     console.warn("재발급 실패 (기타 이유)", err.response?.data || err.message);
-    localStorage.clear();
+    clearAuthStorage();
     throw err;
   }
 };

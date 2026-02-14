@@ -1,5 +1,10 @@
 import { useEffect } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
+import { shouldShowPwaGuide } from "@utils/pwaUtils";
 
 import { reissueTokenApi } from "@apis/axiosInstance";
 import Home from "@pages/Home/Home";
@@ -34,8 +39,17 @@ import ChatPage from "@pages/Chatbot/ChatPage/ChatPage";
 import LocationTotalRank from "@pages/Map/LocationTotalRank/LocationTotalRank";
 import MapLayout from "@pages/Map/layout/MapLayout";
 import ShareLocation from "@pages/ShareLocation/ShareLocation";
+import PwaGuide from "@pages/PwaGuide/PwaGuide";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
+
+// PWA 가이드 표시 여부에 따라 Home 또는 가이드로 분기
+const RootIndex = () => {
+  if (shouldShowPwaGuide()) {
+    return <Navigate to="/pwa-guide" replace />;
+  }
+  return <Home />;
+};
 
 function App() {
   useEffect(() => {
@@ -75,7 +89,11 @@ function App() {
       children: [
         {
           index: true,
-          element: <Home />,
+          element: <RootIndex />,
+        },
+        {
+          path: "pwa-guide",
+          element: <PwaGuide />,
         },
         {
           path: "alarm",

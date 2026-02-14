@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ReactModal from "react-modal";
 
 import { logoutApi, withdrawApi } from "@apis/auth";
+import { clearAuthStorage } from "@utils/storageUtils";
 import cautionIcon from "@assets/icon/editFriend/cautionIcon.svg";
 import Button from "@components/Button/Button";
 
@@ -32,7 +33,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
         await logoutApi()
           .then(() => {
             toast.info("로그아웃되었습니다.");
-            localStorage.clear();
+            clearAuthStorage();
             navigate("/login");
           })
           .catch(() => {
@@ -43,7 +44,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
       case "withdraw":
         setModalState(false);
         await withdrawApi();
-        localStorage.clear();
+        clearAuthStorage();
 
         navigate("/login");
         break;
