@@ -1,4 +1,5 @@
-// 유저의 프로필과 관련된 api (닉네임, 비밀번호, 프로필 이미지, 학과 등)
+// tanstack query 리팩토링 완료
+// 유저의 프로필과 관련된 api
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { ApiResponse } from "@/shared/types";

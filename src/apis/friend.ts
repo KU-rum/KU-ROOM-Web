@@ -1,3 +1,4 @@
+// tanstack query 리팩토링 완료
 // 친구 관련 api
 import { ApiResponse, RankListType } from "@/shared/types";
 import axiosInstance from "./axiosInstance";
