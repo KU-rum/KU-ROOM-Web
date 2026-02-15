@@ -33,20 +33,11 @@ import { MapLayoutContext } from "./layout/MapLayout";
 import { getCategoryEnum } from "./utils/category-chip";
 import LocationTrackingButton from "./components/LocationTrackingButton/LocationTrackingButton";
 import LocationShareButton from "./components/LocationShareButton/LocationShareButton";
+import { CATEGORY_CHIPS } from "./constant/MapData";
 
-const includeBottomSheetList = [
-  "건물",
-  "단과대",
-  "K-Cube",
-  "K-Hub",
-  "편의점",
-  "레스티오",
-  "1847",
-  "학생식당",
-  "기숙사",
-  "은행",
-  "우체국",
-];
+const INCLUDE_BOTTOM_SHEET_LIST: string[] = CATEGORY_CHIPS.filter(
+  (chip) => chip.title !== "친구",
+).map((chip) => chip.title);
 
 // TODO: 전체 랭킹 페이지에서 돌아왔을 때 마커 포커스 및 해당 마커를 가운데로 정렬하는 기능 추가 필요
 
@@ -323,7 +314,7 @@ const MapPage = () => {
     <div>
       <KuroomMap
         height={
-          includeBottomSheetList.includes(selectedCategoryTitle) ||
+          INCLUDE_BOTTOM_SHEET_LIST.includes(selectedCategoryTitle) ||
           selectedCategoryTitle === ""
             ? "calc(100vh - 92px)"
             : "100vh"
@@ -394,7 +385,7 @@ const MapPage = () => {
           )}
         </>
       )}
-      {(includeBottomSheetList.includes(selectedCategoryTitle) ||
+      {(INCLUDE_BOTTOM_SHEET_LIST.includes(selectedCategoryTitle) ||
         selectedCategoryTitle === "") && (
         <>
           <LocationsBottomSheet

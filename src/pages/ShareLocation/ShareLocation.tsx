@@ -10,9 +10,12 @@ import { getUserShareLocation } from "@apis/map";
 import styles from "./ShareLocation.module.css";
 import Button from "@/shared/components/Button/Button";
 import ShareLocationModal from "@/shared/components/ShareLocationModal/ShareLocationModal";
+import { isMyLocationInSchool } from "@/shared/utils/mapRangeUtils";
 
 const ShareLocation = () => {
   const navigate = useNavigate();
+  const [isInSchool, setIsInSchool] = useState(false);
+
   const [center, setCenter] = useState<Coordinate>();
   const [placeName, setPlaceName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +34,7 @@ const ShareLocation = () => {
     try {
       const response = await getUserShareLocation(
         center.latitude,
-        center.longitude
+        center.longitude,
       );
       if (response.code === 1204) {
         setPlaceName("");
@@ -57,12 +60,17 @@ const ShareLocation = () => {
     };
   }, [center, getBuildingToShare]);
 
+  useEffect(() => {
+    // 현재 내 위치가 학교 내부인지 검증
+    return isMyLocationInSchool(setIsInSchool);
+  }, []);
+
   return (
     <div className={styles.PageWrapper}>
       <Header>내 위치 공유</Header>
       <KuroomMap
         height="100dvh"
-        isTracking={false}
+        isTracking={true}
         handleCenterChanged={setCenter}
       />
       <div className={styles.SharePinWrapper}>
@@ -84,7 +92,11 @@ const ShareLocation = () => {
           ) : (
             <div className={styles.BottomSheetContent}>
               <span className={styles.PlaceName}>{placeName}</span>
-              <Button onClick={handleOpenShareModal}>내 위치 공유하기</Button>
+              <Button onClick={handleOpenShareModal} disabled={!isInSchool}>
+                {isInSchool
+                  ? "내 위치 공유하기"
+                  : "학교 외부에서는 공유할 수 없습니다."}
+              </Button>
             </div>
           )}
         </div>

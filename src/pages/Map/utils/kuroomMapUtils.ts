@@ -7,6 +7,7 @@ import buildingMarker from "@assets/map/markers/buildingMarker.svg";
 import kcubekhubMarker from "@assets/map/markers/kcubekhubMarker.svg";
 import storeMarker from "@assets/map/markers/storeMarker.svg";
 import cafeMarker from "@assets/map/markers/cafeMarker.svg";
+import copyRoomMarker from "@assets/map/markers/copyRoomMarker.svg";
 import restaurantMarker from "@assets/map/markers/restaurantMarker.svg";
 import dormitoryMarker from "@assets/map/markers/dormitoryMarker.svg";
 import bankMarker from "@assets/map/markers/bankMarker.svg";
@@ -38,10 +39,10 @@ export const makeMarkerIcon = (category: string): string => {
       return kcubekhubMarker;
     case "편의점":
       return storeMarker;
-    case "레스티오":
+    case "카페":
       return cafeMarker;
-    case "1847":
-      return cafeMarker;
+    case "복사실":
+      return copyRoomMarker;
     case "학생식당":
       return restaurantMarker;
     case "기숙사":

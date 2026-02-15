@@ -1,6 +1,6 @@
 import React from "react";
 
-import { CategoryChips } from "@pages/Map/constant/MapData";
+import { CATEGORY_CHIPS } from "@pages/Map/constant/MapData";
 
 import styles from "./MapCategoryChip.module.css";
 
@@ -13,7 +13,7 @@ const MapCategoryChip: React.FC<MapCategoryChip> = ({
 }) => {
   return (
     <div className={styles.CategoryChipsWrapper}>
-      {CategoryChips.map((category, index) => (
+      {CATEGORY_CHIPS.map((category, index) => (
         <button
           className={styles.CategoryChip}
           key={index}

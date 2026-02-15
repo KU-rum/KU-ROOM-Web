@@ -95,6 +95,7 @@
   font-weight: 700;
   line-height: normal;
 }
+
 .SubTitleText {
   color: var(--Gray-100, #9eaab5);
   font-size: 18px;
@@ -110,11 +111,10 @@
 .InfoContent {
   font-size: 16px;
   font-weight: 500;
-  line-height: 120%; /* 19.2px */
-}
-.InfoContent {
+  line-height: 24px;
   white-space: pre-wrap;
 }
+
 .InfoContentClamp {
   display: -webkit-box;
   -webkit-line-clamp: 3;

@@ -14,10 +14,10 @@ export const getCategoryEnum = (title: string): CategoryEnum | undefined => {
       return "K_HUB";
     case "편의점":
       return "CONVENIENCE_STORE";
-    case "레스티오":
-      return "CAFE_RESTIO";
-    case "1847":
-      return "CAFE_1847";
+    case "카페":
+      return "CAFE";
+    case "복사실":
+      return "COPY_ROOM";
     case "학생식당":
       return "STUDENT_CAFETERIA";
     case "기숙사":
