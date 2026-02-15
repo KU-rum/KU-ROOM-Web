@@ -1,4 +1,4 @@
-import axiosInstance from "@/apis/axiosInstance";
+import axiosInstance from "@apis/axiosInstance";
 import { ApiResponse } from "@/shared/types";
 import { AlarmCategory, AlarmDataType } from "@pages/Alarm/types";
 import { PAGE_SIZE } from "@/shared/constant/page";

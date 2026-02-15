@@ -4,7 +4,7 @@ import { ApiResponse } from "@/shared/types";
 
 const GET_ALL_COLLEGES = "/colleges";
 const GET_DEPARTMENTS = "/departments?collegeName";
-const GET_SEACHRED_DEPARTMENT_URL = "/departments/search";
+const GET_SEARCHED_DEPARTMENT_URL = "/departments/search";
 
 // 단과대 조회
 interface GetCollegesDepartmentsResponse {
@@ -52,7 +52,7 @@ interface SearchedDepartmentsResponse extends ApiResponse {
 
 export const getSearchedDepartmentsApi = async (searchText: string) => {
   const response = await axiosInstance.get<SearchedDepartmentsResponse>(
-    GET_SEACHRED_DEPARTMENT_URL,
+    GET_SEARCHED_DEPARTMENT_URL,
     { params: { query: searchText } },
   );
 

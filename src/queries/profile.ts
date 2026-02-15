@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -17,6 +18,7 @@ import {
   UserProfileResponse,
 } from "@apis/profile";
 import { PROFILE_QUERY_KEY } from "@/queryKey/profile";
+import { NOTICE_QUERY_KEY } from "@/pages/Notice/queryKey";
 
 export const useUserProfileQuery = () => {
   const navigate = useNavigate();
@@ -35,10 +37,12 @@ export const useUserProfileQuery = () => {
 
   const userProfileData = data?.data;
 
-  if (isError) {
-    toast.error(`유저 정보 조회 오류 : ${error.message}`);
-    navigate("/login");
-  }
+  useEffect(() => {
+    if (isError) {
+      toast.error(`유저 정보 조회 오류 : ${error.message}`);
+      navigate("/login");
+    }
+  }, [isError, toast, error, navigate]);
 
   return {
     userProfileData,
@@ -106,6 +110,9 @@ export const useUserDepartmentMutation = () => {
       qc.invalidateQueries({
         queryKey: PROFILE_QUERY_KEY.DEFAULT,
       });
+      qc.invalidateQueries({
+        queryKey: NOTICE_QUERY_KEY.OTHERS,
+      });
       toast.info(response);
     },
     onError: (error) => {
@@ -118,6 +125,9 @@ export const useUserDepartmentMutation = () => {
     onSuccess: (response) => {
       qc.invalidateQueries({
         queryKey: PROFILE_QUERY_KEY.DEFAULT,
+      });
+      qc.invalidateQueries({
+        queryKey: NOTICE_QUERY_KEY.OTHERS,
       });
       toast.info(response);
     },

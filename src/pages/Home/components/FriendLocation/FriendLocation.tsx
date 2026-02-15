@@ -8,7 +8,7 @@ import kuroomEmptyIcon from "@assets/icon/kuroom-icon/kuroom-gray.svg";
 import { PlaceData } from "@/shared/types";
 
 import styles from "./FriendLocation.module.css";
-import { getCategoryLocationsApi } from "@/apis/map";
+import { getCategoryLocationsApi } from "@apis/map";
 
 interface FriendLocationProps {
   userSharedLocation: string | null;

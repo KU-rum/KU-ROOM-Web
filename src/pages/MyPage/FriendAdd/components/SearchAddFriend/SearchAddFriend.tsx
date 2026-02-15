@@ -5,7 +5,7 @@ import defaultImg from "@assets/defaultProfileImg.svg";
 import Button from "@components/Button/Button";
 
 import styles from "./SearchAddFriend.module.css";
-import { SearchedUserData } from "@/apis/user-list";
+import { SearchedUserData } from "@apis/user-list";
 
 interface SearchAddFriendProps {
   searchNickname: string;

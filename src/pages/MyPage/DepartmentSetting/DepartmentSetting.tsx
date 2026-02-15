@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import useToast from "@hooks/use-toast";
 import Header from "@components/Header/Header";
-import { DepartmentType } from "@apis/department";
 import { useUserDepartmentMutation, useUserProfileQuery } from "@/queries";
 
 import DepartmentSearch from "./components/DepartmentSearchBar/DepartmentSearchBar";
@@ -26,12 +25,12 @@ const DepartmentSetting = () => {
     deleteDepartment(department);
   };
 
-  // TODO: 이미 설정한 학과를 추가하려고 할 경우, addDepartment가 실행되지 않도록 수정
-  const handleAddUserDepartment = (department: DepartmentType) => {
-    if (userProfileData && userProfileData.departments.includes(department)) {
+  // 이미 설정한 학과를 추가하려고 할 경우, addDepartment가 실행되지 않도록
+  const handleAddUserDepartment = (department: string) => {
+    if (userProfileData?.departments.some((d) => d.department === department)) {
       toast.info("이미 설정하신 학과입니다.");
     } else {
-      addDepartment(department.department);
+      addDepartment(department);
     }
     setSearchText("");
   };

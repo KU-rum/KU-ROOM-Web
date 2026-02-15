@@ -13,7 +13,7 @@ import {
   rejectRequestApi,
   requestFriendApi,
   SearchedUserListResponse,
-} from "@/apis/user-list";
+} from "@apis/user-list";
 import useToast from "@/shared/hooks/use-toast";
 
 export const useSearchedUserListQuery = (nickname: string) => {

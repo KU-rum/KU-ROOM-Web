@@ -4,11 +4,10 @@ import noResultIcon from "@assets/icon/noResultSearch.svg";
 
 import styles from "./SearchDepartmentList.module.css";
 import { useSearchDepartments } from "../../hooks/use-search-departments";
-import { DepartmentType } from "@/apis/department";
 
 interface SearchDepartmentListProps {
   searchText: string;
-  handleAddUserDepartment: (value: DepartmentType) => void;
+  handleAddUserDepartment: (value: string) => void;
 }
 
 const SearchDepartmentList: React.FC<SearchDepartmentListProps> = ({
@@ -43,7 +42,7 @@ const SearchDepartmentList: React.FC<SearchDepartmentListProps> = ({
           <div
             key={item.department}
             className={styles.SearchedDepartmentContainer}
-            onClick={() => handleAddUserDepartment(item)}
+            onClick={() => handleAddUserDepartment(item.department)}
           >
             <div className={styles.DepartmentInfoWrapper}>
               <span className={styles.DepartmentTitle}>{item.department}</span>

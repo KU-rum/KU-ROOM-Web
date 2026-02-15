@@ -129,7 +129,7 @@ interface CheckNicknameResponse {
   data?: string;
 }
 
-export const checkDuplictedNickname = async (
+export const checkDuplicatedNickname = async (
   newNickname: string,
   setErrorMsg: (value: string) => void,
 ) => {

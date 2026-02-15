@@ -169,6 +169,6 @@ export const uploadToProfileImagePresignedUrlApi = async (
   file: File,
 ) => {
   await axios.put(presignedUrl, file, {
-    headers: { "Content-Type": file.type },
+    headers: { "Content-Type": file.type || "application/octet-stream" },
   });
 };

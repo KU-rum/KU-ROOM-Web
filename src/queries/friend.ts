@@ -1,14 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import useToast from "@hooks/use-toast";
 import {
   friendBlockApi,
   friendDeleteApi,
   friendReportApi,
   getFriendListApi,
   GetUserFriendListResponse,
-} from "@/apis/friend";
+} from "@apis/friend";
 import { FRIEND_QUERY_KEY, USER_LIST_QUERY_KEY } from "@/queryKey";
-import useToast from "@/shared/hooks/use-toast";
 
 export const useFriendListQuery = () => {
   const {
