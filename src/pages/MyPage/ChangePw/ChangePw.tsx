@@ -1,12 +1,13 @@
 import { ChangeEvent, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { changePwAfterLogin } from "@apis/changePw";
+import useToast from "@hooks/use-toast";
 import InputBar from "@components/InputBar/InputBar";
 import Button from "@components/Button/Button";
 import InformModal from "@components/InformModal/InformModal";
 import Header from "@components/Header/Header";
 import { isValidPassword } from "@utils/validations";
+import { useChangePwMutation } from "@/queries";
 
 import styles from "./ChangePw.module.css";
 
@@ -22,6 +23,9 @@ const ChangePw = () => {
 
   const [modalType, setModalType] = useState("");
   const [modalState, setModalState] = useState(false);
+
+  const { changePwAfterLogin } = useChangePwMutation();
+  const toast = useToast();
 
   const handleOriginalPwChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -53,41 +57,28 @@ const ChangePw = () => {
     setIsOriginalPwValid(isValidOriginalPw);
     setAllowedPw(isAllowedPw);
     setIsCheckedPw(isPwMatched);
-    const userInfo = {
+    const passwords = {
       prevPassword: originalPw,
       newPassword: newPw,
     };
 
     // 모든 조건이 충족되었을 때 재설정 성공
     if (isValidOriginalPw && isAllowedPw && isPwMatched) {
-      try {
-        try {
-          const result = await changePwAfterLogin(userInfo);
-
-          if (!result.success) {
-            if (result.code === 310 || result.code === 311) {
-              setErrorCode(result.code);
-              return;
-            }
+      changePwAfterLogin(passwords, {
+        onSuccess: (response) => {
+          if (response.code === 310 || response.code === 311) {
+            setErrorCode(response.code);
+            return;
           }
 
           // 성공 시
           setErrorCode(null);
           setModalType("NewPassword");
           setModalState(true);
-        } catch (error: any) {
-          alert(error.message); // 네트워크 에러나 기타 에러
-        }
-      } catch (error: any) {
-        console.error("서버 에러:", error.message);
-        if (error.code === 310 || error.code === 311) {
-          setErrorCode(error.code);
-        } else {
-          alert(error.message); // 기타 에러 알림
-        }
-      }
+        },
+      });
     } else {
-      console.log("재설정 실패: 조건을 다시 확인하세요.");
+      toast.error("재설정 실패: 조건을 다시 확인하세요.");
     }
   };
 

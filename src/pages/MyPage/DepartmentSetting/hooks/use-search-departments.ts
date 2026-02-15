@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 
 import useToast from "@hooks/use-toast";
 import useDebounce from "@hooks/use-debounce";
+import { DepartmentType, getSearchedDepartmentsApi } from "@apis/department";
 
-import { DepartmentType, getSearchedDepartmentsApi } from "../../api";
 import { MYPAGE_QUERY_KEY } from "../../querykey";
 
 export const useSearchDepartments = (searchText: string) => {
@@ -21,6 +21,7 @@ export const useSearchDepartments = (searchText: string) => {
     queryFn: () => getSearchedDepartmentsApi(debouncedText),
     enabled: !!debouncedText.trim(),
     staleTime: 1000 * 60 * 3,
+    retry: 3,
   });
 
   useEffect(() => {

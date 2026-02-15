@@ -13,7 +13,7 @@ import {
   rejectRequestApi,
   requestFriendApi,
   SearchedUserListResponse,
-} from "@/apis/user-list";
+} from "@apis/user-list";
 import useToast from "@/shared/hooks/use-toast";
 
 export const useSearchedUserListQuery = (nickname: string) => {
@@ -86,7 +86,7 @@ export const useFriendRequestMutation = () => {
     mutationFn: (receiverId: number) => requestFriendApi(receiverId),
     onSuccess: () => {
       qc.invalidateQueries({
-        queryKey: USER_LIST_QUERY_KEY.ALL,
+        queryKey: USER_LIST_QUERY_KEY.DEFAULT,
       });
     },
     onError: () => {
@@ -98,7 +98,7 @@ export const useFriendRequestMutation = () => {
     mutationFn: (receiverId: number) => cancelRequestApi(receiverId),
     onSuccess: () => {
       qc.invalidateQueries({
-        queryKey: USER_LIST_QUERY_KEY.ALL,
+        queryKey: USER_LIST_QUERY_KEY.DEFAULT,
       });
     },
     onError: () => {
@@ -120,10 +120,10 @@ export const useRespondToRequestMutation = () => {
     mutationFn: (receiverId: number) => acceptRequestApi(receiverId),
     onSuccess: () => {
       qc.invalidateQueries({
-        queryKey: USER_LIST_QUERY_KEY.ALL,
+        queryKey: USER_LIST_QUERY_KEY.DEFAULT,
       });
       qc.invalidateQueries({
-        queryKey: FRIEND_QUERY_KEY.FRIEND_LIST,
+        queryKey: FRIEND_QUERY_KEY.DEFAULT,
       });
     },
     onError: () => {
@@ -135,10 +135,10 @@ export const useRespondToRequestMutation = () => {
     mutationFn: (receiverId: number) => rejectRequestApi(receiverId),
     onSuccess: () => {
       qc.invalidateQueries({
-        queryKey: USER_LIST_QUERY_KEY.ALL,
+        queryKey: USER_LIST_QUERY_KEY.DEFAULT,
       });
       qc.invalidateQueries({
-        queryKey: FRIEND_QUERY_KEY.FRIEND_LIST,
+        queryKey: FRIEND_QUERY_KEY.DEFAULT,
       });
     },
     onError: () => {

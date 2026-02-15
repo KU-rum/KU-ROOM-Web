@@ -1,14 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import useToast from "@hooks/use-toast";
 import {
   friendBlockApi,
   friendDeleteApi,
   friendReportApi,
   getFriendListApi,
   GetUserFriendListResponse,
-} from "@/apis/friend";
+} from "@apis/friend";
 import { FRIEND_QUERY_KEY, USER_LIST_QUERY_KEY } from "@/queryKey";
-import useToast from "@/shared/hooks/use-toast";
 
 export const useFriendListQuery = () => {
   const {
@@ -16,7 +16,7 @@ export const useFriendListQuery = () => {
     isPending: isPendingFriendList,
     isError: isErrorFriendList,
   } = useQuery<GetUserFriendListResponse>({
-    queryKey: FRIEND_QUERY_KEY.FRIEND_LIST,
+    queryKey: FRIEND_QUERY_KEY.DEFAULT,
     queryFn: () => getFriendListApi(),
     staleTime: 1000 * 60 * 3,
   });
@@ -37,8 +37,8 @@ export const useEditFriendMutation = () => {
   const { mutate: deleteFriend } = useMutation({
     mutationFn: (friendId: string) => friendDeleteApi(friendId),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: FRIEND_QUERY_KEY.FRIEND_LIST });
-      qc.invalidateQueries({ queryKey: USER_LIST_QUERY_KEY.ALL });
+      qc.invalidateQueries({ queryKey: FRIEND_QUERY_KEY.DEFAULT });
+      qc.invalidateQueries({ queryKey: USER_LIST_QUERY_KEY.DEFAULT });
       toast.info("삭제가 완료되었습니다.");
     },
     onError: () => {
@@ -49,8 +49,8 @@ export const useEditFriendMutation = () => {
   const { mutate: blockFriend } = useMutation({
     mutationFn: (reportId: number) => friendBlockApi(reportId),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: FRIEND_QUERY_KEY.FRIEND_LIST });
-      qc.invalidateQueries({ queryKey: USER_LIST_QUERY_KEY.ALL });
+      qc.invalidateQueries({ queryKey: FRIEND_QUERY_KEY.DEFAULT });
+      qc.invalidateQueries({ queryKey: USER_LIST_QUERY_KEY.DEFAULT });
       toast.info("차단이 완료되었습니다.");
     },
     onError: () => {
@@ -62,8 +62,8 @@ export const useEditFriendMutation = () => {
     mutationFn: ({ reportId, reason }: { reportId: number; reason: string }) =>
       friendReportApi(reportId, reason),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: FRIEND_QUERY_KEY.FRIEND_LIST });
-      qc.invalidateQueries({ queryKey: USER_LIST_QUERY_KEY.ALL });
+      qc.invalidateQueries({ queryKey: FRIEND_QUERY_KEY.DEFAULT });
+      qc.invalidateQueries({ queryKey: USER_LIST_QUERY_KEY.DEFAULT });
       toast.info("신고가 완료되었습니다.");
     },
     onError: () => {
