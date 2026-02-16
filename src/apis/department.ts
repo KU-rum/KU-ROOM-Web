@@ -3,25 +3,31 @@ import axiosInstance from "./axiosInstance";
 import { ApiResponse } from "@/shared/types";
 
 const GET_ALL_COLLEGES = "/colleges";
-const GET_DEPARTMENTS = "/departments?collegeName";
+const GET_DEPARTMENTS = "/departments";
 const GET_SEARCHED_DEPARTMENT_URL = "/departments/search";
 
-// 단과대 조회
-interface GetCollegesDepartmentsResponse extends ApiResponse {
+export interface GetCollegesDepartmentsResponse extends ApiResponse {
   data: { name: string[] };
 }
+
+// 단과대 조회
 export const getAllCollegesApi = async () => {
   const response =
     await axiosInstance.get<GetCollegesDepartmentsResponse>(GET_ALL_COLLEGES);
-  return response.data.data.name;
+  return response.data;
 };
 
 // 해당 단과대 내 학과 조회
 export const getCollegeDepartmentsApi = async (college: string) => {
   const response = await axiosInstance.get<GetCollegesDepartmentsResponse>(
-    `${GET_DEPARTMENTS}=${college}`,
+    GET_DEPARTMENTS,
+    {
+      params: {
+        collegeName: college,
+      },
+    },
   );
-  return response.data.data.name;
+  return response.data;
 };
 
 export interface DepartmentType {
@@ -29,7 +35,7 @@ export interface DepartmentType {
   college: string;
 }
 
-interface SearchedDepartmentsResponse extends ApiResponse {
+export interface SearchedDepartmentsResponse extends ApiResponse {
   data: DepartmentType[];
 }
 
@@ -39,5 +45,5 @@ export const getSearchedDepartmentsApi = async (searchText: string) => {
     { params: { query: searchText } },
   );
 
-  return response.data.data;
+  return response.data;
 };
