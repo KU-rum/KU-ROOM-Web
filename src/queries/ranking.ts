@@ -57,6 +57,7 @@ export const useFriendSharingRankingQuery = (friendId: string) => {
   } = useQuery<RankingResponse>({
     queryKey: RANKING_QUERY_KEY.FRIEND(friendId),
     queryFn: () => getFriendRankingApi(friendId),
+    enabled: !!friendId,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
   });
@@ -75,10 +76,8 @@ export const useFriendSharingRankingQuery = (friendId: string) => {
   };
 };
 
-export const useLocationTotalRankQuery = (placeId: number) => {
+export const useLocationTop3RankQuery = (placeId: number) => {
   const toast = useToast();
-
-  const { ref: listBottomRef, inView } = useInView();
 
   const {
     data: top3RankResponse,
@@ -87,9 +86,33 @@ export const useLocationTotalRankQuery = (placeId: number) => {
   } = useQuery<LocationTop3RankResponse>({
     queryKey: RANKING_QUERY_KEY.LOCATION_TOP3(placeId),
     queryFn: () => getLocationTop3RankApi(placeId),
+    enabled: !!placeId,
     staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 30,
   });
+
+  const top3RankData = top3RankResponse?.data;
+
+  useEffect(() => {
+    if (isTop3Error) {
+      toast.error("랭킹 조회 중 오류가 발생했습니다.");
+    }
+  }, [isTop3Error, toast]);
+
+  return {
+    top3RankData,
+    isTop3Pending,
+    isTop3Error,
+  };
+};
+
+export const useLocationTotalRankQuery = (placeId: number) => {
+  const toast = useToast();
+
+  const { ref: listBottomRef, inView } = useInView();
+
+  const { top3RankData, isTop3Pending, isTop3Error } =
+    useLocationTop3RankQuery(placeId);
 
   const {
     data: rowTotalRankResponse,
@@ -110,6 +133,7 @@ export const useLocationTotalRankQuery = (placeId: number) => {
         return lastPage.nextCursor;
       }
     },
+    enabled: !!placeId,
     staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 30,
   });
@@ -122,11 +146,11 @@ export const useLocationTotalRankQuery = (placeId: number) => {
   } = useQuery<LocationMyRankResponse>({
     queryKey: RANKING_QUERY_KEY.LOCATION_USER(placeId),
     queryFn: () => getLocationMyRankApi(placeId),
+    enabled: !!placeId,
     staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 30,
   });
 
-  const top3RankData = top3RankResponse?.data;
   const totalRankData =
     rowTotalRankResponse?.pages.flatMap((page) => page?.ranks || []) || [];
   const myRankData = myRankResponse?.data;

@@ -4,7 +4,7 @@ import axiosInstance from "./axiosInstance";
 
 import { ApiResponse } from "@/shared/types";
 
-const GET_USER_SHARING_RANKING = "places/users/ranks";
+const GET_USER_SHARING_RANKING = "/places/users/ranks";
 const FRIEND_RANKING = (friendId: string) => `/places/users/${friendId}/ranks`;
 const LOCATION_RANK_URL = {
   TOP3: (placeId: number) => `/places/${placeId}/top`,

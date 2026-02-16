@@ -23,5 +23,6 @@ export {
 export {
   useUserSharingRankingQuery,
   useFriendSharingRankingQuery,
+  useLocationTop3RankQuery,
   useLocationTotalRankQuery,
 } from "./ranking";

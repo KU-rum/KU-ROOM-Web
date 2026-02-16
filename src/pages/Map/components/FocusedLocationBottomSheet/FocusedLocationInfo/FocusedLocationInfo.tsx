@@ -7,7 +7,7 @@ import Rank2Icon from "@assets/icon/ranking/rank2.png";
 import Rank3Icon from "@assets/icon/ranking/rank3.png";
 import ArrowRight from "@assets/nav/arrowRight.svg";
 import { DetailPlaceData } from "@/shared/types";
-import { useLocationTotalRankQuery } from "@/queries";
+import { useLocationTop3RankQuery } from "@/queries";
 
 import styles from "./FocusedLocationInfo.module.css";
 
@@ -24,7 +24,7 @@ const FocusedLocationInfo: React.FC<FocusedLocationInfo> = ({
 }) => {
   const navigate = useNavigate();
 
-  const { top3RankData, isTop3Pending } = useLocationTotalRankQuery(
+  const { top3RankData, isTop3Pending } = useLocationTop3RankQuery(
     detailInfo?.placeId,
   );
 
