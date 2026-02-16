@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 
-import Header from "@/shared/components/Header/Header";
+import Header from "@components/Header/Header";
+import { LocationTop3RankType } from "@/shared/types/rankTypes";
+import { useLocationTotalRankQuery } from "@/queries";
+
+import MyRankSection from "./components/MyRankSection/MyRankSection";
+import TopRankSection from "./components/TopRankSection/TopRankSection";
+import LowRankSection from "./components/LowRankSection/LowRankSection";
+import TopRankModal from "./components/TopRankModal/TopRankModal";
 
 import styles from "./LocationTotalRank.module.css";
-import { LocationTop3RankType } from "@/shared/types/rankTypes";
-import { useLocationTotalRank } from "./hooks/use-location-total-rank";
-import TopRankModal from "@pages/Map/LocationTotalRank/components/TopRankModal/TopRankModal";
-import TopRankSection from "@pages/Map/LocationTotalRank/components/TopRankSection/TopRankSection";
-import LowRankSection from "@pages/Map/LocationTotalRank/components/LowRankSection/LowRankSection";
-import MyRankSection from "./components/MyRankSection/MyRankSection";
 
 const LocationTotalRank = () => {
   const { placeName } = useParams();
@@ -28,7 +29,7 @@ const LocationTotalRank = () => {
     totalRankData,
     myRankData,
     isPagePending,
-  } = useLocationTotalRank(placeId);
+  } = useLocationTotalRankQuery(placeId);
 
   const [modalState, setModalState] = useState(false);
   const [modalRankData, setModalRankData] = useState<

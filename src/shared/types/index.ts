@@ -9,4 +9,8 @@ export type {
   DetailPlaceData,
   MarkerData,
 } from "./mapTypes";
-export type { RankListType } from "./rankTypes";
+export type {
+  RankListType,
+  LocationTop3RankType,
+  LocationTotalRankType,
+} from "./rankTypes";

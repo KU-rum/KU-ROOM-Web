@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import arrowRight from "@assets/nav/arrowRight.svg";
@@ -6,37 +5,20 @@ import rank1Icon from "@assets/icon/ranking/rank1.png";
 import rank2Icon from "@assets/icon/ranking/rank2.png";
 import rank3Icon from "@assets/icon/ranking/rank3.png";
 import kuroomEmptyIcon from "@assets/icon/kuroom-icon/kuroom-gray.svg";
-import { getSharingRanking } from "@apis/home";
-import { RankListType } from "@/shared/types";
+import { useUserSharingRankingQuery } from "@/queries";
 
-import styles from "./MyLocationRanking.module.css";
+import styles from "./HomeRanking.module.css";
+import Loading from "@/shared/components/Loading/Loading";
 
-type Props = {
-  updateTrigger: boolean;
-};
-
-const MyLocationRanking = ({ updateTrigger }: Props) => {
+const HomeRanking = () => {
   const navigate = useNavigate();
 
-  const [myRankData, setMyRankData] = useState<RankListType[]>([]);
-
-  const getMyLocationRanking = async () => {
-    try {
-      const response = await getSharingRanking();
-      console.log(response);
-      setMyRankData(response);
-    } catch (error) {
-      console.error("내 장소 랭킹 조회 중 에러", error);
-    }
-  };
+  const { userRankingData, isPendingUserRankingData } =
+    useUserSharingRankingQuery();
 
   const goToMyLocationRankingPage = () => {
     navigate("/mylocationranking");
   };
-
-  useEffect(() => {
-    getMyLocationRanking();
-  }, [updateTrigger]);
 
   return (
     <div className={styles.MyLocationRankingBackground}>
@@ -55,9 +37,11 @@ const MyLocationRanking = ({ updateTrigger }: Props) => {
             onClick={goToMyLocationRankingPage}
           />
         </div>
-        {myRankData.length > 0 ? (
+        {isPendingUserRankingData ? (
+          <Loading type="section" sectionHeight={154} />
+        ) : userRankingData && userRankingData.length > 0 ? (
           <div className={styles.RankingContentWrapper}>
-            {myRankData.map((item, index) => (
+            {userRankingData.map((item, index) => (
               <div
                 key={index}
                 className={`${styles.EachRankingContentContainer} ${
@@ -112,4 +96,4 @@ const MyLocationRanking = ({ updateTrigger }: Props) => {
   );
 };
 
-export default MyLocationRanking;
+export default HomeRanking;

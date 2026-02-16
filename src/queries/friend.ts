@@ -9,12 +9,15 @@ import {
   GetUserFriendListResponse,
 } from "@apis/friend";
 import { FRIEND_QUERY_KEY, USER_LIST_QUERY_KEY } from "@/queryKey";
+import { useEffect } from "react";
 
 export const useFriendListQuery = () => {
+  const toast = useToast();
   const {
     data,
     isPending: isPendingFriendList,
-    isError: isErrorFriendList,
+    isError,
+    error,
   } = useQuery<GetUserFriendListResponse>({
     queryKey: FRIEND_QUERY_KEY.DEFAULT,
     queryFn: () => getFriendListApi(),
@@ -23,10 +26,15 @@ export const useFriendListQuery = () => {
 
   const friendListData = data?.data;
 
+  useEffect(() => {
+    if (isError) {
+      toast.error(`유저 정보 조회 오류 : ${error.message}`);
+    }
+  }, [isError, toast, error]);
+
   return {
     friendListData,
     isPendingFriendList,
-    isErrorFriendList,
   };
 };
 
