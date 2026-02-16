@@ -114,6 +114,7 @@ export const useLocationTotalRankQuery = (placeId: number) => {
     gcTime: 1000 * 60 * 30,
   });
 
+  // TODO: 위치 공유 취소 시 캐시 초기화. map 관련 api 리팩토링 시 추가
   const {
     data: myRankResponse,
     isPending: isMyRankPending,
