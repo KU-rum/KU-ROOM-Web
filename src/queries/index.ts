@@ -13,3 +13,5 @@ export {
   useUserDepartmentMutation,
   useProfileImageMutation,
 } from "./profile";
+
+export { useSearchedDepartmentQuery } from "./department";

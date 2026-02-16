@@ -7,38 +7,21 @@ const GET_DEPARTMENTS = "/departments?collegeName";
 const GET_SEARCHED_DEPARTMENT_URL = "/departments/search";
 
 // 단과대 조회
-interface GetCollegesDepartmentsResponse {
-  code: number;
-  status: string;
-  message: string;
+interface GetCollegesDepartmentsResponse extends ApiResponse {
   data: { name: string[] };
 }
-export const getAllColleges = async () => {
-  try {
-    const response =
-      await axiosInstance.get<GetCollegesDepartmentsResponse>(GET_ALL_COLLEGES);
-    // console.log(response.data.data.name);
-    return response.data.data.name;
-  } catch (error: any) {
-    console.error("단과대 조회 실패:", error.response?.data || error.message);
-    throw new Error(
-      error.response?.data?.message || "단과대 조회 중 오류 발생",
-    );
-  }
+export const getAllCollegesApi = async () => {
+  const response =
+    await axiosInstance.get<GetCollegesDepartmentsResponse>(GET_ALL_COLLEGES);
+  return response.data.data.name;
 };
 
 // 해당 단과대 내 학과 조회
-export const getDepartments = async (college: string) => {
-  try {
-    const response = await axiosInstance.get<GetCollegesDepartmentsResponse>(
-      `${GET_DEPARTMENTS}=${college}`,
-    );
-    // console.log(response.data.data.name);
-    return response.data.data.name;
-  } catch (error: any) {
-    console.error("학과 조회 실패:", error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || "학과 조회 중 오류 발생");
-  }
+export const getCollegeDepartmentsApi = async (college: string) => {
+  const response = await axiosInstance.get<GetCollegesDepartmentsResponse>(
+    `${GET_DEPARTMENTS}=${college}`,
+  );
+  return response.data.data.name;
 };
 
 export interface DepartmentType {

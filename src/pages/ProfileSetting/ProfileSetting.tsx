@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { signupApi } from "@apis/signup";
 import { createSocialUserApi } from "@apis/auth";
-import { getAllColleges, getDepartments } from "@apis/department";
+import { getAllCollegesApi, getCollegeDepartmentsApi } from "@apis/department";
 import Button from "@components/Button/Button";
 import InputBar from "@components/InputBar/InputBar";
 import Header from "@components/Header/Header";
@@ -52,7 +52,7 @@ const ProfileSetting: React.FC = () => {
 
   const fetchToGetColleges = async () => {
     try {
-      const response = await getAllColleges();
+      const response = await getAllCollegesApi();
       setColleges(response);
     } catch (error) {
       console.error("단과대학 목록 불러오기 실패", error);
@@ -61,7 +61,7 @@ const ProfileSetting: React.FC = () => {
 
   const fetchToGetDepartments = async (college: string) => {
     try {
-      const response = await getDepartments(college);
+      const response = await getCollegeDepartmentsApi(college);
       setDepartments(response);
     } catch (error) {
       console.error("학과 목록 불러오기 실패", error);

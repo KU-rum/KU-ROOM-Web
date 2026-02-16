@@ -3,11 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 
 import useToast from "@hooks/use-toast";
 import useDebounce from "@hooks/use-debounce";
-import { DepartmentType, getSearchedDepartmentsApi } from "@apis/department";
+import { getSearchedDepartmentsApi } from "@apis/department";
+import { DEPARTMENT_QUERY_KEY } from "@/queryKey";
 
-import { MYPAGE_QUERY_KEY } from "../../querykey";
-
-export const useSearchDepartments = (searchText: string) => {
+export const useSearchedDepartmentQuery = (searchText: string) => {
   const toast = useToast();
   const debouncedText = useDebounce(searchText, 300);
 
@@ -16,12 +15,12 @@ export const useSearchDepartments = (searchText: string) => {
     isPending: isPendingSearchedDepartments,
     isError,
     error,
-  } = useQuery<DepartmentType[]>({
-    queryKey: MYPAGE_QUERY_KEY.SEARCHED_DEPARTMENTS(debouncedText),
-    queryFn: () => getSearchedDepartmentsApi(debouncedText),
+  } = useQuery({
+    queryKey: DEPARTMENT_QUERY_KEY.SEARCHED_DEPARTMENT(searchText),
+    queryFn: () => getSearchedDepartmentsApi(searchText),
     enabled: !!debouncedText.trim(),
-    staleTime: 1000 * 60 * 3,
-    retry: 3,
+    staleTime: 1000 * 60 * 30,
+    gcTime: 1000 * 60 * 60,
   });
 
   useEffect(() => {
