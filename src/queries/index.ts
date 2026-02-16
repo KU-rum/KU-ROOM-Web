@@ -13,3 +13,9 @@ export {
   useUserDepartmentMutation,
   useProfileImageMutation,
 } from "./profile";
+
+export {
+  useCollegesQuery,
+  useCollegeDepartmentsQuery,
+  useSearchedDepartmentQuery,
+} from "./department";
