@@ -1,3 +1,4 @@
+// tanstack query 리팩토링 완료
 // 단과대 및 학과 조회 api
 import axiosInstance from "./axiosInstance";
 import { ApiResponse } from "@/shared/types";
@@ -38,7 +39,7 @@ export interface DepartmentType {
 export interface SearchedDepartmentsResponse extends ApiResponse {
   data: DepartmentType[];
 }
-
+// 학과 검색 api
 export const getSearchedDepartmentsApi = async (searchText: string) => {
   const response = await axiosInstance.get<SearchedDepartmentsResponse>(
     GET_SEARCHED_DEPARTMENT_URL,
