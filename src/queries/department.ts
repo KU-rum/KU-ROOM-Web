@@ -79,8 +79,8 @@ export const useSearchedDepartmentQuery = (searchText: string) => {
     isError,
     error,
   } = useQuery<SearchedDepartmentsResponse>({
-    queryKey: DEPARTMENT_QUERY_KEY.SEARCHED_DEPARTMENT(searchText),
-    queryFn: () => getSearchedDepartmentsApi(searchText),
+    queryKey: DEPARTMENT_QUERY_KEY.SEARCHED_DEPARTMENT(debouncedText),
+    queryFn: () => getSearchedDepartmentsApi(debouncedText),
     enabled: !!debouncedText.trim(),
     staleTime: 1000 * 60 * 30,
     gcTime: 1000 * 60 * 60,
