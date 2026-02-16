@@ -3,10 +3,10 @@ import ReactModal from "react-modal";
 import Rank1Icon from "@assets/icon/ranking/rank1.png";
 import Rank2Icon from "@assets/icon/ranking/rank2.png";
 import Rank3Icon from "@assets/icon/ranking/rank3.png";
+import Button from "@components/Button/Button";
+import { LocationTop3RankType } from "@/shared/types";
 
 import styles from "./TopRankModal.module.css";
-import Button from "@/shared/components/Button/Button";
-import { LocationTop3RankType } from "@/shared/types/rankTypes";
 
 interface TopRankModalProps {
   modalState: boolean;

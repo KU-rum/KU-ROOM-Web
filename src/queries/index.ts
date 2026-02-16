@@ -19,3 +19,9 @@ export {
   useCollegeDepartmentsQuery,
   useSearchedDepartmentQuery,
 } from "./department";
+
+export {
+  useUserSharingRankingQuery,
+  useFriendSharingRankingQuery,
+  useLocationTotalRankQuery,
+} from "./ranking";

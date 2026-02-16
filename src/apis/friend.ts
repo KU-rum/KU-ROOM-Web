@@ -1,13 +1,12 @@
 // tanstack query 리팩토링 완료
 // 친구 관련 api
-import { ApiResponse, RankListType } from "@/shared/types";
+import { ApiResponse } from "@/shared/types";
 import axiosInstance from "./axiosInstance";
 
 const GET_ALL_FRIENDS = "/friends/list";
 const DELETE_FRIEND = "/friends/";
 const BLOCK_FRIEND = "/friends/block";
 const REPORT_FRIEND = "/friends/report";
-const FRIEND_RANKING = (friendId: string) => `/places/users/${friendId}/ranks`;
 
 interface UserFriendData {
   id: number;
@@ -40,6 +39,7 @@ export const friendBlockApi = async (reportId: number) => {
   });
   return response.data;
 };
+
 // 친구 신고 api
 export const friendReportApi = async (reportId: number, reason: string) => {
   const response = await axiosInstance.patch<ApiResponse>(REPORT_FRIEND, {
@@ -47,17 +47,4 @@ export const friendReportApi = async (reportId: number, reason: string) => {
     reason: reason,
   });
   return response.data;
-};
-
-// 친구의 위치 랭킹 api
-interface FriendRankingResponse extends ApiResponse {
-  data: RankListType[];
-}
-
-export const getFriendRankingData = async (friendId: string) => {
-  const response = await axiosInstance.get<FriendRankingResponse>(
-    FRIEND_RANKING(friendId),
-  );
-
-  return response.data.data;
 };
