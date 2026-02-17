@@ -7,18 +7,21 @@ import {
   addDepartmentApi,
   changeNicknameApi,
   changePwAfterLoginApi,
-  ChangePwAfterLoginRequest,
   changePwBeforeLoginApi,
-  type ChangePwBeforeLoginRequest,
   deleteDepartmentApi,
   getProfileImagePresignedUrlApi,
   getUserProfileApi,
   updateProfileImageApi,
   uploadToProfileImagePresignedUrlApi,
-  UserProfileResponse,
 } from "@apis/profile";
+import {
+  ChangePwAfterLoginRequest,
+  ChangePwBeforeLoginRequest,
+  UserProfileResponse,
+} from "@apis/types";
+
 import { PROFILE_QUERY_KEY } from "@/queryKey/profile";
-import { NOTICE_QUERY_KEY } from "@/pages/Notice/queryKey";
+import { NOTICE_QUERY_KEY } from "@pages/Notice/queryKey";
 
 export const useUserProfileQuery = () => {
   const navigate = useNavigate();

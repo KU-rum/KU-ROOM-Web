@@ -9,11 +9,13 @@ import {
   getLocationTop3RankApi,
   getLocationTotalRankApi,
   getUserSharingRankingApi,
+} from "@apis/ranking";
+import {
   LocationMyRankResponse,
   LocationTop3RankResponse,
   LocationTotalRankResponseData,
-  type RankingResponse,
-} from "@apis/ranking";
+  RankingResponse,
+} from "@apis/types";
 import { RANKING_QUERY_KEY } from "@/queryKey";
 
 // TODO: 위치 공유 취소 시 캐시 초기화. map 관련 api 리팩토링 시 추가

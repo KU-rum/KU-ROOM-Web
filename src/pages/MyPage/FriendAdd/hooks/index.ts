@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
+import useToast from "@hooks/use-toast";
 import {
   useReceivedRequestListQuery,
   useSearchedUserListQuery,
   useSentRequestListQuery,
+  useFriendRequestMutation,
 } from "@/queries";
-import { useFriendRequestMutation } from "@/queries/user-list";
-import useToast from "@hooks/use-toast";
 
 export default function useFriendAdd() {
   const toast = useToast();

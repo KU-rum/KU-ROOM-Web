@@ -1,7 +1,7 @@
 import React from "react";
 
+import { DepartmentType } from "@apis/types";
 import deleteIcon from "@assets/icon/deleteIcon.svg";
-import { DepartmentType } from "@apis/department";
 
 import styles from "./UserDepartmentList.module.css";
 

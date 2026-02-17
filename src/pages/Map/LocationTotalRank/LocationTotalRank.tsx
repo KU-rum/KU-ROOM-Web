@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 
+import { LocationTop3RankType } from "@apis/types";
 import Header from "@components/Header/Header";
-import { LocationTop3RankType } from "@/shared/types/rankTypes";
 import { useLocationTotalRankQuery } from "@/queries";
 
 import MyRankSection from "./components/MyRankSection/MyRankSection";

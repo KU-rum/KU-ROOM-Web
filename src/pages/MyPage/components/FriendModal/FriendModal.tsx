@@ -3,10 +3,9 @@ import ReactModal from "react-modal";
 
 import cautionIcon from "@assets/icon/editFriend/cautionIcon.svg";
 import Button from "@components/Button/Button";
-import { useEditFriendMutation } from "@/queries";
+import { useEditFriendMutation, useRespondToRequestMutation } from "@/queries";
 
 import styles from "./FriendModal.module.css";
-import { useRespondToRequestMutation } from "@/queries/user-list";
 
 interface FriendModalProps {
   editFriend: string;
