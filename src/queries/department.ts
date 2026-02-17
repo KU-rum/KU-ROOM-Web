@@ -6,10 +6,12 @@ import useDebounce from "@hooks/use-debounce";
 import {
   getAllCollegesApi,
   getCollegeDepartmentsApi,
-  type GetCollegesDepartmentsResponse,
   getSearchedDepartmentsApi,
-  type SearchedDepartmentsResponse,
 } from "@apis/department";
+import {
+  GetCollegesDepartmentsResponse,
+  SearchedDepartmentsResponse,
+} from "@apis/types";
 import { DEPARTMENT_QUERY_KEY } from "@/queryKey";
 
 export const useCollegesQuery = () => {

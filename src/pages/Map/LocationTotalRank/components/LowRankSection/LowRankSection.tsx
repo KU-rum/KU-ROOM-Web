@@ -1,4 +1,4 @@
-import { LocationTotalRankType } from "@/shared/types/rankTypes";
+import { LocationTotalRankType } from "@apis/types";
 import styles from "./LowRankSection.module.css";
 
 interface LowRankSectionProps {

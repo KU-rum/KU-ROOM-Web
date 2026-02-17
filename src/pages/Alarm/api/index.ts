@@ -1,7 +1,7 @@
 import axiosInstance from "@apis/axiosInstance";
-import { ApiResponse } from "@/shared/types";
+import { ApiResponse } from "@apis/types";
+import { PAGE_SIZE } from "@constant/page";
 import { AlarmCategory, AlarmDataType } from "@pages/Alarm/types";
-import { PAGE_SIZE } from "@/shared/constant/page";
 
 const ALARM_API_URL = {
   BASE: "/alarm",

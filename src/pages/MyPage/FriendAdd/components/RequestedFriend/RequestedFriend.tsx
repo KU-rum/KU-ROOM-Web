@@ -1,8 +1,8 @@
+import { FriendRequestReceivedData } from "@apis/types";
 import defaultImg from "@assets/defaultProfileImg.svg";
 import deleteIcon from "@assets/icon/deleteIcon.svg";
 
 import styles from "./RequestedFriend.module.css";
-import { FriendRequestReceivedData } from "@apis/user-list";
 
 interface RequestedFriendProps {
   sentRequestList: FriendRequestReceivedData[] | undefined;

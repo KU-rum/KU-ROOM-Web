@@ -4,6 +4,8 @@ export {
   useSearchedUserListQuery,
   useSentRequestListQuery,
   useReceivedRequestListQuery,
+  useFriendRequestMutation,
+  useRespondToRequestMutation,
 } from "./user-list";
 
 export {

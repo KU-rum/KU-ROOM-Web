@@ -1,0 +1,41 @@
+export interface ApiResponse {
+  code: number;
+  status: string;
+  message: string;
+}
+
+export type {
+  DepartmentType,
+  GetCollegesDepartmentsResponse,
+  SearchedDepartmentsResponse,
+} from "./department";
+
+export type { GetUserFriendListResponse } from "./friend";
+
+export type {
+  UserProfileResponseData,
+  UserProfileResponse,
+  ChangeProfileResponse,
+  ChangePwBeforeLoginRequest,
+  ChangePwAfterLoginRequest,
+  GetProfileImagePresignedUrlData,
+  GetProfileImagePresignedUrlResponse,
+} from "./profile";
+
+export type {
+  RankListType,
+  LocationTop3RankResponse,
+  LocationTotalRankType,
+  RankingResponse,
+  LocationTop3RankType,
+  LocationTotalRankResponseData,
+  LocationTotalRankResponse,
+  LocationMyRankResponse,
+} from "./ranking";
+
+export type {
+  SearchedUserData,
+  SearchedUserListResponse,
+  FriendRequestReceivedData,
+  GetFriendRequestReceivedListResponse,
+} from "./user-list";

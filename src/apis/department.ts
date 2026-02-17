@@ -1,15 +1,14 @@
 // tanstack query 리팩토링 완료
 // 단과대 및 학과 조회 api
 import axiosInstance from "./axiosInstance";
-import { ApiResponse } from "@/shared/types";
+import {
+  GetCollegesDepartmentsResponse,
+  SearchedDepartmentsResponse,
+} from "./types";
 
 const GET_ALL_COLLEGES = "/colleges";
 const GET_DEPARTMENTS = "/departments";
 const GET_SEARCHED_DEPARTMENT_URL = "/departments/search";
-
-export interface GetCollegesDepartmentsResponse extends ApiResponse {
-  data: { name: string[] };
-}
 
 // 단과대 조회
 export const getAllCollegesApi = async () => {
@@ -31,14 +30,6 @@ export const getCollegeDepartmentsApi = async (college: string) => {
   return response.data;
 };
 
-export interface DepartmentType {
-  department: string;
-  college: string;
-}
-
-export interface SearchedDepartmentsResponse extends ApiResponse {
-  data: DepartmentType[];
-}
 // 학과 검색 api
 export const getSearchedDepartmentsApi = async (searchText: string) => {
   const response = await axiosInstance.get<SearchedDepartmentsResponse>(

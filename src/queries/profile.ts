@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import useToast from "@hooks/use-toast";
@@ -7,21 +6,23 @@ import {
   addDepartmentApi,
   changeNicknameApi,
   changePwAfterLoginApi,
-  ChangePwAfterLoginRequest,
   changePwBeforeLoginApi,
-  type ChangePwBeforeLoginRequest,
   deleteDepartmentApi,
   getProfileImagePresignedUrlApi,
   getUserProfileApi,
   updateProfileImageApi,
   uploadToProfileImagePresignedUrlApi,
-  UserProfileResponse,
 } from "@apis/profile";
-import { PROFILE_QUERY_KEY } from "@/queryKey/profile";
-import { NOTICE_QUERY_KEY } from "@/pages/Notice/queryKey";
+import {
+  ChangePwAfterLoginRequest,
+  ChangePwBeforeLoginRequest,
+  UserProfileResponse,
+} from "@apis/types";
+
+import { PROFILE_QUERY_KEY } from "@/queryKey";
+import { NOTICE_QUERY_KEY } from "@pages/Notice/queryKey";
 
 export const useUserProfileQuery = () => {
-  const navigate = useNavigate();
   const toast = useToast();
   const {
     data,
@@ -40,9 +41,8 @@ export const useUserProfileQuery = () => {
   useEffect(() => {
     if (isError) {
       toast.error(`유저 정보 조회 오류 : ${error.message}`);
-      navigate("/login");
     }
-  }, [isError, toast, error, navigate]);
+  }, [isError, toast, error]);
 
   return {
     userProfileData,

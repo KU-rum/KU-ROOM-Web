@@ -2,7 +2,11 @@
 // 친구 되기 전 유저 관련 api
 
 import axiosInstance from "./axiosInstance";
-import { ApiResponse } from "@/shared/types";
+import {
+  ApiResponse,
+  GetFriendRequestReceivedListResponse,
+  SearchedUserListResponse,
+} from "./types";
 
 const SEARCH_NEW_FRIENDS = "/friends/search";
 const REQUEST_FRIEND = "/friends/request";
@@ -11,19 +15,7 @@ const GET_RECEIVED_REQUESTS = "/friends/requests/received";
 const ACCEPT_REQUEST = "/friends/accept";
 const REJECT_REQUEST = "/friends/reject";
 
-export interface SearchedUserData {
-  userId: number;
-  nickname: string;
-  imageUrl: string;
-  requestSent: boolean;
-  requestReceived: boolean;
-  isFriend: boolean;
-}
-
 // 친구 요청할 닉네임 검색 api
-export interface SearchedUserListResponse extends ApiResponse {
-  data: SearchedUserData[];
-}
 export const getSearchedUserListApi = async (nickname: string) => {
   const response = await axiosInstance.get<SearchedUserListResponse>(
     SEARCH_NEW_FRIENDS,
@@ -37,17 +29,7 @@ export const getSearchedUserListApi = async (nickname: string) => {
   return response.data;
 };
 
-export interface FriendRequestReceivedData {
-  requestId: number;
-  fromUserId: number;
-  fromUserNickname: string;
-  imageUrl: string;
-}
-
 // 보낸 요청 목록 조회 api
-export interface GetFriendRequestReceivedListResponse extends ApiResponse {
-  data: FriendRequestReceivedData[];
-}
 export const getSentRequestListApi = async () => {
   const response =
     await axiosInstance.get<GetFriendRequestReceivedListResponse>(

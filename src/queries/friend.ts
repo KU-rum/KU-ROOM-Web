@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import useToast from "@hooks/use-toast";
@@ -6,10 +7,9 @@ import {
   friendDeleteApi,
   friendReportApi,
   getFriendListApi,
-  GetUserFriendListResponse,
 } from "@apis/friend";
+import { GetUserFriendListResponse } from "@apis/types";
 import { FRIEND_QUERY_KEY, USER_LIST_QUERY_KEY } from "@/queryKey";
-import { useEffect } from "react";
 
 export const useFriendListQuery = () => {
   const toast = useToast();
@@ -28,7 +28,7 @@ export const useFriendListQuery = () => {
 
   useEffect(() => {
     if (isError) {
-      toast.error(`유저 정보 조회 오류 : ${error.message}`);
+      toast.error(`친구 목록 조회 오류 : ${error.message}`);
     }
   }, [isError, toast, error]);
 

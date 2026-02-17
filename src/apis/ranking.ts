@@ -1,8 +1,13 @@
+// tanstack query 리팩토링 완료
 // 랭킹 관련 api
-import { PAGE_SIZE } from "@/shared/constant/page";
 import axiosInstance from "./axiosInstance";
-
-import { ApiResponse } from "@/shared/types";
+import { PAGE_SIZE } from "@constant/page";
+import {
+  LocationMyRankResponse,
+  LocationTop3RankResponse,
+  LocationTotalRankResponse,
+  RankingResponse,
+} from "./types";
 
 const GET_USER_SHARING_RANKING = "/places/users/ranks";
 const FRIEND_RANKING = (friendId: string) => `/places/users/${friendId}/ranks`;
@@ -11,27 +16,6 @@ const LOCATION_RANK_URL = {
   TOTAL: (placeId: number) => `/places/${placeId}/ranks`,
   ME: (placeId: number) => `/places/${placeId}/ranks/me`,
 };
-
-export interface RankListType {
-  name: string[];
-  sharingCount: number;
-}
-
-export interface LocationTop3RankType {
-  ranking: number;
-  nickname: string[];
-  sharingCount: number;
-}
-
-export interface LocationTotalRankType {
-  ranking: number;
-  nickname: string;
-  sharingCount: number;
-}
-
-export interface RankingResponse extends ApiResponse {
-  data: RankListType[];
-}
 
 // 유저의 내 장소 랭킹 조회 api
 export const getUserSharingRankingApi = async () => {
@@ -50,11 +34,7 @@ export const getFriendRankingApi = async (friendId: string) => {
   return response.data;
 };
 
-// 위치별 top3  조회
-export interface LocationTop3RankResponse extends ApiResponse {
-  data: LocationTop3RankType[];
-}
-
+// 위치별 top3 조회 api
 export const getLocationTop3RankApi = async (placeId: number) => {
   const response = await axiosInstance.get<LocationTop3RankResponse>(
     LOCATION_RANK_URL.TOP3(placeId),
@@ -63,16 +43,7 @@ export const getLocationTop3RankApi = async (placeId: number) => {
   return response.data;
 };
 
-export interface LocationTotalRankResponseData {
-  ranks: LocationTotalRankType[];
-  hasNext: boolean;
-  nextCursor: string;
-}
-export interface LocationTotalRankResponse extends ApiResponse {
-  data: LocationTotalRankResponseData;
-}
-
-// 위치별 랭킹 조회 무한스크롤
+// 위치별 랭킹 조회 무한스크롤 api
 export const getLocationTotalRankApi = async (
   placeId: number,
   lastKnown?: string,
@@ -85,11 +56,7 @@ export const getLocationTotalRankApi = async (
   return response.data.data;
 };
 
-export interface LocationMyRankResponse extends ApiResponse {
-  data: LocationTotalRankType;
-}
-
-// 위치별 내 랭킹 조회
+// 위치별 내 랭킹 조회 api
 export const getLocationMyRankApi = async (placeId: number) => {
   const response = await axiosInstance.get<LocationMyRankResponse>(
     LOCATION_RANK_URL.ME(placeId),

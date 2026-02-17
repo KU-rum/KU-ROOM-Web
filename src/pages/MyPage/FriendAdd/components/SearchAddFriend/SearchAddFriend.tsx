@@ -1,11 +1,11 @@
 import React from "react";
 
+import { SearchedUserData } from "@apis/types";
 import noResultIcon from "@assets/icon/noResultSearch.svg";
 import defaultImg from "@assets/defaultProfileImg.svg";
 import Button from "@components/Button/Button";
 
 import styles from "./SearchAddFriend.module.css";
-import { SearchedUserData } from "@apis/user-list";
 
 interface SearchAddFriendProps {
   searchNickname: string;

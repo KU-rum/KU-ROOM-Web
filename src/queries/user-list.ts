@@ -1,20 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import useToast from "@hooks/use-toast";
 import useDebounce from "@hooks/use-debounce";
-import { FRIEND_QUERY_KEY, USER_LIST_QUERY_KEY } from "@/queryKey";
 
 import {
   acceptRequestApi,
   cancelRequestApi,
-  GetFriendRequestReceivedListResponse,
   getReceivedRequestListApi,
   getSearchedUserListApi,
   getSentRequestListApi,
   rejectRequestApi,
   requestFriendApi,
-  SearchedUserListResponse,
 } from "@apis/user-list";
-import useToast from "@/shared/hooks/use-toast";
+import {
+  GetFriendRequestReceivedListResponse,
+  SearchedUserListResponse,
+} from "@apis/types";
+import { FRIEND_QUERY_KEY, USER_LIST_QUERY_KEY } from "@/queryKey";
 
 export const useSearchedUserListQuery = (nickname: string) => {
   const debouncedText = useDebounce(nickname, 300);

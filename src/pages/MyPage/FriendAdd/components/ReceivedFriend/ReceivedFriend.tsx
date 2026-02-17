@@ -1,6 +1,6 @@
 import React from "react";
 
-import { FriendRequestReceivedData } from "@apis/user-list";
+import { FriendRequestReceivedData } from "@apis/types";
 import defaultImg from "@assets/defaultProfileImg.svg";
 import Button from "@components/Button/Button";
 

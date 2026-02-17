@@ -1,5 +1,5 @@
 import axiosInstance from "@apis/axiosInstance";
-import { ApiResponse } from "@/shared/types";
+import { ApiResponse } from "@apis/types";
 
 const ALARM_SETTING_API_URL = {
   ALARM_ACTIVE_STATUS: "/alarm/disable",
@@ -13,7 +13,7 @@ interface GetAlarmActiveStatusResponse extends ApiResponse {
 
 export const getAlarmActiveStatusApi = async () => {
   const response = await axiosInstance.get<GetAlarmActiveStatusResponse>(
-    ALARM_SETTING_API_URL.ALARM_ACTIVE_STATUS
+    ALARM_SETTING_API_URL.ALARM_ACTIVE_STATUS,
   );
 
   return response.data.data.disabledAlarmType;
@@ -34,7 +34,7 @@ export const updateAlarmActiveStatusApi = async (alarmTypes: string[]) => {
     ALARM_SETTING_API_URL.ALARM_ACTIVE_STATUS,
     {
       alarmTypes,
-    }
+    },
   );
 
   return response.data.data;
