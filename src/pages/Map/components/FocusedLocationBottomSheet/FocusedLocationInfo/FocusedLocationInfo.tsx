@@ -25,7 +25,7 @@ const FocusedLocationInfo: React.FC<FocusedLocationInfo> = ({
   const navigate = useNavigate();
 
   const { top3RankData, isTop3Pending } = useLocationTop3RankQuery(
-    detailInfo?.placeId,
+    detailInfo.placeId,
   );
 
   const handleNavigateToTotalRank = () => {

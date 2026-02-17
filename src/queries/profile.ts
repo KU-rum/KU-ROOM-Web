@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import useToast from "@hooks/use-toast";
@@ -20,11 +19,10 @@ import {
   UserProfileResponse,
 } from "@apis/types";
 
-import { PROFILE_QUERY_KEY } from "@/queryKey/profile";
+import { PROFILE_QUERY_KEY } from "@/queryKey";
 import { NOTICE_QUERY_KEY } from "@pages/Notice/queryKey";
 
 export const useUserProfileQuery = () => {
-  const navigate = useNavigate();
   const toast = useToast();
   const {
     data,
@@ -43,9 +41,8 @@ export const useUserProfileQuery = () => {
   useEffect(() => {
     if (isError) {
       toast.error(`유저 정보 조회 오류 : ${error.message}`);
-      navigate("/login");
     }
-  }, [isError, toast, error, navigate]);
+  }, [isError, toast, error]);
 
   return {
     userProfileData,

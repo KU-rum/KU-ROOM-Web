@@ -28,7 +28,7 @@ export const useFriendListQuery = () => {
 
   useEffect(() => {
     if (isError) {
-      toast.error(`유저 정보 조회 오류 : ${error.message}`);
+      toast.error(`친구 목록 조회 오류 : ${error.message}`);
     }
   }, [isError, toast, error]);
 
