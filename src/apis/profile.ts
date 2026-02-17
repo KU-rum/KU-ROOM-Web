@@ -10,7 +10,7 @@ import {
   UserProfileResponse,
 } from "./types";
 
-const CHANGE_NICKNAME_API = "/users/nickname";
+const CHANGE_NICKNAME_URL = "/users/nickname";
 const CHANGE_PW_BEFORE_LOGIN_URL = "/users/password-reset/initiate";
 const CHANGE_PW_AFTER_LOGIN_URL = "/users/password-reset";
 const USER_PROFILE_URL = "/users/profile";
@@ -28,7 +28,7 @@ export const getUserProfileApi = async () => {
 // 닉네임 변경 api
 export const changeNicknameApi = async (nickname: string) => {
   const response = await axiosInstance.patch<ChangeProfileResponse>(
-    CHANGE_NICKNAME_API,
+    CHANGE_NICKNAME_URL,
     {
       nickname,
     },

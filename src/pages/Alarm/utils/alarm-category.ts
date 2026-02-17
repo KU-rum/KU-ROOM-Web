@@ -1,7 +1,7 @@
+import { AlarmType } from "@apis/types";
 import FriendIcon from "@assets/homemenuicon/homeicon_plus_friend.png";
 import NoticeIcon from "@assets/homemenuicon/homeicon_kcube_reserve.png";
 import RankingIcon from "@assets/homemenuicon/homeicon_search_location.png";
-import { AlarmType } from "../types";
 
 export const getCategory = (category: AlarmType) => {
   switch (category) {

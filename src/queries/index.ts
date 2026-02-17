@@ -28,3 +28,11 @@ export {
   useLocationTop3RankQuery,
   useLocationTotalRankQuery,
 } from "./ranking";
+
+export {
+  useAlarmListQuery,
+  useCheckAlarmMutation,
+  useUnreadAlarmQuery,
+  useAlarmSettingsQuery,
+  useAlarmSettingsMutation,
+} from "./alarm";
