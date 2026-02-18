@@ -48,6 +48,8 @@ export {
   type AlarmListResponseData,
   type AlarmListResponse,
   type CheckAlarmRequest,
+  type CheckAlarmResponseData,
+  type CheckAlarmResponse,
   type AlarmReadStatusResponseData,
   type AlarmReadStatusResponse,
   type GetAlarmActiveStatusResponse,

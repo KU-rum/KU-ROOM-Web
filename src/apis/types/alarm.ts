@@ -32,7 +32,7 @@ export interface AlarmDataType {
 export interface AlarmListResponseData {
   alarms: AlarmDataType[];
   hasNext: boolean;
-  nextCursor: string;
+  nextCursor?: string;
 }
 
 export interface AlarmListResponse extends ApiResponse {
@@ -42,6 +42,17 @@ export interface AlarmListResponse extends ApiResponse {
 export interface CheckAlarmRequest {
   alarmId: number;
   alarmCategory: AlarmCategory;
+}
+
+export interface CheckAlarmResponseData {
+  id: number;
+  alarmType: string;
+  message: string;
+  dataId: string;
+}
+
+export interface CheckAlarmResponse extends ApiResponse {
+  data: CheckAlarmResponseData;
 }
 
 export interface AlarmReadStatusResponseData {

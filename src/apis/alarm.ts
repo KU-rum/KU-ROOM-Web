@@ -4,6 +4,7 @@ import {
   AlarmReadStatusResponse,
   ApiResponse,
   CheckAlarmRequest,
+  CheckAlarmResponse,
   GetAlarmActiveStatusResponse,
   UpdateAlarmActiveStatusResponse,
 } from "./types";
@@ -27,11 +28,17 @@ export const getAlarmListApi = async (lastKnown?: string) => {
 export const checkAlarmApi = async ({
   alarmId,
   alarmCategory,
-}: CheckAlarmRequest) =>
-  await axiosInstance.patch(ALARMS_BASE_URL, {
-    alarmId,
-    alarmCategory,
-  });
+}: CheckAlarmRequest) => {
+  const response = await axiosInstance.patch<CheckAlarmResponse>(
+    ALARMS_BASE_URL,
+    {
+      alarmId,
+      alarmCategory,
+    },
+  );
+
+  return response.data;
+};
 
 // 안 읽은 알림 존재 여부 및 개수 조회 api
 export const getAlarmUnreadStatusApi = async () => {
