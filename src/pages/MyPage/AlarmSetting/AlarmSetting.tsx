@@ -1,14 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 
 import useToast from "@hooks/use-toast";
-import Header from "@components/Header/Header";
 import { getKeywords, registerKeyword } from "@apis/search";
+import Header from "@components/Header/Header";
+import Loading from "@components/Loading/Loading";
 
 import ProfileSection from "@pages/MyPage/components/ProfileSection/ProfileSection";
 import ToggleAlarmButton from "@pages/MyPage/components/ToggleAlarmButton";
-import { ALARM_SECTION_DATA } from "@pages/MyPage/AlarmSetting/constant/alarm";
-import useAlarmSettingQuery from "@pages/MyPage/AlarmSetting/hooks/use-alarm-setting-query";
+import { ALARM_SECTION_DATA } from "@pages/MyPage/AlarmSetting/constant";
 
+import { useAlarmSettings } from "./hooks/use-alarm-settings";
 import styles from "./AlarmSetting.module.css";
 
 const AlarmSetting = () => {
@@ -19,10 +20,10 @@ const AlarmSetting = () => {
   const {
     isAllAlarmOn,
     toggleStates,
-    isPending,
+    isPendingAlarmActiveStatus,
     handleToggle,
     handleToggleAll,
-  } = useAlarmSettingQuery();
+  } = useAlarmSettings();
 
   useEffect(() => {
     const loadKeywords = async () => {
@@ -40,9 +41,8 @@ const AlarmSetting = () => {
     loadKeywords();
   }, []);
 
-  if (isPending) {
-    // TODO: 로딩 화면 보여주기
-    return <div>로딩중...</div>;
+  if (isPendingAlarmActiveStatus) {
+    return <Loading />;
   }
 
   const handleDeleteKeyword = async (target: string) => {

@@ -39,3 +39,19 @@ export type {
   FriendRequestReceivedData,
   GetFriendRequestReceivedListResponse,
 } from "./user-list";
+
+export {
+  AlarmType,
+  AlarmCategory,
+  type AlarmContentType,
+  type AlarmDataType,
+  type AlarmListResponseData,
+  type AlarmListResponse,
+  type CheckAlarmRequest,
+  type CheckAlarmResponseData,
+  type CheckAlarmResponse,
+  type AlarmReadStatusResponseData,
+  type AlarmReadStatusResponse,
+  type GetAlarmActiveStatusResponse,
+  type UpdateAlarmActiveStatusResponse,
+} from "./alarm";

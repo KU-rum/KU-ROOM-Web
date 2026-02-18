@@ -28,7 +28,7 @@ export interface LocationTop3RankResponse extends ApiResponse {
 export interface LocationTotalRankResponseData {
   ranks: LocationTotalRankType[];
   hasNext: boolean;
-  nextCursor: string;
+  nextCursor?: string;
 }
 export interface LocationTotalRankResponse extends ApiResponse {
   data: LocationTotalRankResponseData;

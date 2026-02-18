@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { checkIsSharedApi } from "@apis/map";
 import { clearAuthStorage } from "@utils/storageUtils";
+import { useUnreadAlarmQuery } from "@/queries";
 // import Splash from "@components/Splash";
 import BottomBar from "@components/BottomBar/BottomBar";
 import Header from "@components/Header/Header";
@@ -16,11 +17,10 @@ import FriendLocation from "./components/FriendLocation/FriendLocation";
 import HomeRanking from "./components/HomeRanking/HomeRanking";
 import HomeNotice from "./components/HomeNotice/HomeNotice";
 import styles from "./Home.module.css";
-import { useUnreadAlarm } from "../Alarm/hooks/use-unread-alarm";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { unreadAlarmData } = useUnreadAlarm();
+  const { unreadAlarmData } = useUnreadAlarmQuery();
   // const [showSplash, setShowSplash] = useState(true);
   const [isSharedLocation, setIsSharedLocation] = useState(false); // 내 위치 공유상태인지 아닌지
   const [sharedLocationName, setSharedLocationName] = useState<string | null>(
