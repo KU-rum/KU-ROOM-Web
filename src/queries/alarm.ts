@@ -130,6 +130,8 @@ export const useAlarmSettingsQuery = () => {
   } = useQuery({
     queryKey: ALARM_QUERY_KEY.SETTINGS,
     queryFn: () => getAlarmActiveStatusApi(),
+    staleTime: 1000 * 60 * 30,
+    gcTime: 1000 * 60 * 60,
   });
 
   useEffect(() => {
