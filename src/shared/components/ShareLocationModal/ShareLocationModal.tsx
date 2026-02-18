@@ -14,7 +14,6 @@ interface ShareLocationModalProps {
   nearLocation?: string;
   setModalState: React.Dispatch<React.SetStateAction<boolean>>;
   refreshSharedStatus: () => void;
-  tryRerendering?: () => void;
 }
 
 const ShareLocationModal: React.FC<ShareLocationModalProps> = ({
@@ -24,7 +23,6 @@ const ShareLocationModal: React.FC<ShareLocationModalProps> = ({
   nearLocation,
   setModalState,
   refreshSharedStatus,
-  tryRerendering,
 }) => {
   const handleCloseModal = () => setModalState(false);
 
@@ -36,7 +34,6 @@ const ShareLocationModal: React.FC<ShareLocationModalProps> = ({
       console.log(response);
 
       refreshSharedStatus();
-      if (tryRerendering) tryRerendering();
       setModalState(false);
     } catch (error) {
       console.error("위치 공유 실패 : ", error);

@@ -1,9 +1,9 @@
-import { useCheckAlarm } from "@pages/Alarm/hooks/use-check-alarm";
+import { useCheckAlarmMutation } from "@/queries";
 
 import styles from "./MarkAsReadButton.module.css";
 
 export default function MarkAsReadButton() {
-  const { checkAllAlarms } = useCheckAlarm();
+  const { checkAllAlarms } = useCheckAlarmMutation();
   return (
     <button
       type="button"

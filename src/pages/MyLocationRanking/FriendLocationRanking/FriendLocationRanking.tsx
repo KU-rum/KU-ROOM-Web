@@ -5,8 +5,8 @@ import rank1Icon from "@assets/icon/ranking/rank1.png";
 import rank2Icon from "@assets/icon/ranking/rank2.png";
 import rank3Icon from "@assets/icon/ranking/rank3.png";
 import Header from "@components/Header/Header";
-
-import useFriendRanking from "../hooks/use-friend-ranking";
+import Loading from "@components/Loading/Loading";
+import { useFriendSharingRankingQuery } from "@/queries";
 
 import styles from "./FriendLocationRankin.module.css";
 
@@ -15,7 +15,8 @@ const FriendLocationRanking = () => {
   const friendNickname = location.state?.nickname;
   const friendId = location.state?.friendId;
 
-  const { friendRankingData, isPending } = useFriendRanking(friendId);
+  const { friendRankingData, isPendingFriendRankingData } =
+    useFriendSharingRankingQuery(friendId);
 
   const getRankIcon = (index: number) => {
     switch (index) {
@@ -30,8 +31,8 @@ const FriendLocationRanking = () => {
     }
   };
 
-  if (isPending) {
-    return <div>불러오는 중...</div>;
+  if (isPendingFriendRankingData) {
+    return <Loading />;
   }
 
   return (

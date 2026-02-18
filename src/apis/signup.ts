@@ -4,6 +4,7 @@ import axiosInstance from "./axiosInstance";
 const SIGNUP_API_BASE_URL = "/users";
 const VALIDATION_ID_API_URL = "/users/check-id?value";
 const VALIDATION_EMAIL_API_URL = "/users/validations";
+const CHECK_DUPLICATED_NICKNAME_API = "/users/check-nickname?value";
 
 interface SignUpResponse {
   code: number;
@@ -24,7 +25,7 @@ export const signupApi = async (
     agreementStatus: string;
   },
   setIsDuplicatedNickname: (value: boolean) => void,
-  setIsDuplicatedStudentId: (value: boolean) => void
+  setIsDuplicatedStudentId: (value: boolean) => void,
 ) => {
   try {
     const response = await axiosInstance.post<SignUpResponse>(
@@ -34,7 +35,7 @@ export const signupApi = async (
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
     console.log("회원가입 관련 message :", response.data);
     return response.data.message; // 성공 응답 반환
@@ -71,14 +72,14 @@ export const checkValidationIdApi = async (newId: string) => {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
     console.log(response.data);
     return response.data.data;
   } catch (error: any) {
     console.error("아이디 확인 실패:", error.response?.data || error.message);
     throw new Error(
-      error.response?.data?.message || "아이디 확인 중 오류 발생"
+      error.response?.data?.message || "아이디 확인 중 오류 발생",
     );
   }
 };
@@ -94,7 +95,7 @@ export const checkValidationEmailApi = async (
   email: { email: string },
   setIsDuplicatedEmail: (value: boolean) => void,
   setModalType: (value: string) => void,
-  setModalState: (value: boolean) => void
+  setModalState: (value: boolean) => void,
 ) => {
   try {
     const response = await axiosInstance.post<CheckEmailResponse>(
@@ -104,7 +105,7 @@ export const checkValidationEmailApi = async (
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
     return response.data.message; // 성공 응답 반환
   } catch (error: any) {
@@ -116,7 +117,40 @@ export const checkValidationEmailApi = async (
       setModalState(true);
     }
     throw new Error(
-      error.response?.data?.message || "이메일 확인 중 오류 발생"
+      error.response?.data?.message || "이메일 확인 중 오류 발생",
+    );
+  }
+};
+
+interface CheckNicknameResponse {
+  code: number;
+  status: string;
+  message: string;
+  data?: string;
+}
+
+export const checkDuplicatedNickname = async (
+  newNickname: string,
+  setErrorMsg: (value: string) => void,
+) => {
+  try {
+    const response = await axiosInstance.get<CheckNicknameResponse>(
+      `${CHECK_DUPLICATED_NICKNAME_API}=${newNickname}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    console.log(response.data.data);
+    return response.data.message;
+  } catch (error: any) {
+    console.error("닉네임 확인 실패:", error.response?.data || error.message);
+    const errorMessage =
+      error.response?.data?.message || "닉네임 확인 중 오류 발생";
+    setErrorMsg(errorMessage);
+    throw new Error(
+      error.response?.data?.message || "닉네임 확인 중 오류 발생",
     );
   }
 };

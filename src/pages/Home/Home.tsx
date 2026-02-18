@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { checkIsSharedApi } from "@apis/map";
 import { clearAuthStorage } from "@utils/storageUtils";
+import { useUnreadAlarmQuery } from "@/queries";
 // import Splash from "@components/Splash";
 import BottomBar from "@components/BottomBar/BottomBar";
 import Header from "@components/Header/Header";
@@ -13,14 +14,13 @@ import HomeMenu from "./components/HomeMenu/HomeMenu";
 import HomeMiniMap from "./components/HomeMiniMap/HomeMiniMap";
 import HomeSildeBanner from "./components/HomeSlideBanner/HomeSildeBanner";
 import FriendLocation from "./components/FriendLocation/FriendLocation";
-import MyLocationRanking from "./components/MyLocationRanking/MyLocationRanking";
+import HomeRanking from "./components/HomeRanking/HomeRanking";
 import HomeNotice from "./components/HomeNotice/HomeNotice";
 import styles from "./Home.module.css";
-import { useUnreadAlarm } from "../Alarm/hooks/use-unread-alarm";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { unreadAlarmData } = useUnreadAlarm();
+  const { unreadAlarmData } = useUnreadAlarmQuery();
   // const [showSplash, setShowSplash] = useState(true);
   const [isSharedLocation, setIsSharedLocation] = useState(false); // 내 위치 공유상태인지 아닌지
   const [sharedLocationName, setSharedLocationName] = useState<string | null>(
@@ -31,8 +31,6 @@ const Home = () => {
 
   // 내 위치 공유 버튼 모달 상태
   const [shareModalState, setShareModalState] = useState(false);
-
-  const [tryToRerender, setTryToRerender] = useState(false);
 
   // 현재 내 위치 공유 상태 확인 함수
   const getIsMySharedInfo = async () => {
@@ -95,7 +93,7 @@ const Home = () => {
           sharedLocationName={sharedLocationName}
         />
         <FriendLocation userSharedLocation={sharedLocationName} />
-        <MyLocationRanking updateTrigger={tryToRerender} />
+        <HomeRanking />
         <HomeNotice />
       </div>
       <BottomBar />
@@ -106,7 +104,6 @@ const Home = () => {
         refreshSharedStatus={() =>
           setLocationSharedRefreshKey((prev) => prev + 1)
         }
-        tryRerendering={() => setTryToRerender(!tryToRerender)}
       />
     </div>
   );

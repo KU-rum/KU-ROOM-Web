@@ -6,21 +6,19 @@ import rank3Icon from "@assets/icon/ranking/rank3.png";
 import kuroomEmptyIcon from "@assets/icon/kuroom-icon/kuroom-gray.svg";
 import Button from "@components/Button/Button";
 import Header from "@components/Header/Header";
+import Loading from "@components/Loading/Loading";
+import { useFriendListQuery, useUserSharingRankingQuery } from "@/queries";
 
 // import ShareBottomSheet from "./components/ShareBottomSheet/ShareBottomSheet";
-import useLocationRanking from "./hooks/use-location-ranking";
 
 import styles from "./MyLocationRanking.module.css";
 
 const MyLocationRanking = () => {
   const navigate = useNavigate();
 
-  const {
-    userRankingData,
-    friendListData,
-    isPendingUserRanking,
-    isPendingFriend,
-  } = useLocationRanking();
+  const { userRankingData, isPendingUserRankingData } =
+    useUserSharingRankingQuery();
+  const { friendListData, isPendingFriendList } = useFriendListQuery();
 
   const handleNavToFriendRanking = (nickname: string, friendId: number) => {
     navigate("friendlocationranking", {
@@ -58,12 +56,8 @@ const MyLocationRanking = () => {
   //   setTimeout(() => setIsSheetVisible(false), 300); // 0.3초 후 제거
   // };
 
-  if (isPendingFriend || isPendingUserRanking) {
-    return <div>불러오는 중...</div>;
-  }
-
-  if (userRankingData === undefined || friendListData === undefined) {
-    return;
+  if (isPendingFriendList || isPendingUserRankingData) {
+    return <Loading />;
   }
 
   return (
@@ -71,7 +65,7 @@ const MyLocationRanking = () => {
       <Header>내 장소 랭킹</Header>
       <div className={styles.PageContentWrapper}>
         <div className={styles.MyRankingContainer}>
-          {userRankingData.length === 0 ? (
+          {userRankingData && userRankingData.length === 0 ? (
             <div className={styles.EmptyViewContainer}>
               <img src={kuroomEmptyIcon} className={styles.EmptyIcon} />
               <span className={styles.EmptyText}>
@@ -80,6 +74,7 @@ const MyLocationRanking = () => {
             </div>
           ) : (
             // TODO: 우선 3위까지만. 추후 변동 가능
+            userRankingData &&
             userRankingData.slice(0, 3).map((item, index) => (
               <div key={index} className={styles.EachRankingContainer}>
                 <img
@@ -105,7 +100,7 @@ const MyLocationRanking = () => {
         </div>
         <div className={styles.FriendRankingContainer}>
           <span className={styles.FriendRankingTitle}>친구 랭킹</span>
-          {friendListData.length === 0 ? (
+          {friendListData && friendListData.length === 0 ? (
             // TODO: 디자인 변경 가능성 있음
             <div className={styles.EmptyViewContainer}>
               <div className={styles.EmtpyFriendWrapper}>
@@ -117,17 +112,18 @@ const MyLocationRanking = () => {
             </div>
           ) : (
             <div className={styles.FriendWrapper}>
-              {friendListData.map((friend) => (
-                <button
-                  key={friend.id}
-                  className={styles.FriendNickname}
-                  onClick={() =>
-                    handleNavToFriendRanking(friend.nickname, friend.id)
-                  }
-                >
-                  {friend.nickname}
-                </button>
-              ))}
+              {friendListData &&
+                friendListData.map((friend) => (
+                  <button
+                    key={friend.id}
+                    className={styles.FriendNickname}
+                    onClick={() =>
+                      handleNavToFriendRanking(friend.nickname, friend.id)
+                    }
+                  >
+                    {friend.nickname}
+                  </button>
+                ))}
             </div>
           )}
         </div>

@@ -2,18 +2,17 @@ import { useState } from "react";
 
 import useToast from "@hooks/use-toast";
 import Header from "@components/Header/Header";
+import { useUserDepartmentMutation, useUserProfileQuery } from "@/queries";
 
 import DepartmentSearch from "./components/DepartmentSearchBar/DepartmentSearchBar";
 import UserDepartmentList from "./components/UserDepartmentList/UserDepartmentList";
 import SearchDepartmentList from "./components/SearchDepartmentList/SearchDepartmentList";
 import styles from "./DepartmentSetting.module.css";
-import { useUserProfile } from "../hooks/use-user-profile";
-import useMutationDepartment from "./hooks/use-mutation-department";
 
 const DepartmentSetting = () => {
   const toast = useToast();
-  const { userProfileData, isPendingUserProfile } = useUserProfile();
-  const { addDepartment, deleteDepartment } = useMutationDepartment();
+  const { userProfileData, isPendingUserProfileData } = useUserProfileQuery();
+  const { addDepartment, deleteDepartment } = useUserDepartmentMutation();
 
   const [searchText, setSearchText] = useState("");
 
@@ -25,8 +24,14 @@ const DepartmentSetting = () => {
     }
     deleteDepartment(department);
   };
+
+  // 이미 설정한 학과를 추가하려고 할 경우, addDepartment가 실행되지 않도록
   const handleAddUserDepartment = (department: string) => {
-    addDepartment(department);
+    if (userProfileData?.departments.some((d) => d.department === department)) {
+      toast.info("이미 설정하신 학과입니다.");
+    } else {
+      addDepartment(department);
+    }
     setSearchText("");
   };
 
@@ -40,7 +45,7 @@ const DepartmentSetting = () => {
             setSearchTarget={setSearchText}
           />
         </div>
-        {isPendingUserProfile ? (
+        {isPendingUserProfileData ? (
           <div>로딩중...</div>
         ) : searchText.trim().length > 0 ? (
           <SearchDepartmentList

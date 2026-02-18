@@ -6,8 +6,8 @@ import editIcon from "@assets/icon/editpencil.svg";
 import Button from "@components/Button/Button";
 import Loading from "@components/Loading/Loading";
 import BottomSheet from "@components/BottomSheet/BottomSheet";
+import { useUserProfileQuery } from "@/queries";
 
-import { useUserProfile } from "../../hooks/use-user-profile";
 import useProfileImage from "../../hooks/use-profile-image";
 
 import styles from "./MyProfileComponent.module.css";
@@ -19,7 +19,7 @@ interface MyProfileComponentProps {
 const MyProfileComponent: React.FC<MyProfileComponentProps> = ({
   isChangeProfile,
 }) => {
-  const { userProfileData, isPendingUserProfile } = useUserProfile();
+  const { userProfileData, isPendingUserProfileData } = useUserProfileQuery();
 
   const navigate = useNavigate();
 
@@ -45,7 +45,7 @@ const MyProfileComponent: React.FC<MyProfileComponentProps> = ({
 
   return (
     <>
-      {isPendingUserProfile ? (
+      {isPendingUserProfileData ? (
         <Loading type="section" sectionHeight={213} />
       ) : (
         <div className={styles.MyProfileContainer}>

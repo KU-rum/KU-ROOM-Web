@@ -3,10 +3,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { signupApi } from "@apis/signup";
 import { createSocialUserApi } from "@apis/auth";
-import { getAllColleges, getDepartments } from "@apis/department";
+import { useCollegeDepartmentsQuery, useCollegesQuery } from "@/queries";
 import Button from "@components/Button/Button";
 import InputBar from "@components/InputBar/InputBar";
 import Header from "@components/Header/Header";
+import Loading from "@components/Loading/Loading";
 import { isValidStudentId } from "@utils/validations";
 import { useUserStore } from "@stores/userStore";
 
@@ -28,9 +29,7 @@ const ProfileSetting: React.FC = () => {
 
   const [nickname, setNickname] = useState("");
   const [isDuplicatedNickname, setIsDuplicatedNickname] = useState(false);
-  const [colleges, setColleges] = useState<string[]>([]);
   const [selectedCollege, setSelectedCollege] = useState("");
-  const [departments, setDepartments] = useState<string[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [studentId, setStudentId] = useState("");
   const [isDuplicatedStudentId, setIsDuplicatedStudentId] = useState(false);
@@ -42,31 +41,9 @@ const ProfileSetting: React.FC = () => {
   const [isCollegeSheetOpen, setIsCollegeSheetOpen] = useState(false);
   const [isDepartmentSheetOpen, setIsDepartmentSheetOpen] = useState(false);
 
-  useEffect(() => {
-    fetchToGetColleges();
-  }, []);
-
-  useEffect(() => {
-    fetchToGetDepartments(selectedCollege);
-  }, [selectedCollege]);
-
-  const fetchToGetColleges = async () => {
-    try {
-      const response = await getAllColleges();
-      setColleges(response);
-    } catch (error) {
-      console.error("단과대학 목록 불러오기 실패", error);
-    }
-  };
-
-  const fetchToGetDepartments = async (college: string) => {
-    try {
-      const response = await getDepartments(college);
-      setDepartments(response);
-    } catch (error) {
-      console.error("학과 목록 불러오기 실패", error);
-    }
-  };
+  const { collegesData, isPendingCollegesData } = useCollegesQuery();
+  const { departmentsData, isPendingDepartmentsData } =
+    useCollegeDepartmentsQuery(selectedCollege);
 
   // 닉네임이 유효한지 확인하는 변수
   const isNicknameValid =
@@ -256,16 +233,21 @@ const ProfileSetting: React.FC = () => {
           title="단과대학"
           selectedItem={tempSelectedCollege}
         >
-          <div className="profile-setting-select-list">
-            {colleges.map((item) => (
-              <SelectItem
-                key={item}
-                text={item}
-                isSelected={tempSelectedCollege === item}
-                onClick={() => handleClickedCollege(item)}
-              />
-            ))}
-          </div>
+          {isPendingCollegesData ? (
+            <Loading type="section" sectionHeight={250} />
+          ) : (
+            <div className="profile-setting-select-list">
+              {collegesData &&
+                collegesData.map((item) => (
+                  <SelectItem
+                    key={item}
+                    text={item}
+                    isSelected={tempSelectedCollege === item}
+                    onClick={() => handleClickedCollege(item)}
+                  />
+                ))}
+            </div>
+          )}
         </BottomSheet>
 
         {/* 학과 선택 바텀시트 */}
@@ -276,17 +258,22 @@ const ProfileSetting: React.FC = () => {
           title="학과"
           selectedItem={tempSelectedDepartment}
         >
-          <div className="profile-setting-select-list">
-            {selectedCollege &&
-              departments.map((item) => (
-                <SelectItem
-                  key={item}
-                  text={item}
-                  isSelected={tempSelectedDepartment === item}
-                  onClick={() => handleClickedDepartment(item)}
-                />
-              ))}
-          </div>
+          {isPendingDepartmentsData ? (
+            <Loading type="section" sectionHeight={250} />
+          ) : (
+            <div className="profile-setting-select-list">
+              {selectedCollege &&
+                departmentsData &&
+                departmentsData.map((item) => (
+                  <SelectItem
+                    key={item}
+                    text={item}
+                    isSelected={tempSelectedDepartment === item}
+                    onClick={() => handleClickedDepartment(item)}
+                  />
+                ))}
+            </div>
+          )}
         </BottomSheet>
       </div>
     </>

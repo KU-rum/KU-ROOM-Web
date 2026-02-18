@@ -1,4 +1,3 @@
-export type { ApiResponse } from "./apiResponse";
 export type {
   Coordinate,
   MapSearchResult,
@@ -9,4 +8,3 @@ export type {
   DetailPlaceData,
   MarkerData,
 } from "./mapTypes";
-export type { RankListType } from "./rankTypes";
