@@ -3,8 +3,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import checkedIcon from "@assets/icon/roundcheck.svg";
 import uncheckedIcon from "@assets/icon/roundUncheck.svg";
-import { checkValidationEmailApi } from "@apis/signup";
-import { sendEmailApi, verifyCodeApi } from "@apis/mails";
+import {
+  checkValidationEmailApi,
+  sendEmailApi,
+  verifyCodeApi,
+} from "@apis/auth";
 import InputBar from "@components/InputBar/InputBar";
 import Button from "@components/Button/Button";
 import Header from "@components/Header/Header";
@@ -41,9 +44,8 @@ const IdentityVerify = () => {
 
   // 인증코드 발송 로직
   const sendVerifyCode = async () => {
-    const checkingEmail = { email: verifiedEmail };
     const response = await checkValidationEmailApi(
-      checkingEmail,
+      verifiedEmail,
       setIsDuplicatedEmail,
       setModalType,
       setModalState,
@@ -52,7 +54,7 @@ const IdentityVerify = () => {
     if (response === "OK") {
       console.log("인증코드 발송");
       // 서버에 전송 요청
-      const sendResponse = await sendEmailApi(checkingEmail);
+      const sendResponse = await sendEmailApi(verifiedEmail);
       console.log(sendResponse);
       setIsAttemptSend(true);
       setModalState(true);

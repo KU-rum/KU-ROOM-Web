@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState, useReducer } from "react";
 
-import { findIdFromEmail, sendEmailApi, verifyCodeApi } from "@apis/mails";
+import { findIdFromEmailApi, sendEmailApi, verifyCodeApi } from "@apis/auth";
 import InformModal from "@components/InformModal/InformModal";
 import Header from "@components/Header/Header";
 import { isValidPassword } from "@utils/validations";
@@ -121,10 +121,9 @@ const FindIdPw = () => {
   // 이메일에 인증코드 전송
   const sendInformEmail = async (informEmail: string) => {
     try {
-      const sendEmail = { email: informEmail };
       console.log(informEmail);
       await getIdfromEmail();
-      const sendResponse = await sendEmailApi(sendEmail);
+      const sendResponse = await sendEmailApi(informEmail);
       console.log(sendResponse);
       setModalType("informEmail");
       setModalState(true);
@@ -138,9 +137,8 @@ const FindIdPw = () => {
 
   // 이메일로 아이디 가져오기.
   const getIdfromEmail = async () => {
-    const response = await findIdFromEmail(state.informEmail);
-    console.log(response);
-    handleuserIdChange(response);
+    const response = await findIdFromEmailApi(state.informEmail);
+    if (response) handleuserIdChange(response);
   };
 
   // 인증코드 유효한지 확인. 테스트용 인증코드 로직. api 연동 필요. 이부분은 서버와 얘기 필요할듯? boolean으로 넘겨줄 수도 있음.

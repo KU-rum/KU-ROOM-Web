@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { signupApi } from "@apis/signup";
+import { signupApi } from "@apis/auth";
 import { createSocialUserApi } from "@apis/auth";
 import { useCollegeDepartmentsQuery, useCollegesQuery } from "@/queries";
 import Button from "@components/Button/Button";
@@ -84,14 +84,14 @@ const ProfileSetting: React.FC = () => {
     try {
       if (isSocialSignup && preSignupToken) {
         const socialUserData = {
-          studentId: studentId,
+          token: preSignupToken,
+          studentId,
           department: selectedDepartment,
-          nickname: nickname,
+          nickname,
           agreementStatus: isMarketingOk ? "AGREED" : "DISAGREED",
         };
 
         const response = await createSocialUserApi(
-          preSignupToken,
           socialUserData,
           setIsDuplicatedNickname,
         );

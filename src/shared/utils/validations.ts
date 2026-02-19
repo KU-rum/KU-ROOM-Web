@@ -2,7 +2,7 @@
 
 import { Dispatch, SetStateAction } from "react";
 import { NavigateFunction } from "react-router-dom";
-import { checkValidationIdApi } from "@apis/signup";
+import { checkValidationIdApi } from "@apis/auth";
 
 // 이메일 형식이 맞는지
 export const isValidEmail = (email: string) => {
@@ -30,7 +30,7 @@ export const isValidStudentId = (id: string) => {
 export const checkAvailableId = async (
   signupId: string,
   setIsAvailableId: Dispatch<SetStateAction<boolean | null>>,
-  setIsChecked: Dispatch<SetStateAction<boolean>>
+  setIsChecked: Dispatch<SetStateAction<boolean>>,
 ) => {
   try {
     await checkValidationIdApi(signupId);
@@ -51,7 +51,7 @@ export const handleSettingPassword = (
   setIsAttemptReset: Dispatch<SetStateAction<boolean>>,
   setAllowedPw: Dispatch<SetStateAction<boolean>>,
   setIsCheckedPw: Dispatch<SetStateAction<boolean>>,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
 ) => {
   setIsAttemptReset(true);
   const isPwValid = isValidPassword(inputPw);

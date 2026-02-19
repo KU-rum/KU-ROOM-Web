@@ -49,9 +49,8 @@ const Login = () => {
   };
 
   const handleLogin = async () => {
-    const loginData = { loginId: inputId, password: inputPw };
     try {
-      const response = await loginApi(loginData); // `await` 추가
+      const response = await loginApi(inputId, inputPw); // `await` 추가
 
       if (response?.code === 1007) {
         // 서버에서 '잘못된 아이디/비밀번호'일 때의 코드 (예: 1007)

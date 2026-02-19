@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { getTokenByTempToken } from "@apis/auth";
+import { getTokenByTempTokenApi } from "@apis/auth";
 import { useUserStore } from "@stores/userStore";
 
 const SocialCallback = () => {
@@ -27,7 +27,7 @@ const SocialCallback = () => {
         }
 
         if (needSignup === "false") {
-          const response = await getTokenByTempToken(token);
+          const response = await getTokenByTempTokenApi(token);
 
           if (response?.code !== 200) {
             throw new Error(response?.message || "토큰 발급 실패");
@@ -46,7 +46,7 @@ const SocialCallback = () => {
               JSON.stringify({
                 type: "AUTH_TOKEN",
                 accessToken: accessToken,
-              })
+              }),
             );
 
             setUser({ ...userResponse, loginType: "social" });

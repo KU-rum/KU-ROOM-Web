@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState } from "react";
 
-import { checkDuplicatedNickname } from "@apis/signup";
+import { checkDuplicatedNicknameApi } from "@apis/auth";
 import { useChangeNicknameMutation, useUserProfileQuery } from "@/queries";
 import InputBar from "@components/InputBar/InputBar";
 import Button from "@components/Button/Button";
@@ -30,7 +30,7 @@ const ChangeNickname = () => {
   };
   const handleChangeNickname = async () => {
     // 서버에 닉네임 중복 여부 검증
-    const checkResponse = await checkDuplicatedNickname(
+    const checkResponse = await checkDuplicatedNicknameApi(
       newNickname,
       setErrorMsg,
     );
