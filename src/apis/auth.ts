@@ -24,10 +24,40 @@ const CREATE_SOCIAL_USER_API_URL = "/users/social";
 const SIGNUP_API_BASE_URL = "/users";
 const VERIFY_MAIL_API_URL = "/mails/auth-codes";
 const VERIFY_CODE_API_URL = "/mails/verification_codes";
-const FIND_ID_API_URL = "/users/loginId?email";
-const VALIDATION_ID_API_URL = "/users/check-id?value";
+const FIND_ID_API_URL = "/users/loginId";
+const VALIDATION_ID_API_URL = "/users/check-id";
 const VALIDATION_EMAIL_API_URL = "/users/validations";
-const CHECK_DUPLICATED_NICKNAME_API = "/users/check-nickname?value";
+const CHECK_DUPLICATED_NICKNAME_API = "/users/check-nickname";
+
+// 회원가입 api
+export const signupApi = async (
+  userData: SignupRequest,
+  setIsDuplicatedNickname: (value: boolean) => void,
+  setIsDuplicatedStudentId: (value: boolean) => void,
+) => {
+  try {
+    const response = await axiosInstance.post<SignUpResponse>(
+      SIGNUP_API_BASE_URL,
+      userData,
+    );
+    console.log("회원가입 관련 message :", response.data);
+    return response.data.message; // 성공 응답 반환
+  } catch (error: any) {
+    console.error("회원가입 실패:", error.response?.data || error.message);
+
+    const errorMessage =
+      error.response?.data?.message || "회원가입 중 오류 발생";
+
+    if (errorMessage === "이미 존재하는 닉네임입니다.") {
+      setIsDuplicatedNickname(true);
+      setIsDuplicatedStudentId(false);
+    } else if (errorMessage === "이미 존재하는 학번입니다.") {
+      setIsDuplicatedStudentId(true);
+      setIsDuplicatedNickname(false);
+    }
+    throw new Error(errorMessage);
+  }
+};
 
 // 로그인 api
 export const loginApi = async (loginId: string, password: string) => {
@@ -74,8 +104,9 @@ export const withdrawApi = async () => {
 export const getTokenByTempTokenApi = async (tempToken: string) => {
   try {
     const response = await axiosInstance.post<LoginResponse>(
-      `${OAUTH_TOKEN_API_URL}?authCode=${tempToken}`,
+      OAUTH_TOKEN_API_URL,
       null,
+      { params: { authCode: tempToken } },
     );
     return response.data;
   } catch (error: any) {
@@ -90,7 +121,7 @@ export const reissueTokenApi = async () => {
     const response = await axiosInstance.patch<ReissueResponse>(
       REISSUE_TOKEN_API_URL,
       {
-        refreshToken: refreshToken,
+        refreshToken,
       },
     );
     return response.data.data;
@@ -141,7 +172,7 @@ export const sendEmailApi = async (email: string) => {
   }
 };
 
-// 이메일 인증 코드 검증
+// 이메일 인증 코드 검증 api
 export const verifyCodeApi = async (verifyData: {
   email: string;
   code: string;
@@ -161,46 +192,12 @@ export const verifyCodeApi = async (verifyData: {
   }
 };
 
-export const signupApi = async (
-  userData: SignupRequest,
-  setIsDuplicatedNickname: (value: boolean) => void,
-  setIsDuplicatedStudentId: (value: boolean) => void,
-) => {
-  try {
-    const response = await axiosInstance.post<SignUpResponse>(
-      SIGNUP_API_BASE_URL,
-      userData,
-    );
-    console.log("회원가입 관련 message :", response.data);
-    return response.data.message; // 성공 응답 반환
-  } catch (error: any) {
-    console.error("회원가입 실패:", error.response?.data || error.message);
-
-    const errorMessage =
-      error.response?.data?.message || "회원가입 중 오류 발생";
-
-    if (errorMessage === "이미 존재하는 닉네임입니다.") {
-      setIsDuplicatedNickname(true);
-      setIsDuplicatedStudentId(false);
-    } else if (errorMessage === "이미 존재하는 학번입니다.") {
-      setIsDuplicatedStudentId(true);
-      setIsDuplicatedNickname(false);
-    }
-    throw new Error(errorMessage);
-  }
-};
-
+// 아이디 찾기 api (이메일 사용)
 export const findIdFromEmailApi = async (email: string) => {
   try {
-    const response = await axiosInstance.get<FindIdResponse>(
-      `${FIND_ID_API_URL}=${email}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-    console.log(response.data.data?.loginId);
+    const response = await axiosInstance.get<FindIdResponse>(FIND_ID_API_URL, {
+      params: { email },
+    });
     return response.data.data?.loginId;
   } catch (error: any) {
     console.error("아이디 조회 실패:", error.response?.data || error.message);
@@ -210,15 +207,13 @@ export const findIdFromEmailApi = async (email: string) => {
   }
 };
 
-// 아이디 중복확인
-export const checkValidationIdApi = async (newId: string) => {
+// 아이디 중복확인 api
+export const checkValidationIdApi = async (value: string) => {
   try {
     const response = await axiosInstance.get<CheckIdResponse>(
-      `${VALIDATION_ID_API_URL}=${newId}`,
+      VALIDATION_ID_API_URL,
       {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        params: { value },
       },
     );
     console.log(response.data);
@@ -231,7 +226,7 @@ export const checkValidationIdApi = async (newId: string) => {
   }
 };
 
-// 이메일 중복확인
+// 이메일 중복확인 api
 export const checkValidationEmailApi = async (
   email: string,
   setIsDuplicatedEmail: (value: boolean) => void,
@@ -258,20 +253,18 @@ export const checkValidationEmailApi = async (
   }
 };
 
+// 닉네임 중복 확인 api
 export const checkDuplicatedNicknameApi = async (
-  newNickname: string,
+  value: string,
   setErrorMsg: (value: string) => void,
 ) => {
   try {
     const response = await axiosInstance.get<CheckNicknameResponse>(
-      `${CHECK_DUPLICATED_NICKNAME_API}=${newNickname}`,
+      CHECK_DUPLICATED_NICKNAME_API,
       {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        params: { value },
       },
     );
-    console.log(response.data.data);
     return response.data.message;
   } catch (error: any) {
     console.error("닉네임 확인 실패:", error.response?.data || error.message);
