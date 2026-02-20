@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import useToast from "@hooks/use-toast";
 import { useUserStore } from "@stores/userStore";
 import { loginApi, signupApi } from "@apis/auth";
-import { LoginRequest, SignupRequest } from "@apis/types";
+import { LoginRequest, LoginResponse, SignupRequest } from "@apis/types";
 
 export const useSignupMutation = () => {
   const toast = useToast();
@@ -35,7 +35,9 @@ export const useLoginMutation = () => {
   const { mutate: login, isPending: isPendingLogin } = useMutation({
     mutationFn: ({ loginId, password }: LoginRequest) =>
       loginApi({ loginId, password }),
-    onSuccess: (response) => {
+    onSuccess: (response: LoginResponse) => {
+      if (!response.data?.tokenResponse) throw Error();
+
       const {
         tokenResponse: { accessToken, refreshToken },
         userResponse,

@@ -41,18 +41,11 @@ export const signupApi = async (userData: SignupRequest) => {
 
 // 로그인 api
 export const loginApi = async ({ loginId, password }: LoginRequest) => {
-  try {
-    const response = await axiosInstance.post<LoginResponse>(LOGIN_API_URL, {
-      loginId,
-      password,
-    });
-    return response.data;
-  } catch (error: any) {
-    if (error.response?.status === 401) {
-      return error.response.data;
-    }
-    throw new Error(error.response?.data?.message || "로그인 중 오류 발생");
-  }
+  const response = await axiosInstance.post<LoginResponse>(LOGIN_API_URL, {
+    loginId,
+    password,
+  });
+  return response.data;
 };
 
 // 로그아웃 api
