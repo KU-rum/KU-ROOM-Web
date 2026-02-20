@@ -50,16 +50,8 @@ export const loginApi = async ({ loginId, password }: LoginRequest) => {
 
 // 로그아웃 api
 export const logoutApi = async () => {
-  try {
-    const response = await axiosInstance.patch<LogoutResponse>(LOGOUT_API_URL);
-
-    return response.data.data;
-  } catch (error: any) {
-    if (error.response?.status === 401) {
-      return error.response.data;
-    }
-    throw new Error(error.response?.data?.message || "로그아웃 중 오류 발생");
-  }
+  const response = await axiosInstance.patch<LogoutResponse>(LOGOUT_API_URL);
+  return response.data;
 };
 
 // 회원 탈퇴 api

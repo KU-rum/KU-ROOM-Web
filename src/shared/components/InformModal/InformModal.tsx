@@ -2,9 +2,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import ReactModal from "react-modal";
 
-import { logoutApi } from "@apis/auth";
-import { clearAuthStorage } from "@utils/storageUtils";
 import cloudIcon from "@assets/icon/cloud.svg";
+import { useLogoutMutation } from "@/queries";
 
 import Button from "../Button/Button";
 import styles from "./InformModal.module.css";
@@ -27,6 +26,7 @@ const InformModal = ({
   setFindStep,
 }: Props) => {
   const navigate = useNavigate();
+  const { logout } = useLogoutMutation();
 
   // 각 모달 유형에 따른 텍스트 및 핸들러 매핑
   const modalConfigs: {
@@ -57,12 +57,7 @@ const InformModal = ({
       description: "다시 로그인해주세요.",
       handleModalButton: async () => {
         setModalState(false);
-        if (localStorage.getItem("accessToken")) {
-          const logoutResponse = await logoutApi();
-          console.log(logoutResponse);
-          clearAuthStorage();
-        }
-        navigate("/login");
+        logout();
       },
     },
     NicknameChange: {

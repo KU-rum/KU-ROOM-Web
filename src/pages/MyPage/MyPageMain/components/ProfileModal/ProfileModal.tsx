@@ -2,13 +2,13 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import ReactModal from "react-modal";
 
-import { logoutApi, withdrawApi } from "@apis/auth";
+import { withdrawApi } from "@apis/auth";
 import { clearAuthStorage } from "@utils/storageUtils";
 import cautionIcon from "@assets/icon/editFriend/cautionIcon.svg";
 import Button from "@components/Button/Button";
+import { useLogoutMutation } from "@/queries";
 
 import styles from "./ProfileModal.module.css";
-import useToast from "@/shared/hooks/use-toast";
 
 interface ProfileModalProps {
   modalState: boolean;
@@ -22,30 +22,20 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   setModalState,
 }) => {
   const navigate = useNavigate();
-  const toast = useToast();
   const handleCloseModal = () => setModalState(false);
+  const { logout } = useLogoutMutation();
 
   // 서버에 각각 요청
   const handleClick = async () => {
     switch (modalType) {
       case "logout":
         setModalState(false);
-        await logoutApi()
-          .then(() => {
-            toast.info("로그아웃되었습니다.");
-            clearAuthStorage();
-            navigate("/login");
-          })
-          .catch(() => {
-            toast.error("새로고침 후 다시 시도해주세요.");
-          });
-
+        logout();
         break;
       case "withdraw":
         setModalState(false);
         await withdrawApi();
         clearAuthStorage();
-
         navigate("/login");
         break;
     }

@@ -3,8 +3,9 @@ import { useMutation } from "@tanstack/react-query";
 
 import useToast from "@hooks/use-toast";
 import { useUserStore } from "@stores/userStore";
-import { loginApi, signupApi } from "@apis/auth";
+import { loginApi, logoutApi, signupApi } from "@apis/auth";
 import { LoginRequest, LoginResponse, SignupRequest } from "@apis/types";
+import { clearAuthStorage } from "@/shared/utils/storageUtils";
 
 export const useSignupMutation = () => {
   const toast = useToast();
@@ -60,5 +61,26 @@ export const useLoginMutation = () => {
   return {
     login,
     isPendingLogin,
+  };
+};
+
+export const useLogoutMutation = () => {
+  const navigate = useNavigate();
+  const toast = useToast();
+
+  const { mutate: logout } = useMutation({
+    mutationFn: () => logoutApi(),
+    onSuccess: () => {
+      toast.info("로그아웃되었습니다.");
+      navigate("/login");
+      clearAuthStorage();
+    },
+    onError: () => {
+      toast.error("로그아웃에 실패했습니다. 다시 시도해주세요.");
+    },
+  });
+
+  return {
+    logout,
   };
 };
