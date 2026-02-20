@@ -37,4 +37,4 @@ export {
   useAlarmSettingsMutation,
 } from "./alarm";
 
-export { useSignupMutation } from "./auth";
+export { useSignupMutation, useLoginMutation } from "./auth";

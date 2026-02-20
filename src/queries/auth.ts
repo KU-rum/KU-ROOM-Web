@@ -1,9 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 
-import { signupApi } from "@apis/auth";
-import { SignupRequest } from "@apis/types";
-import useToast from "@/shared/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import useToast from "@hooks/use-toast";
+import { useUserStore } from "@stores/userStore";
+import { loginApi, signupApi } from "@apis/auth";
+import { LoginRequest, SignupRequest } from "@apis/types";
 
 export const useSignupMutation = () => {
   const toast = useToast();
@@ -24,5 +25,38 @@ export const useSignupMutation = () => {
   return {
     signup,
     isPendingSignup,
+  };
+};
+
+export const useLoginMutation = () => {
+  const navigate = useNavigate();
+  const { setUser } = useUserStore();
+
+  const { mutate: login, isPending: isPendingLogin } = useMutation({
+    mutationFn: ({ loginId, password }: LoginRequest) =>
+      loginApi({ loginId, password }),
+    onSuccess: (response) => {
+      const {
+        tokenResponse: { accessToken, refreshToken },
+        userResponse,
+      } = response.data;
+
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+
+      window.ReactNativeWebView?.postMessage(
+        JSON.stringify({
+          type: "AUTH_TOKEN",
+          accessToken: accessToken,
+        }),
+      );
+      setUser({ ...userResponse, loginType: "email" });
+      navigate("/", { replace: true });
+    },
+  });
+
+  return {
+    login,
+    isPendingLogin,
   };
 };

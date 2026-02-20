@@ -13,6 +13,7 @@ import {
   CheckEmailResponse,
   CheckNicknameResponse,
   VerifyCodeResponse,
+  LoginRequest,
 } from "./types";
 
 const LOGIN_API_URL = "/auth/login";
@@ -39,7 +40,7 @@ export const signupApi = async (userData: SignupRequest) => {
 };
 
 // 로그인 api
-export const loginApi = async (loginId: string, password: string) => {
+export const loginApi = async ({ loginId, password }: LoginRequest) => {
   try {
     const response = await axiosInstance.post<LoginResponse>(LOGIN_API_URL, {
       loginId,
