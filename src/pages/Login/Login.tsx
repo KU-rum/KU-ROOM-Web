@@ -8,7 +8,7 @@ import Button from "@components/Button/Button";
 import Header from "@components/Header/Header";
 import { EdgeGuard } from "@components/EdgeGuard";
 import InputBar from "@components/InputBar/InputBar";
-import Loading from "@components/Loading/Loading";
+import Splash from "@components/Splash/Splash";
 import { useLoginMutation } from "@/queries";
 
 import styles from "./Login.module.css";
@@ -96,7 +96,7 @@ const Login = () => {
 
   if (isPendingLogin) {
     // TODO: 로그인할 때는 다른 디자인의 스플래시 화면 보여줘도 좋을 듯
-    return <Loading />;
+    return <Splash />;
   }
 
   return (
