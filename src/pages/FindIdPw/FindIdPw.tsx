@@ -1,5 +1,6 @@
 import { ChangeEvent, useEffect, useState, useReducer } from "react";
 
+import useToast from "@hooks/use-toast";
 import InformModal from "@components/InformModal/InformModal";
 import Header from "@components/Header/Header";
 import { isValidPassword } from "@utils/validations";
@@ -14,7 +15,6 @@ import FindStep0 from "./FindStep0";
 import FindStep1 from "./FindStep1";
 import FindStep2 from "./FindStep2";
 import styles from "./FindIdPw.module.css";
-import useToast from "@/shared/hooks/use-toast";
 
 // 상태 정의
 type State = {
