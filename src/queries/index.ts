@@ -40,6 +40,7 @@ export {
 
 export {
   useSignupMutation,
+  useSocialUserSignupMutation,
   useLoginMutation,
   useLogoutMutation,
   useWithdrawMutation,

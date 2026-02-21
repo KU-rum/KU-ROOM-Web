@@ -2,18 +2,17 @@ import React, { useState, ChangeEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import useToast from "@hooks/use-toast";
-import { createSocialUserApi } from "@apis/auth";
 import {
   useCollegeDepartmentsQuery,
   useCollegesQuery,
   useSignupMutation,
+  useSocialUserSignupMutation,
 } from "@/queries";
 import Button from "@components/Button/Button";
 import InputBar from "@components/InputBar/InputBar";
 import Header from "@components/Header/Header";
 import Loading from "@components/Loading/Loading";
 import { isValidStudentId } from "@utils/validations";
-import { useUserStore } from "@stores/userStore";
 
 import Select from "./components/Select/Select";
 import BottomSheet from "./components/BottomSheet/BottomSheet";
@@ -23,7 +22,6 @@ import "./ProfileSetting.css";
 const ProfileSetting: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUser } = useUserStore();
   const { signupEmail, signupId, signupPw, isMarketingOk } =
     location.state || {};
 
@@ -50,6 +48,8 @@ const ProfileSetting: React.FC = () => {
   const { collegesData, isPendingCollegesData } = useCollegesQuery();
   const { departmentsData, isPendingDepartmentsData } =
     useCollegeDepartmentsQuery(selectedCollege);
+  const { socialUserSignup, isPendingSocialUserSignup } =
+    useSocialUserSignupMutation();
 
   // 닉네임이 유효한지 확인하는 변수
   const isNicknameValid =
@@ -97,23 +97,20 @@ const ProfileSetting: React.FC = () => {
         agreementStatus: isMarketingOk ? "AGREED" : "DISAGREED",
       };
 
-      const response = await createSocialUserApi(
-        socialUserData,
-        setIsDuplicatedNickname,
-      );
-
-      if (response?.data) {
-        const {
-          tokenResponse: { accessToken, refreshToken },
-          userResponse,
-        } = response.data;
-
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
-        sessionStorage.removeItem("preSignupToken");
-        setUser({ ...userResponse, loginType: "social" });
-        navigate("/welcome");
-      }
+      socialUserSignup(socialUserData, {
+        onError: (error: any) => {
+          const errorMessage =
+            error.response?.data?.message || "회원가입 중 오류 발생";
+          if (errorMessage === "이미 존재하는 닉네임입니다.") {
+            setIsDuplicatedNickname(true);
+          } else {
+            toast.error(
+              error.response?.data?.message ||
+                "소셜 로그인 회원 생성 중 오류 발생",
+            );
+          }
+        },
+      });
     } else {
       const userData = {
         email: signupEmail || "",
@@ -147,7 +144,7 @@ const ProfileSetting: React.FC = () => {
     studentId.length >= 9 &&
     isValidStudentId(studentId);
 
-  if (isPendingSignup) {
+  if (isPendingSignup || isPendingSocialUserSignup) {
     return <Loading />;
   }
 

@@ -41,24 +41,12 @@ export const signupApi = async (userData: SignupRequest) => {
 // 소셜 로그인 회원가입 api (PreSignupToken 사용)
 export const createSocialUserApi = async (
   socialUserData: CreateSocialUserRequest,
-  setIsDuplicatedNickname: (value: boolean) => void,
 ) => {
-  try {
-    const response = await axiosInstance.post<LoginResponse>(
-      CREATE_SOCIAL_USER_API_URL,
-      socialUserData,
-    );
-    return response.data;
-  } catch (error: any) {
-    const errorMessage =
-      error.response?.data?.message || "회원가입 중 오류 발생";
-    if (errorMessage === "이미 존재하는 닉네임입니다.") {
-      setIsDuplicatedNickname(true);
-    }
-    throw new Error(
-      error.response?.data?.message || "소셜 로그인 회원 생성 중 오류 발생",
-    );
-  }
+  const response = await axiosInstance.post<LoginResponse>(
+    CREATE_SOCIAL_USER_API_URL,
+    socialUserData,
+  );
+  return response.data;
 };
 
 // 로그인 api

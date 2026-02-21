@@ -6,6 +6,7 @@ import { useUserStore } from "@stores/userStore";
 import {
   checkIsEmailDuplicatedApi,
   checkIsIdDuplicatedApi,
+  createSocialUserApi,
   findIdFromEmailApi,
   getTokenByTempTokenApi,
   loginApi,
@@ -15,7 +16,12 @@ import {
   verifyCodeApi,
   withdrawApi,
 } from "@apis/auth";
-import { LoginRequest, LoginResponse, SignupRequest } from "@apis/types";
+import {
+  CreateSocialUserRequest,
+  LoginRequest,
+  LoginResponse,
+  SignupRequest,
+} from "@apis/types";
 import { clearAuthStorage } from "@utils/storageUtils";
 
 export const useSignupMutation = () => {
@@ -37,6 +43,35 @@ export const useSignupMutation = () => {
   return {
     signup,
     isPendingSignup,
+  };
+};
+
+export const useSocialUserSignupMutation = () => {
+  const navigate = useNavigate();
+  const { setUser } = useUserStore();
+
+  const { mutate: socialUserSignup, isPending: isPendingSocialUserSignup } =
+    useMutation({
+      mutationFn: (socialUserData: CreateSocialUserRequest) =>
+        createSocialUserApi(socialUserData),
+      onSuccess: (response) => {
+        if (!response.data?.tokenResponse) throw Error();
+        const {
+          tokenResponse: { accessToken, refreshToken },
+          userResponse,
+        } = response.data;
+
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        sessionStorage.removeItem("preSignupToken");
+        setUser({ ...userResponse, loginType: "social" });
+        navigate("/welcome");
+      },
+    });
+
+  return {
+    socialUserSignup,
+    isPendingSocialUserSignup,
   };
 };
 
