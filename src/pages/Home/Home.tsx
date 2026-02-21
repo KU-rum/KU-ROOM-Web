@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { checkIsSharedApi } from "@apis/map";
+import { checkShareStatusApi } from "@apis/map";
 import { clearAuthStorage } from "@utils/storageUtils";
 import { useUnreadAlarmQuery } from "@/queries";
 // import Splash from "@components/Splash";
@@ -35,7 +35,7 @@ const Home = () => {
   // 현재 내 위치 공유 상태 확인 함수
   const getIsMySharedInfo = async () => {
     try {
-      const response = await checkIsSharedApi();
+      const response = await checkShareStatusApi();
       console.log("현재 내 위치 공유 상태 : ", response);
       setIsSharedLocation(response.isActive);
       setSharedLocationName(response.placeName);

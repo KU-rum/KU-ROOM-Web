@@ -1,4 +1,17 @@
-import { CategoryEnum } from "@/shared/types";
+// 카테고리 ENUM 정보
+type CategoryEnum =
+  | "FRIEND"
+  | "BUILDING"
+  | "COLLEGE"
+  | "K_CUBE"
+  | "K_HUB"
+  | "CONVENIENCE_STORE"
+  | "CAFE"
+  | "COPY_ROOM"
+  | "STUDENT_CAFETERIA"
+  | "DORMITORY"
+  | "BANK"
+  | "POST_OFFICE";
 
 export const getCategoryEnum = (title: string): CategoryEnum | undefined => {
   switch (title) {

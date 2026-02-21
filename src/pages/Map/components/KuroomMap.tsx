@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
-import { Coordinate, DetailPlaceData, MarkerData } from "@/shared/types";
+import { Coordinate, MarkerData } from "@/shared/types";
+import { DetailPlaceData } from "@apis/types";
 
 import {
   myLocationTracking,

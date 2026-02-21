@@ -2,7 +2,9 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 
-import { checkIsSharedApi, getCategoryLocationsApi } from "@apis/map";
+import { MapSearchResult, PlaceData } from "@apis/types";
+import { MarkerData } from "@/shared/types/mapTypes";
+import { checkShareStatusApi, getCategoryLocationsApi } from "@apis/map";
 import DefaultProfileImg from "@assets/defaultProfileImg.svg";
 import BottomBar from "@components/BottomBar/BottomBar";
 import ShareLocationModal from "@components/ShareLocationModal/ShareLocationModal";
@@ -15,11 +17,7 @@ import MapSearch from "./components/MapSearch/MapSearch";
 import LocationsBottomSheet from "./components/LocationsBottomSheet/LocationsBottomSheet";
 import FocusedLocationBottomSheet from "./components/FocusedLocationBottomSheet/FocusedLocationBottomSheet";
 import { isMyLocationInSchool } from "@utils/mapRangeUtils";
-import {
-  MapSearchResult,
-  MarkerData,
-  PlaceData,
-} from "@/shared/types/mapTypes";
+
 import {
   clearAllMarkers,
   makeFocusMarker,
@@ -88,7 +86,7 @@ const MapPage = () => {
   // 현재 내 위치 공유 상태 확인 함수
   const getIsMySharedInfo = async () => {
     try {
-      const response = await checkIsSharedApi();
+      const response = await checkShareStatusApi();
       setIsSharedLocation(response.isActive);
     } catch (error) {
       console.error("위치 공유 상태 확인 실패 : ", error);

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactModal from "react-modal";
 
-import { shareUserLocation, unshareLocation } from "@apis/map";
+import { shareUserLocationApi, unshareLocationApi } from "@apis/map";
 import cautionIcon from "@assets/icon/editFriend/cautionIcon.svg";
 import Button from "@components/Button/Button";
 
@@ -30,7 +30,7 @@ const ShareLocationModal: React.FC<ShareLocationModalProps> = ({
   const handleSharingLocation = async () => {
     if (!nearLocation) return;
     try {
-      const response = await shareUserLocation(nearLocation);
+      const response = await shareUserLocationApi(nearLocation);
       console.log(response);
 
       refreshSharedStatus();
@@ -41,7 +41,7 @@ const ShareLocationModal: React.FC<ShareLocationModalProps> = ({
   };
   const handleUnSharingLocation = async () => {
     try {
-      const response = await unshareLocation();
+      const response = await unshareLocationApi();
       console.log("서버에 공유 해제 요청");
       console.log(response);
 

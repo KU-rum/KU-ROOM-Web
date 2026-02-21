@@ -5,7 +5,7 @@ import arrowBack from "@assets/nav/arrowback.svg";
 import deleteIcon from "@assets/icon/deleteIcon.svg";
 import noResultIcon from "@assets/icon/noResultSearch.svg";
 import kuroomEmptyIcon from "@assets/icon/kuroom-icon/kuroom-gray.svg";
-import { MapSearchResult } from "@/shared/types";
+import { MapSearchResult } from "@apis/types";
 
 import { useSearchLocationQuery } from "../../hooks/use-search-location-query";
 import { useLocationKeyword } from "../../hooks/use-location-keyword";

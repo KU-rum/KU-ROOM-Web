@@ -5,7 +5,7 @@ import Header from "@/shared/components/Header/Header";
 import KuroomMap from "@pages/Map/components/KuroomMap";
 import sharePin from "@assets/map/share-pin.png";
 import { Coordinate } from "@/shared/types";
-import { getUserShareLocation } from "@apis/map";
+import { getPlaceNameApi } from "@apis/map";
 
 import styles from "./ShareLocation.module.css";
 import Button from "@/shared/components/Button/Button";
@@ -32,10 +32,7 @@ const ShareLocation = () => {
     }
 
     try {
-      const response = await getUserShareLocation(
-        center.latitude,
-        center.longitude,
-      );
+      const response = await getPlaceNameApi(center.latitude, center.longitude);
       if (response.code === 1204) {
         setPlaceName("");
         return;

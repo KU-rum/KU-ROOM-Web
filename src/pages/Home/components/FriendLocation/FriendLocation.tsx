@@ -5,7 +5,7 @@ import arrowRight from "@assets/nav/arrowRight.svg";
 import locationIcon from "@assets/icon/locationIcon.png";
 import DefaultProfileImg from "@assets/defaultProfileImg.svg";
 import kuroomEmptyIcon from "@assets/icon/kuroom-icon/kuroom-gray.svg";
-import { PlaceData } from "@/shared/types";
+import { PlaceData } from "@apis/types";
 
 import styles from "./FriendLocation.module.css";
 import { getCategoryLocationsApi } from "@apis/map";

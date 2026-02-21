@@ -72,3 +72,18 @@ export type {
   CheckEmailResponse,
   VerifyCodeResponse,
 } from "./auth";
+
+export type {
+  ShareStatusData,
+  ShareStatusResponse,
+  PlaceNameData,
+  PlaceNameResponse,
+  PlaceData,
+  CategoryLocationsResponse,
+  DetailPlaceData,
+  LocationDetailResponse,
+  MapSearchResult,
+  MapSearchResultResponse,
+  MapRecentSearchData,
+  MapRecentSearchReponse,
+} from "./map";

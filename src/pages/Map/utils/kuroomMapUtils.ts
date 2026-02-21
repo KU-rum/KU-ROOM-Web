@@ -1,4 +1,4 @@
-import { getLocationDetailData } from "@apis/map";
+import { getLocationDetailDataApi } from "@apis/map";
 
 import myMarkerIcon from "@assets/map/mylocationMarker.svg";
 import focusedMarkerIcon from "@assets/map/focusedMarker.png";
@@ -13,7 +13,8 @@ import dormitoryMarker from "@assets/map/markers/dormitoryMarker.svg";
 import bankMarker from "@assets/map/markers/bankMarker.svg";
 import postMarker from "@assets/map/markers/postMarker.svg";
 import defaultMarker from "@assets/map/defaultMarkerIcon.svg";
-import { DetailPlaceData, MarkerData } from "@/shared/types";
+import { MarkerData } from "@/shared/types";
+import { DetailPlaceData } from "@apis/types";
 
 interface KuroomMarker {
   marker: naver.maps.Marker;
@@ -197,7 +198,7 @@ async function makeFocusMarker(
   setIsTracking(false);
 
   try {
-    const response = await getLocationDetailData(placeId);
+    const response = await getLocationDetailDataApi(placeId);
     setDetailLocationData(response);
   } catch (error) {
     console.error("디테일 위치 정보 가져오기 mapUtils에서 오류 : ", error);

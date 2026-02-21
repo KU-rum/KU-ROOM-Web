@@ -6,7 +6,7 @@ import Rank1Icon from "@assets/icon/ranking/rank1.png";
 import Rank2Icon from "@assets/icon/ranking/rank2.png";
 import Rank3Icon from "@assets/icon/ranking/rank3.png";
 import ArrowRight from "@assets/nav/arrowRight.svg";
-import { DetailPlaceData } from "@/shared/types";
+import { DetailPlaceData } from "@apis/types";
 import { useLocationTop3RankQuery } from "@/queries";
 
 import styles from "./FocusedLocationInfo.module.css";

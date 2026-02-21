@@ -1,17 +1,17 @@
 // 지도 관련 api
 import axiosInstance from "./axiosInstance";
-
 import {
-  DetailPlaceData,
-  MapRecentSearchData,
-  MapSearchResult,
-  PlaceData,
-} from "@/shared/types";
-
-import { ApiResponse } from "./types";
+  ApiResponse,
+  CategoryLocationsResponse,
+  LocationDetailResponse,
+  MapRecentSearchReponse,
+  MapSearchResultResponse,
+  PlaceNameResponse,
+  ShareStatusResponse,
+} from "./types";
 
 const CHECK_SHARE_STATE_API = "/places/sharing/status";
-const GET_USER_SHARE_LOCATION = "/places/sharing";
+const GET_PLACE_NAME = "/places/sharing";
 const SHARE_USER_LOCATION = "/places/sharing/confirm";
 const UNSHARE_LOCATION = "/places/sharing/confirm";
 const GET_CHIP_LOCATION = "/places";
@@ -22,19 +22,13 @@ const GET_RECENT_SEARCH = "/places/search/history"; // 최근 검색어 5개
 const DELETE_RECENT_ALL_SEARCH = "/places/search/history"; // 최근 검색어 모두 삭제
 const DELETE_RECENT_SEARCH = "/places/search/history/"; // 최근 검색어 하나 삭제
 
-// 현재 위치 공유 상태인지 여부 api
-interface IsSharedApiResponse extends ApiResponse {
-  data: {
-    isActive: boolean;
-    placeName: string | null;
-  };
-}
-export const checkIsSharedApi = async () => {
+// 위치 공유 상태 조회 api
+export const checkShareStatusApi = async () => {
   try {
-    const response = await axiosInstance.get<IsSharedApiResponse>(
+    const response = await axiosInstance.get<ShareStatusResponse>(
       CHECK_SHARE_STATE_API,
     );
-    return response.data.data; // 성공 응답 반환
+    return response.data.data;
   } catch (error: any) {
     console.error(
       "위치 공유 상태 확인 실패:",
@@ -46,30 +40,17 @@ export const checkIsSharedApi = async () => {
   }
 };
 
-// 내 위치 공유 클릭 시 가장 가까운 건물명 받아오는 api
-interface GetUserShareLocationApi extends ApiResponse {
-  data: {
-    placeName: string;
-  };
-}
-export const getUserShareLocation = async (
-  latitude: number,
-  longitude: number,
-) => {
+// 좌표 기준 건물명 받아오는 api
+export const getPlaceNameApi = async (latitude: number, longitude: number) => {
   try {
-    const response = await axiosInstance.post<GetUserShareLocationApi>(
-      GET_USER_SHARE_LOCATION,
+    const response = await axiosInstance.post<PlaceNameResponse>(
+      GET_PLACE_NAME,
       {
-        latitude: latitude,
-        longitude: longitude,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        latitude,
+        longitude,
       },
     );
-    return response.data; // 성공 응답 반환
+    return response.data;
   } catch (error: any) {
     console.error(
       "유저의 가장 가까운 건물명 조회 실패:",
@@ -82,23 +63,13 @@ export const getUserShareLocation = async (
   }
 };
 
-// 위치 공유 시작(확정) api
-interface ShareUserLocationApi extends ApiResponse {
-  data: {
-    placeName: string;
-  };
-}
-export const shareUserLocation = async (placeName: string) => {
+// 위치 공유 시작 api
+export const shareUserLocationApi = async (placeName: string) => {
   try {
-    const response = await axiosInstance.post<ShareUserLocationApi>(
+    const response = await axiosInstance.post<PlaceNameResponse>(
       SHARE_USER_LOCATION,
       {
         placeName: placeName,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
       },
     );
     return response.data.data; // 성공 응답 반환
@@ -113,12 +84,12 @@ export const shareUserLocation = async (placeName: string) => {
   }
 };
 
-// 위치 공유 해제(취소) api
-export const unshareLocation = async () => {
+// 위치 공유 해제 api
+export const unshareLocationApi = async () => {
   try {
     const response =
-      await axiosInstance.delete<IsSharedApiResponse>(UNSHARE_LOCATION);
-    return response.data.status; // 성공 응답 반환
+      await axiosInstance.delete<ShareStatusResponse>(UNSHARE_LOCATION);
+    return response.data;
   } catch (error: any) {
     console.error(
       "위치 공유 해제 실패:",
@@ -131,12 +102,9 @@ export const unshareLocation = async () => {
 };
 
 // 카테고리 칩(핀) 클릭 시 위치 정보 조회 api / 홈에서 친구 위치 조회에서도 사용
-interface LocationChipApiResponse extends ApiResponse {
-  data: PlaceData[];
-}
 export const getCategoryLocationsApi = async (category: string) => {
   try {
-    const response = await axiosInstance.get<LocationChipApiResponse>(
+    const response = await axiosInstance.get<CategoryLocationsResponse>(
       GET_CHIP_LOCATION,
       { params: { chip: category.trim() } },
     );
@@ -154,12 +122,9 @@ export const getCategoryLocationsApi = async (category: string) => {
 };
 
 // 하나의 위치에 대한 디테일 정보 조회 api
-interface GetLocationDetailData extends ApiResponse {
-  data: DetailPlaceData;
-}
-export const getLocationDetailData = async (placeId: number) => {
+export const getLocationDetailDataApi = async (placeId: number) => {
   try {
-    const response = await axiosInstance.get<GetLocationDetailData>(
+    const response = await axiosInstance.get<LocationDetailResponse>(
       GET_LOCATION_DETAIL_DATA + placeId,
     );
     return response.data.data; // 성공 응답 반환
@@ -175,12 +140,9 @@ export const getLocationDetailData = async (placeId: number) => {
   }
 };
 
-// 위치 검색 시 결과 api. 타이틀만 반환
-interface SearchResultApiResponse extends ApiResponse {
-  data: MapSearchResult[];
-}
-export const getSearchLocationResult = async (search: string) => {
-  const response = await axiosInstance.get<SearchResultApiResponse>(
+// 위치 검색 시 검색 결과(타이틀) api.
+export const getMapSearchResultApi = async (search: string) => {
+  const response = await axiosInstance.get<MapSearchResultResponse>(
     GET_SEARCH_LOCATION_RESULT,
     { params: { query: search.trim() } },
   );
@@ -188,18 +150,15 @@ export const getSearchLocationResult = async (search: string) => {
 };
 
 // 최근 위치 검색어 가져오기 api
-interface RecentSearchReponse extends ApiResponse {
-  data: MapRecentSearchData[];
-}
-export const getRecentSearchLocation = async () => {
+export const getMapRecentSearchApi = async () => {
   const response =
-    await axiosInstance.get<RecentSearchReponse>(GET_RECENT_SEARCH);
+    await axiosInstance.get<MapRecentSearchReponse>(GET_RECENT_SEARCH);
 
   return response.data.data;
 };
 
 // 최근 위치 검색어 저장 api
-export const saveSearchLocationKeywordApi = async (search: string) => {
+export const saveMapRecentSearchApi = async (search: string) => {
   const response = await axiosInstance.post<ApiResponse>(
     SAVE_SEARCH_LOCATION_KEYWORD,
     {},
@@ -209,7 +168,7 @@ export const saveSearchLocationKeywordApi = async (search: string) => {
 };
 
 // 최근 검색어 모두 삭제 api
-export const deleteAllRecentData = async () => {
+export const deleteAllMapRecentSearchApi = async () => {
   const response = await axiosInstance.request({
     url: DELETE_RECENT_ALL_SEARCH,
     method: "DELETE",
@@ -221,7 +180,7 @@ export const deleteAllRecentData = async () => {
 };
 
 // 최근 검색어 하나 삭제 api
-export const deleteRecentSearchLocation = async (deleteData: number) => {
+export const deleteMapRecentSearchApi = async (deleteData: number) => {
   const response = await axiosInstance.request({
     url: DELETE_RECENT_SEARCH + deleteData,
     method: "DELETE",

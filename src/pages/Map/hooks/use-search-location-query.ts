@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getRecentSearchLocation, getSearchLocationResult } from "@apis/map";
-import { MapRecentSearchData, MapSearchResult } from "@/shared/types";
+import { getMapRecentSearchApi, getMapSearchResultApi } from "@apis/map";
+import { MapRecentSearchData, MapSearchResult } from "@apis/types";
 import useToast from "@hooks/use-toast";
 import useDebounce from "@hooks/use-debounce";
 import { MAP_SEARCH_QUERY_KEY } from "../querykey";
@@ -17,7 +17,7 @@ export const useSearchLocationQuery = (search: string) => {
     error: searchError,
   } = useQuery<MapSearchResult[]>({
     queryKey: MAP_SEARCH_QUERY_KEY.SEARCH_RESULT(debouncedText),
-    queryFn: () => getSearchLocationResult(debouncedText),
+    queryFn: () => getMapSearchResultApi(debouncedText),
     enabled: !!debouncedText.trim(),
     staleTime: 1000 * 60 * 3,
   });
@@ -28,7 +28,7 @@ export const useSearchLocationQuery = (search: string) => {
     isError: isErrorKeyword,
   } = useQuery<MapRecentSearchData[]>({
     queryKey: MAP_SEARCH_QUERY_KEY.KEYWORD,
-    queryFn: () => getRecentSearchLocation(),
+    queryFn: () => getMapRecentSearchApi(),
     staleTime: 1000 * 60,
   });
 

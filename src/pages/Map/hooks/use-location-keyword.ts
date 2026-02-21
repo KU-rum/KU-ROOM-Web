@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
-  deleteAllRecentData,
-  deleteRecentSearchLocation,
-  saveSearchLocationKeywordApi,
+  deleteAllMapRecentSearchApi,
+  deleteMapRecentSearchApi,
+  saveMapRecentSearchApi,
 } from "@apis/map";
 import useToast from "@hooks/use-toast";
 import { MAP_SEARCH_QUERY_KEY } from "../querykey";
@@ -13,7 +13,7 @@ export const useLocationKeyword = () => {
   const qc = useQueryClient();
 
   const { mutate: saveLocationKeyword } = useMutation({
-    mutationFn: (search: string) => saveSearchLocationKeywordApi(search),
+    mutationFn: (search: string) => saveMapRecentSearchApi(search),
     onSuccess: () => {
       qc.invalidateQueries({
         queryKey: MAP_SEARCH_QUERY_KEY.KEYWORD,
@@ -25,7 +25,7 @@ export const useLocationKeyword = () => {
   });
 
   const { mutate: deleteRecentKeyword } = useMutation({
-    mutationFn: (keywordId: number) => deleteRecentSearchLocation(keywordId),
+    mutationFn: (keywordId: number) => deleteMapRecentSearchApi(keywordId),
     onSuccess: () => {
       qc.invalidateQueries({
         queryKey: MAP_SEARCH_QUERY_KEY.KEYWORD,
@@ -37,7 +37,7 @@ export const useLocationKeyword = () => {
   });
 
   const { mutate: deleteAllRecentKeyword } = useMutation({
-    mutationFn: () => deleteAllRecentData(),
+    mutationFn: () => deleteAllMapRecentSearchApi(),
     onSuccess: () => {
       toast.info("최근 검색어가 모두 삭제되었습니다.");
       qc.invalidateQueries({
