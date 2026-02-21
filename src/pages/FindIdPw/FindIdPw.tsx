@@ -1,15 +1,20 @@
 import { ChangeEvent, useEffect, useState, useReducer } from "react";
 
-import { findIdFromEmailApi, sendEmailApi, verifyCodeApi } from "@apis/auth";
 import InformModal from "@components/InformModal/InformModal";
 import Header from "@components/Header/Header";
 import { isValidPassword } from "@utils/validations";
-import { useChangePwMutation } from "@/queries";
+import {
+  useChangePwMutation,
+  useFindIdMutation,
+  useSendEmailMutation,
+  useVerifyCodeMutation,
+} from "@/queries";
 
 import FindStep0 from "./FindStep0";
 import FindStep1 from "./FindStep1";
 import FindStep2 from "./FindStep2";
 import styles from "./FindIdPw.module.css";
+import useToast from "@/shared/hooks/use-toast";
 
 // 상태 정의
 type State = {
@@ -83,12 +88,16 @@ const reducer = (state: State, action: Action): State => {
 };
 
 const FindIdPw = () => {
+  const toast = useToast();
   const [state, dispatch] = useReducer(reducer, initialState);
   // 다른 컴포넌트 prop으로 가는 것은 useState로 관리
   const [findStep, setFindStep] = useState(0); // 아이디/비밀번호 찾기 프로세스 스텝
   const [modalState, setModalState] = useState(false); // 모달창 on/off 상태
   const [modalType, setModalType] = useState(""); // 모달창 종류
 
+  const { sendEmail } = useSendEmailMutation();
+  const { findId } = useFindIdMutation();
+  const { verifyEmailCode } = useVerifyCodeMutation();
   const { changePwBeforeLogin } = useChangePwMutation();
 
   // 상태 변경 함수들
@@ -101,7 +110,7 @@ const FindIdPw = () => {
       dispatch({ type: "SET_VERIFY_CODE", payload: newValue });
     }
   };
-  const handleuserIdChange = (userId: string) => {
+  const handleUserIdChange = (userId: string) => {
     dispatch({ type: "SET_USER_ID", payload: userId });
   };
   const handleNewPwChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -120,43 +129,39 @@ const FindIdPw = () => {
 
   // 이메일에 인증코드 전송
   const sendInformEmail = async (informEmail: string) => {
-    try {
-      console.log(informEmail);
-      await getIdfromEmail();
-      const sendResponse = await sendEmailApi(informEmail);
-      console.log(sendResponse);
-      setModalType("informEmail");
-      setModalState(true);
-    } catch (error) {
-      console.error("이메일 안내 실패:", error);
-      // 필요하다면 사용자에게 에러 메시지 보여주는 상태 처리도 추가 가능
-      setModalType("NonExistentEmail");
-      setModalState(true);
-    }
-  };
-
-  // 이메일로 아이디 가져오기.
-  const getIdfromEmail = async () => {
-    const response = await findIdFromEmailApi(state.informEmail);
-    if (response) handleuserIdChange(response);
+    findId(informEmail, {
+      onSuccess: (response) => {
+        if (!response.data?.loginId) {
+          toast.error("이메일 검증 중 오류가 발생했습니다.");
+          return;
+        }
+        handleUserIdChange(response.data?.loginId);
+        sendEmail(informEmail, {
+          onSuccess: () => {
+            setModalType("informEmail");
+            setModalState(true);
+          },
+        });
+      },
+      onError: () => {
+        setModalType("NonExistentEmail");
+        setModalState(true);
+      },
+    });
   };
 
   // 인증코드 유효한지 확인. 테스트용 인증코드 로직. api 연동 필요. 이부분은 서버와 얘기 필요할듯? boolean으로 넘겨줄 수도 있음.
   const handleVerifyCodeTest = async () => {
-    try {
-      const verifyData = {
-        email: state.informEmail,
-        code: state.verifyCode,
-      };
-      // 서버에 요청해서 같은지 확인
-      await verifyCodeApi(verifyData);
-      console.log("비밀번호 재설정으로 넘어가기");
-      setFindStep(2);
-    } catch (error) {
-      dispatch({ type: "SET_VERIFY_ATTEMPTED", payload: true });
-      console.error(error);
-    }
+    const verifyData = {
+      email: state.informEmail,
+      code: state.verifyCode,
+    };
+    verifyEmailCode(verifyData, {
+      onSuccess: () => setFindStep(2),
+      onError: () => dispatch({ type: "SET_VERIFY_ATTEMPTED", payload: true }),
+    });
   };
+
   // 인증코드 실패 시 2초 간 보여줌
   useEffect(() => {
     if (!state.isVerifyAttempted) return;
@@ -191,14 +196,11 @@ const FindIdPw = () => {
           if (response.code === 311) {
             dispatch({ type: "SET_ERROR_CODE", payload: 311 });
           } else {
-            console.log("재설정 성공!");
-            setModalType("NewPassword");
+            setModalType("NewPwBeforeLogin");
             setModalState(true);
           }
         },
       });
-    } else {
-      console.log("재설정 실패: 조건을 다시 확인하세요.");
     }
   };
 

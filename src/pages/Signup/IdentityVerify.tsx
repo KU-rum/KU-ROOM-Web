@@ -3,13 +3,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import checkedIcon from "@assets/icon/roundcheck.svg";
 import uncheckedIcon from "@assets/icon/roundUncheck.svg";
-import { sendEmailApi, verifyCodeApi } from "@apis/auth";
 import InputBar from "@components/InputBar/InputBar";
 import Button from "@components/Button/Button";
 import Header from "@components/Header/Header";
 import InformModal from "@components/InformModal/InformModal";
 import { isValidEmail } from "@utils/validations";
-import { useCheckIsEmailDuplicatedMutation } from "@/queries";
+import {
+  useCheckIsEmailDuplicatedMutation,
+  useSendEmailMutation,
+  useVerifyCodeMutation,
+} from "@/queries";
 
 import styles from "./IdentityVerify.module.css";
 
@@ -29,6 +32,8 @@ const IdentityVerify = () => {
   const [isAttemptVerify, setIsAttemptVerify] = useState(false); // 인증코드를 확인한 적 있는지 여부
 
   const { checkIsEmailDuplicated } = useCheckIsEmailDuplicatedMutation();
+  const { sendEmail } = useSendEmailMutation();
+  const { verifyEmailCode } = useVerifyCodeMutation();
 
   const handleVerifiedEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setVerifiedEmail(e.target.value);
@@ -46,9 +51,12 @@ const IdentityVerify = () => {
   const sendVerifyCode = async () => {
     checkIsEmailDuplicated(verifiedEmail, {
       onSuccess: async () => {
-        await sendEmailApi(verifiedEmail);
-        setIsAttemptSend(true);
-        setModalState(true);
+        sendEmail(verifiedEmail, {
+          onSuccess: () => {
+            setIsAttemptSend(true);
+            setModalState(true);
+          },
+        });
       },
       onError: (error: any) => {
         if (error.response.data.code === 305) {
@@ -67,21 +75,22 @@ const IdentityVerify = () => {
       code: verifyCode,
     };
     // 서버에 요청해서 같은지 확인
-    try {
-      const response = await verifyCodeApi(verifyData);
-      if (response) {
-        console.log("여기");
-        navigate("/agreement", {
-          state: {
-            signupId: signupId,
-            signupPw: signupPw,
-            signupEmail: verifiedEmail,
-          },
-        });
-      }
-    } catch (_) {
-      setIsAttemptVerify(true);
-    }
+    verifyEmailCode(verifyData, {
+      onSuccess: (response) => {
+        if (response.data.verified) {
+          navigate("/agreement", {
+            state: {
+              signupId,
+              signupPw,
+              signupEmail: verifiedEmail,
+            },
+          });
+        }
+      },
+      onError: () => {
+        setIsAttemptVerify(true);
+      },
+    });
   };
 
   useEffect(() => {

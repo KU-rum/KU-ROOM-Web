@@ -6,11 +6,13 @@ import { useUserStore } from "@stores/userStore";
 import {
   checkIsEmailDuplicatedApi,
   checkIsIdDuplicatedApi,
+  findIdFromEmailApi,
   getTokenByTempTokenApi,
   loginApi,
   logoutApi,
   sendEmailApi,
   signupApi,
+  verifyCodeApi,
   withdrawApi,
 } from "@apis/auth";
 import { LoginRequest, LoginResponse, SignupRequest } from "@apis/types";
@@ -183,4 +185,23 @@ export const useSendEmailMutation = () => {
   return { sendEmail };
 };
 
-export const useVerifyCodeMutation = () => {};
+export const useVerifyCodeMutation = () => {
+  const { mutate: verifyEmailCode } = useMutation({
+    mutationFn: (verifyData: { email: string; code: string }) =>
+      verifyCodeApi(verifyData),
+  });
+
+  return {
+    verifyEmailCode,
+  };
+};
+
+export const useFindIdMutation = () => {
+  const { mutate: findId } = useMutation({
+    mutationFn: (email: string) => findIdFromEmailApi(email),
+  });
+
+  return {
+    findId,
+  };
+};

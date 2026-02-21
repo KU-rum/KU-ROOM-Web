@@ -48,4 +48,5 @@ export {
   useCheckIsEmailDuplicatedMutation,
   useSendEmailMutation,
   useVerifyCodeMutation,
+  useFindIdMutation,
 } from "./auth";
