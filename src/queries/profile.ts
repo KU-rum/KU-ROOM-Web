@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useToast from "@hooks/use-toast";
 import {
   addDepartmentApi,
+  checkIsNicknameDuplicatedApi,
   changeNicknameApi,
   changePwAfterLoginApi,
   changePwBeforeLoginApi,
@@ -48,6 +49,14 @@ export const useUserProfileQuery = () => {
     userProfileData,
     isPendingUserProfileData,
   };
+};
+
+export const useCheckIsNicknameDuplicatedApi = () => {
+  const { mutate: checkIsNicknameDuplicated } = useMutation({
+    mutationFn: (nickname: string) => checkIsNicknameDuplicatedApi(nickname),
+  });
+
+  return { checkIsNicknameDuplicated };
 };
 
 export const useChangeNicknameMutation = () => {

@@ -3,9 +3,18 @@ import { useMutation } from "@tanstack/react-query";
 
 import useToast from "@hooks/use-toast";
 import { useUserStore } from "@stores/userStore";
-import { loginApi, logoutApi, signupApi, withdrawApi } from "@apis/auth";
+import {
+  checkIsEmailDuplicatedApi,
+  checkIsIdDuplicatedApi,
+  getTokenByTempTokenApi,
+  loginApi,
+  logoutApi,
+  sendEmailApi,
+  signupApi,
+  withdrawApi,
+} from "@apis/auth";
 import { LoginRequest, LoginResponse, SignupRequest } from "@apis/types";
-import { clearAuthStorage } from "@/shared/utils/storageUtils";
+import { clearAuthStorage } from "@utils/storageUtils";
 
 export const useSignupMutation = () => {
   const toast = useToast();
@@ -105,3 +114,73 @@ export const useWithdrawMutation = () => {
     withdraw,
   };
 };
+
+export const useGetTokenByTempMutation = () => {
+  const navigate = useNavigate();
+  const toast = useToast();
+  const { setUser } = useUserStore();
+
+  const { mutate: getTokenByTemp } = useMutation({
+    mutationFn: (tempToken: string) => getTokenByTempTokenApi(tempToken),
+    onSuccess: (response: LoginResponse) => {
+      if (!response.data?.tokenResponse) throw Error();
+
+      const {
+        tokenResponse: { accessToken, refreshToken },
+        userResponse,
+      } = response.data;
+
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+
+      window.ReactNativeWebView?.postMessage(
+        JSON.stringify({
+          type: "AUTH_TOKEN",
+          accessToken,
+        }),
+      );
+
+      setUser({ ...userResponse, loginType: "social" });
+      navigate("/", { replace: true });
+    },
+    onError: (error) => {
+      navigate("/login");
+      toast.error(`로그인 실패 : ${error.message}`);
+    },
+  });
+
+  return {
+    getTokenByTemp,
+  };
+};
+
+export const useCheckIsIdDuplicatedMutation = () => {
+  const { mutate: checkIsIdDuplicated } = useMutation({
+    mutationFn: (id: string) => checkIsIdDuplicatedApi(id),
+  });
+
+  return { checkIsIdDuplicated };
+};
+
+export const useCheckIsEmailDuplicatedMutation = () => {
+  const { mutate: checkIsEmailDuplicated } = useMutation({
+    mutationFn: (email: string) => checkIsEmailDuplicatedApi(email),
+  });
+
+  return {
+    checkIsEmailDuplicated,
+  };
+};
+
+export const useSendEmailMutation = () => {
+  const toast = useToast();
+  const { mutate: sendEmail } = useMutation({
+    mutationFn: (email: string) => sendEmailApi(email),
+    onError: (error) => {
+      toast.error(`이메일 전송 실패 : ${error.message}`);
+    },
+  });
+  return { sendEmail };
+};
+
+export const useVerifyCodeMutation = () => {};

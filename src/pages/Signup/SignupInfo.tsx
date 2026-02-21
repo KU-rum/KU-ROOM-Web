@@ -6,12 +6,14 @@ import classNames from "classnames"; // 조건부 스타일링을 위해서
 import Header from "@components/Header/Header";
 import InputBar from "@components/InputBar/InputBar";
 import Button from "@components/Button/Button";
-import { checkAvailableId, handleSettingPassword } from "@utils/validations";
+import { handleSettingPassword } from "@utils/validations";
+import { useCheckIsIdDuplicatedMutation } from "@/queries";
 
 import styles from "./Signup.module.css";
 
 const SignupInfo = () => {
   const navigate = useNavigate();
+
   const [signupStep, setSignupStep] = useState(0);
   const [signupId, setSignupId] = useState("");
   const [isAvailableId, setIsAvailableId] = useState<boolean | null>(null);
@@ -22,12 +24,23 @@ const SignupInfo = () => {
   const [isCheckedPw, setIsCheckedPw] = useState(false);
   const [isAttemptReset, setIsAttemptReset] = useState(false); // 재설정 시도를 했는지
 
+  const { checkIsIdDuplicated } = useCheckIsIdDuplicatedMutation();
+
   const handleSignupIdChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value.replace(/[^a-zA-Z0-9]/g, ""); // 영어와 숫자만 허용
     if (newValue.length <= 15) {
       setSignupId(newValue);
     }
   };
+
+  const handleIsIdDuplicated = () => {
+    checkIsIdDuplicated(signupId, {
+      onSuccess: () => setIsAvailableId(true),
+      onError: () => setIsAvailableId(false),
+      onSettled: () => setIsChecked(true),
+    });
+  };
+
   const handleInputPwChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     if (newValue.length <= 20) {
@@ -74,9 +87,7 @@ const SignupInfo = () => {
                     [styles.disabled]:
                       signupId.length < 6 || !/[a-zA-Z]/.test(signupId),
                   })}
-                  onClick={() => {
-                    checkAvailableId(signupId, setIsAvailableId, setIsChecked);
-                  }}
+                  onClick={handleIsIdDuplicated}
                 >
                   중복확인
                 </button>

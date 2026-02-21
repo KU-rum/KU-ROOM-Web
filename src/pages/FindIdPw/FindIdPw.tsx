@@ -241,7 +241,6 @@ const FindIdPw = () => {
             errorCode={state.errorCode}
             isCheckedPw={state.isCheckedPw}
             isAttemptReset={state.isAttemptReset}
-            handleuserIdChange={handleuserIdChange}
             handleNewPwChange={handleNewPwChange}
             handleCheckPwChange={handleCheckPwChange}
             handleResetPassword={handleResetPassword}

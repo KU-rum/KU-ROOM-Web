@@ -115,10 +115,6 @@ const ProfileSetting: React.FC = () => {
         navigate("/welcome");
       }
     } else {
-      // if (!signupEmail || !signupId || !signupPw) {
-      //   toast.error("회원가입에 실패했습니다. 처음부터 시도해주세요.");
-      //   navigate("/login");
-      // }
       const userData = {
         email: signupEmail || "",
         loginId: signupId || "",

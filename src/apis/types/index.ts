@@ -15,6 +15,7 @@ export type { GetUserFriendListResponse } from "./friend";
 export type {
   UserProfileResponseData,
   UserProfileResponse,
+  CheckNicknameResponse,
   ChangeProfileResponse,
   ChangePwBeforeLoginRequest,
   ChangePwAfterLoginRequest,
@@ -69,6 +70,5 @@ export type {
   FindIdResponse,
   CheckIdResponse,
   CheckEmailResponse,
-  CheckNicknameResponse,
   VerifyCodeResponse,
 } from "./auth";

@@ -6,10 +6,12 @@ import {
   ChangeProfileResponse,
   ChangePwAfterLoginRequest,
   ChangePwBeforeLoginRequest,
+  CheckNicknameResponse,
   GetProfileImagePresignedUrlResponse,
   UserProfileResponse,
 } from "./types";
 
+const CHECK_DUPLICATED_NICKNAME_API = "/users/check-nickname";
 const CHANGE_NICKNAME_URL = "/users/nickname";
 const CHANGE_PW_BEFORE_LOGIN_URL = "/users/password-reset/initiate";
 const CHANGE_PW_AFTER_LOGIN_URL = "/users/password-reset";
@@ -22,6 +24,17 @@ export const getUserProfileApi = async () => {
   const response =
     await axiosInstance.get<UserProfileResponse>(USER_PROFILE_URL);
 
+  return response.data;
+};
+
+// 닉네임 중복 확인 api
+export const checkIsNicknameDuplicatedApi = async (value: string) => {
+  const response = await axiosInstance.get<CheckNicknameResponse>(
+    CHECK_DUPLICATED_NICKNAME_API,
+    {
+      params: { value },
+    },
+  );
   return response.data;
 };
 

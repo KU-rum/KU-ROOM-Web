@@ -3,16 +3,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import checkedIcon from "@assets/icon/roundcheck.svg";
 import uncheckedIcon from "@assets/icon/roundUncheck.svg";
-import {
-  checkValidationEmailApi,
-  sendEmailApi,
-  verifyCodeApi,
-} from "@apis/auth";
+import { sendEmailApi, verifyCodeApi } from "@apis/auth";
 import InputBar from "@components/InputBar/InputBar";
 import Button from "@components/Button/Button";
 import Header from "@components/Header/Header";
 import InformModal from "@components/InformModal/InformModal";
 import { isValidEmail } from "@utils/validations";
+import { useCheckIsEmailDuplicatedMutation } from "@/queries";
 
 import styles from "./IdentityVerify.module.css";
 
@@ -30,6 +27,9 @@ const IdentityVerify = () => {
   const [isDuplicatedEmail, setIsDuplicatedEmail] = useState(false);
   const [verifyCode, setVerifyCode] = useState("");
   const [isAttemptVerify, setIsAttemptVerify] = useState(false); // 인증코드를 확인한 적 있는지 여부
+
+  const { checkIsEmailDuplicated } = useCheckIsEmailDuplicatedMutation();
+
   const handleVerifiedEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setVerifiedEmail(e.target.value);
   };
@@ -44,29 +44,22 @@ const IdentityVerify = () => {
 
   // 인증코드 발송 로직
   const sendVerifyCode = async () => {
-    const response = await checkValidationEmailApi(
-      verifiedEmail,
-      setIsDuplicatedEmail,
-      setModalType,
-      setModalState,
-    );
-    console.log(response);
-    if (response === "OK") {
-      console.log("인증코드 발송");
-      // 서버에 전송 요청
-      const sendResponse = await sendEmailApi(verifiedEmail);
-      console.log(sendResponse);
-      setIsAttemptSend(true);
-      setModalState(true);
-    }
+    checkIsEmailDuplicated(verifiedEmail, {
+      onSuccess: async () => {
+        await sendEmailApi(verifiedEmail);
+        setIsAttemptSend(true);
+        setModalState(true);
+      },
+      onError: (error: any) => {
+        if (error.response.data.code === 305) {
+          setIsDuplicatedEmail(true);
+        } else if (error.response.data.code === 900) {
+          setModalType("EmailFailed");
+          setModalState(true);
+        }
+      },
+    });
   };
-
-  useEffect(() => {
-    setIsAttemptSend(false);
-    setIsAttemptVerify(false);
-    setVerifyCode("");
-    setIsDuplicatedEmail(false);
-  }, [verifiedEmail]);
 
   const handleVerifyCode = async () => {
     const verifyData = {
@@ -90,6 +83,13 @@ const IdentityVerify = () => {
       setIsAttemptVerify(true);
     }
   };
+
+  useEffect(() => {
+    setIsAttemptSend(false);
+    setIsAttemptVerify(false);
+    setVerifyCode("");
+    setIsDuplicatedEmail(false);
+  }, [verifiedEmail]);
 
   return (
     <>

@@ -2,7 +2,6 @@
 
 import { Dispatch, SetStateAction } from "react";
 import { NavigateFunction } from "react-router-dom";
-import { checkValidationIdApi } from "@apis/auth";
 
 // 이메일 형식이 맞는지
 export const isValidEmail = (email: string) => {
@@ -24,23 +23,6 @@ export const isValidStudentId = (id: string) => {
     return yearPrefix <= currentYear && id.length < 10;
   }
   return true; // 아직 8자리가 안되면 유효하다고 처리 (경고 표시 안함)
-};
-
-// 아이디 중복 여부 검사
-export const checkAvailableId = async (
-  signupId: string,
-  setIsAvailableId: Dispatch<SetStateAction<boolean | null>>,
-  setIsChecked: Dispatch<SetStateAction<boolean>>,
-) => {
-  try {
-    await checkValidationIdApi(signupId);
-    setIsAvailableId(true);
-  } catch (error) {
-    setIsAvailableId(false);
-    console.error(error);
-  } finally {
-    setIsChecked(true); // 무조건 실행되도록!
-  }
 };
 
 // 비밀번호 설정 검증

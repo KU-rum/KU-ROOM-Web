@@ -13,6 +13,10 @@ export interface UserProfileResponse extends ApiResponse {
   data: UserProfileResponseData;
 }
 
+export interface CheckNicknameResponse extends ApiResponse {
+  data?: string;
+}
+
 export interface ChangeProfileResponse extends ApiResponse {
   data: string;
 }

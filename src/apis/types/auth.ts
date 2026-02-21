@@ -94,7 +94,3 @@ export interface CheckIdResponse extends ApiResponse {
 export interface CheckEmailResponse extends ApiResponse {
   data?: string;
 }
-
-export interface CheckNicknameResponse extends ApiResponse {
-  data?: string;
-}
