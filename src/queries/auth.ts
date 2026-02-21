@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import useToast from "@hooks/use-toast";
 import { useUserStore } from "@stores/userStore";
-import { loginApi, logoutApi, signupApi } from "@apis/auth";
+import { loginApi, logoutApi, signupApi, withdrawApi } from "@apis/auth";
 import { LoginRequest, LoginResponse, SignupRequest } from "@apis/types";
 import { clearAuthStorage } from "@/shared/utils/storageUtils";
 
@@ -82,5 +82,26 @@ export const useLogoutMutation = () => {
 
   return {
     logout,
+  };
+};
+
+export const useWithdrawMutation = () => {
+  const navigate = useNavigate();
+  const toast = useToast();
+
+  const { mutate: withdraw } = useMutation({
+    mutationFn: () => withdrawApi(),
+    onSuccess: () => {
+      toast.info("회원탈퇴 완료");
+      navigate("/login");
+      clearAuthStorage();
+    },
+    onError: () => {
+      toast.error("회원탈퇴에 실패했습니다. 다시 시도해주세요.");
+    },
+  });
+
+  return {
+    withdraw,
   };
 };

@@ -1,12 +1,9 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import ReactModal from "react-modal";
 
-import { withdrawApi } from "@apis/auth";
-import { clearAuthStorage } from "@utils/storageUtils";
 import cautionIcon from "@assets/icon/editFriend/cautionIcon.svg";
 import Button from "@components/Button/Button";
-import { useLogoutMutation } from "@/queries";
+import { useLogoutMutation, useWithdrawMutation } from "@/queries";
 
 import styles from "./ProfileModal.module.css";
 
@@ -21,11 +18,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   modalType,
   setModalState,
 }) => {
-  const navigate = useNavigate();
   const handleCloseModal = () => setModalState(false);
   const { logout } = useLogoutMutation();
+  const { withdraw } = useWithdrawMutation();
 
-  // 서버에 각각 요청
   const handleClick = async () => {
     switch (modalType) {
       case "logout":
@@ -34,9 +30,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
         break;
       case "withdraw":
         setModalState(false);
-        await withdrawApi();
-        clearAuthStorage();
-        navigate("/login");
+        withdraw();
         break;
     }
   };
