@@ -1,7 +1,6 @@
 import { useEffect, useState, type ChangeEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-import { loginApi } from "@apis/auth";
 import GoogleIcon from "@assets/socialLoginIcon/googleLogin.svg?react";
 import KakaoIcon from "@assets/socialLoginIcon/kakaoLogin.svg?react";
 import AppleIcon from "@assets/socialLoginIcon/appleLogin.svg?react";
@@ -9,17 +8,18 @@ import Button from "@components/Button/Button";
 import Header from "@components/Header/Header";
 import { EdgeGuard } from "@components/EdgeGuard";
 import InputBar from "@components/InputBar/InputBar";
-import { useUserStore } from "@stores/userStore";
+import Splash from "@components/Splash/Splash";
+import { useLoginMutation } from "@/queries";
 
 import styles from "./Login.module.css";
 
 const Login = () => {
-  const navigate = useNavigate();
-  const { setUser } = useUserStore();
   const [inputId, setInputId] = useState("");
   const [inputPw, setInputPw] = useState("");
   // 로그인 버튼을 눌렀는지 여부
   const [isLoginAttempted, setIsLoginAttempted] = useState(false);
+
+  const { login, isPendingLogin } = useLoginMutation();
 
   // Login 컴포넌트 안
   useEffect(() => {
@@ -49,41 +49,14 @@ const Login = () => {
   };
 
   const handleLogin = async () => {
-    const loginData = { loginId: inputId, password: inputPw };
-    try {
-      const response = await loginApi(loginData); // `await` 추가
-
-      if (response?.code === 1007) {
-        // 서버에서 '잘못된 아이디/비밀번호'일 때의 코드 (예: 1007)
-        console.log("로그인 실패: 잘못된 아이디/비밀번호");
-        setIsLoginAttempted(true);
-        return;
-      }
-      console.log("로그인 성공!", response.data);
-      // 토큰 저장 후 홈으로 이동
-      const {
-        tokenResponse: { accessToken, refreshToken },
-        userResponse,
-      } = response.data;
-
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-
-      window.ReactNativeWebView?.postMessage(
-        JSON.stringify({
-          type: "AUTH_TOKEN",
-          accessToken: accessToken,
-        }),
-      );
-
-      // 전역 상태관리 zustand 사용해서 저장.
-      // TODO : 추후 서버에서 소셜 로그인 상태 보내주도록 수정
-      setUser({ ...userResponse, loginType: "email" });
-      navigate("/", { replace: true });
-    } catch (error: any) {
-      console.error("로그인 중 오류 발생:", error.message); // 서버 오류(500) 같은 경우
-      setIsLoginAttempted(true);
-    }
+    login(
+      { loginId: inputId, password: inputPw },
+      {
+        onError: () => {
+          setIsLoginAttempted(true);
+        },
+      },
+    );
   };
 
   const OAUTH2_BASE_URI = import.meta.env.VITE_OAUTH2_BASE_URI;
@@ -120,6 +93,11 @@ const Login = () => {
       clearTimeout(timer);
     };
   }, [isLoginAttempted]);
+
+  if (isPendingLogin) {
+    // TODO: 로그인할 때는 다른 디자인의 스플래시 화면 보여줘도 좋을 듯
+    return <Splash />;
+  }
 
   return (
     <>

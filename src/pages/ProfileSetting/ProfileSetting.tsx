@@ -1,15 +1,18 @@
-import React, { useState, ChangeEvent, useEffect } from "react";
+import React, { useState, ChangeEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { signupApi } from "@apis/signup";
-import { createSocialUserApi } from "@apis/auth";
-import { useCollegeDepartmentsQuery, useCollegesQuery } from "@/queries";
+import useToast from "@hooks/use-toast";
+import {
+  useCollegeDepartmentsQuery,
+  useCollegesQuery,
+  useSignupMutation,
+  useSocialUserSignupMutation,
+} from "@/queries";
 import Button from "@components/Button/Button";
 import InputBar from "@components/InputBar/InputBar";
 import Header from "@components/Header/Header";
 import Loading from "@components/Loading/Loading";
 import { isValidStudentId } from "@utils/validations";
-import { useUserStore } from "@stores/userStore";
 
 import Select from "./components/Select/Select";
 import BottomSheet from "./components/BottomSheet/BottomSheet";
@@ -19,9 +22,11 @@ import "./ProfileSetting.css";
 const ProfileSetting: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUser } = useUserStore();
   const { signupEmail, signupId, signupPw, isMarketingOk } =
     location.state || {};
+
+  const toast = useToast();
+  const { signup, isPendingSignup } = useSignupMutation();
 
   // 소셜 로그인 신규 회원인지 확인
   const preSignupToken = sessionStorage.getItem("preSignupToken");
@@ -32,7 +37,6 @@ const ProfileSetting: React.FC = () => {
   const [selectedCollege, setSelectedCollege] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [studentId, setStudentId] = useState("");
-  const [isDuplicatedStudentId, setIsDuplicatedStudentId] = useState(false);
 
   // 임시 선택값 (바텀시트에서 클릭한 값)
   const [tempSelectedCollege, setTempSelectedCollege] = useState("");
@@ -44,6 +48,8 @@ const ProfileSetting: React.FC = () => {
   const { collegesData, isPendingCollegesData } = useCollegesQuery();
   const { departmentsData, isPendingDepartmentsData } =
     useCollegeDepartmentsQuery(selectedCollege);
+  const { socialUserSignup, isPendingSocialUserSignup } =
+    useSocialUserSignupMutation();
 
   // 닉네임이 유효한지 확인하는 변수
   const isNicknameValid =
@@ -52,6 +58,7 @@ const ProfileSetting: React.FC = () => {
     /[a-zA-Z가-힣ㄱ-ㅎ]/.test(nickname); // 영어 또는 한글이 반드시 포함되어야 함
 
   const handleNicknameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setIsDuplicatedNickname(false);
     const inputNickname = e.target.value;
     if (inputNickname.length <= 10) {
       setNickname(inputNickname);
@@ -81,55 +88,51 @@ const ProfileSetting: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    try {
-      if (isSocialSignup && preSignupToken) {
-        const socialUserData = {
-          studentId: studentId,
-          department: selectedDepartment,
-          nickname: nickname,
-          agreementStatus: isMarketingOk ? "AGREED" : "DISAGREED",
-        };
+    if (isSocialSignup && preSignupToken) {
+      const socialUserData = {
+        token: preSignupToken,
+        studentId,
+        department: selectedDepartment,
+        nickname,
+        agreementStatus: isMarketingOk ? "AGREED" : "DISAGREED",
+      };
 
-        const response = await createSocialUserApi(
-          preSignupToken,
-          socialUserData,
-          setIsDuplicatedNickname,
-        );
+      socialUserSignup(socialUserData, {
+        onError: (error: any) => {
+          const errorMessage =
+            error.response?.data?.message || "회원가입 중 오류 발생";
+          if (errorMessage === "이미 존재하는 닉네임입니다.") {
+            setIsDuplicatedNickname(true);
+          } else {
+            toast.error(
+              error.response?.data?.message ||
+                "소셜 로그인 회원 생성 중 오류 발생",
+            );
+          }
+        },
+      });
+    } else {
+      const userData = {
+        email: signupEmail || "",
+        loginId: signupId || "",
+        password: signupPw || "",
+        studentId: studentId,
+        department: selectedDepartment,
+        nickname: nickname,
+        agreementStatus: isMarketingOk ? "AGREED" : "DISAGREED",
+      };
 
-        if (response?.data) {
-          const {
-            tokenResponse: { accessToken, refreshToken },
-            userResponse,
-          } = response.data;
-
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
-          sessionStorage.removeItem("preSignupToken");
-          setUser({ ...userResponse, loginType: "social" });
-          navigate("/welcome");
-        }
-      } else {
-        const userData = {
-          email: signupEmail || "",
-          loginId: signupId || "",
-          password: signupPw || "",
-          studentId: studentId,
-          department: selectedDepartment,
-          nickname: nickname,
-          agreementStatus: isMarketingOk ? "AGREED" : "DISAGREED",
-        };
-
-        await signupApi(
-          userData,
-          setIsDuplicatedNickname,
-          setIsDuplicatedStudentId,
-        );
-        navigate("/welcome");
-      }
-    } catch (error: any) {
-      // 에러 처리는 각 API 함수 내부에서 처리됨
-      // TODO: 추후 API 함수 내에서 처리하지 말고 여기서 처리하도록 수정하기
-      console.error(error);
+      signup(userData, {
+        onError: (error: any) => {
+          const errorCode = error.response?.data?.code;
+          if (errorCode === 306) {
+            setIsDuplicatedNickname(true);
+          } else {
+            toast.error("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
+            navigate("/login");
+          }
+        },
+      });
     }
   };
 
@@ -141,12 +144,9 @@ const ProfileSetting: React.FC = () => {
     studentId.length >= 9 &&
     isValidStudentId(studentId);
 
-  useEffect(() => {
-    setIsDuplicatedNickname(false);
-  }, [nickname]);
-  useEffect(() => {
-    setIsDuplicatedStudentId(false);
-  }, [studentId]);
+  if (isPendingSignup || isPendingSocialUserSignup) {
+    return <Loading />;
+  }
 
   return (
     <>
@@ -214,10 +214,6 @@ const ProfileSetting: React.FC = () => {
               errorMessage="유효하지 않은 학번입니다."
             />
           )}
-          {isDuplicatedStudentId && (
-            <span className="ErrorMsg">이미 있는 계정입니다.</span>
-          )}
-
           <div className="profile-setting-button">
             <Button onClick={handleSubmit} disabled={!isProfileComplete}>
               다음으로

@@ -73,7 +73,7 @@ const ChangePw = () => {
 
           // 성공 시
           setErrorCode(null);
-          setModalType("NewPassword");
+          setModalType("NewPwAfterLogin");
           setModalState(true);
         },
       });

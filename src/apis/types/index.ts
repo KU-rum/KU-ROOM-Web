@@ -15,6 +15,7 @@ export type { GetUserFriendListResponse } from "./friend";
 export type {
   UserProfileResponseData,
   UserProfileResponse,
+  CheckNicknameResponse,
   ChangeProfileResponse,
   ChangePwBeforeLoginRequest,
   ChangePwAfterLoginRequest,
@@ -55,3 +56,19 @@ export {
   type GetAlarmActiveStatusResponse,
   type UpdateAlarmActiveStatusResponse,
 } from "./alarm";
+
+export type {
+  LoginRequest,
+  LoginResponse,
+  LogoutResponse,
+  WithdrawResponse,
+  ReissueResponse,
+  CreateSocialUserRequest,
+  SendEmailResponse,
+  SignupRequest,
+  SignupResponse,
+  FindIdResponse,
+  CheckIdResponse,
+  CheckEmailResponse,
+  VerifyCodeResponse,
+} from "./auth";
