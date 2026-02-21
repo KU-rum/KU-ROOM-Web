@@ -1,5 +1,12 @@
 import { ApiResponse } from ".";
 
+interface TokenResponse {
+  accessToken: string;
+  refreshToken: string;
+  accessExpireIn: number;
+  refreshExpireIn: number;
+}
+
 export interface LoginRequest {
   loginId: string;
   password: string;
@@ -7,13 +14,7 @@ export interface LoginRequest {
 
 export interface LoginResponse extends ApiResponse {
   data?: {
-    tokenResponse: {
-      accessToken: string;
-      refreshToken: string;
-      accessExpireIn: number;
-      refreshExpireIn: number;
-      isFirstLogin?: boolean;
-    };
+    tokenResponse: TokenResponse & { isFirstLogin?: boolean };
     userResponse: {
       id: number;
       oauthId: string | null;
@@ -39,12 +40,7 @@ export interface WithdrawResponse extends ApiResponse {
 }
 
 export interface ReissueResponse extends ApiResponse {
-  data: {
-    accessToken: string;
-    refreshToken: string;
-    accessExpireIn: number;
-    refreshExpireIn: number;
-  };
+  data: TokenResponse;
 }
 
 export interface CreateSocialUserRequest {
@@ -75,7 +71,7 @@ export interface SignupRequest {
   agreementStatus: string;
 }
 
-export interface SignUpResponse extends ApiResponse {
+export interface SignupResponse extends ApiResponse {
   data?: {
     id: number;
   };

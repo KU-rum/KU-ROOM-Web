@@ -51,7 +51,7 @@ export const useUserProfileQuery = () => {
   };
 };
 
-export const useCheckIsNicknameDuplicatedApi = () => {
+export const useCheckIsNicknameDuplicatedMutation = () => {
   const { mutate: checkIsNicknameDuplicated } = useMutation({
     mutationFn: (nickname: string) => checkIsNicknameDuplicatedApi(nickname),
   });

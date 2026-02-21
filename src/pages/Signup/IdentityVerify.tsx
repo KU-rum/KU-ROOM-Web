@@ -48,9 +48,9 @@ const IdentityVerify = () => {
   };
 
   // 인증코드 발송 로직
-  const sendVerifyCode = async () => {
+  const sendVerifyCode = () => {
     checkIsEmailDuplicated(verifiedEmail, {
-      onSuccess: async () => {
+      onSuccess: () => {
         sendEmail(verifiedEmail, {
           onSuccess: () => {
             setIsAttemptSend(true);
@@ -59,9 +59,9 @@ const IdentityVerify = () => {
         });
       },
       onError: (error: any) => {
-        if (error.response.data.code === 305) {
+        if (error.response?.data?.code === 305) {
           setIsDuplicatedEmail(true);
-        } else if (error.response.data.code === 900) {
+        } else if (error.response?.data?.code === 900) {
           setModalType("EmailFailed");
           setModalState(true);
         }
@@ -77,7 +77,7 @@ const IdentityVerify = () => {
     // 서버에 요청해서 같은지 확인
     verifyEmailCode(verifyData, {
       onSuccess: (response) => {
-        if (response.data.verified) {
+        if (response.data?.verified) {
           navigate("/agreement", {
             state: {
               signupId,

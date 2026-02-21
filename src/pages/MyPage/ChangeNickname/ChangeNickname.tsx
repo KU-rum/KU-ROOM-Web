@@ -2,7 +2,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 
 import {
   useChangeNicknameMutation,
-  useCheckIsNicknameDuplicatedApi,
+  useCheckIsNicknameDuplicatedMutation,
   useUserProfileQuery,
 } from "@/queries";
 import InputBar from "@components/InputBar/InputBar";
@@ -14,7 +14,7 @@ import styles from "./ChangeNickname.module.css";
 
 const ChangeNickname = () => {
   const { userProfileData } = useUserProfileQuery();
-  const { checkIsNicknameDuplicated } = useCheckIsNicknameDuplicatedApi();
+  const { checkIsNicknameDuplicated } = useCheckIsNicknameDuplicatedMutation();
   const { changeNickname } = useChangeNicknameMutation();
 
   const [newNickname, setNewNickname] = useState("");

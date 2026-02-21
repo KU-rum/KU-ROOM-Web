@@ -10,7 +10,7 @@ export {
 
 export {
   useUserProfileQuery,
-  useCheckIsNicknameDuplicatedApi,
+  useCheckIsNicknameDuplicatedMutation,
   useChangeNicknameMutation,
   useChangePwMutation,
   useUserDepartmentMutation,

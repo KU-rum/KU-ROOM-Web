@@ -55,7 +55,7 @@ const InformModal = ({
     NewPwBeforeLogin: {
       title: "비밀번호가 재설정되었습니다.",
       description: "다시 로그인해주세요.",
-      handleModalButton: async () => {
+      handleModalButton: () => {
         setModalState(false);
         navigate("/login");
       },
@@ -63,7 +63,7 @@ const InformModal = ({
     NewPwAfterLogin: {
       title: "비밀번호가 재설정되었습니다.",
       description: "다시 로그인해주세요.",
-      handleModalButton: async () => {
+      handleModalButton: () => {
         setModalState(false);
         logout();
       },

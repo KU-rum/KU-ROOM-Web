@@ -83,7 +83,8 @@ export const useLoginMutation = () => {
     mutationFn: ({ loginId, password }: LoginRequest) =>
       loginApi({ loginId, password }),
     onSuccess: (response: LoginResponse) => {
-      if (!response.data?.tokenResponse) throw Error();
+      if (!response.data?.tokenResponse)
+        throw new Error("토큰 응답이 없습니다.");
 
       const {
         tokenResponse: { accessToken, refreshToken },
@@ -154,7 +155,6 @@ export const useWithdrawMutation = () => {
 
 export const useGetTokenByTempMutation = () => {
   const navigate = useNavigate();
-  const toast = useToast();
   const { setUser } = useUserStore();
 
   const { mutate: getTokenByTemp } = useMutation({
@@ -180,9 +180,8 @@ export const useGetTokenByTempMutation = () => {
       setUser({ ...userResponse, loginType: "social" });
       navigate("/", { replace: true });
     },
-    onError: (error) => {
+    onError: () => {
       navigate("/login");
-      toast.error(`로그인 실패 : ${error.message}`);
     },
   });
 

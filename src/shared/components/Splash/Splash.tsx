@@ -5,7 +5,7 @@ import styles from "./Splash.module.css";
 const Splash = () => {
   return (
     <div className={styles.SplashPage}>
-      <img src={splashIcon} />
+      <img src={splashIcon} alt="KUROOM 로고" />
       <h1 className={styles.Title}>KUROOM</h1>
     </div>
   );

@@ -66,7 +66,7 @@ export type {
   CreateSocialUserRequest,
   SendEmailResponse,
   SignupRequest,
-  SignUpResponse,
+  SignupResponse,
   FindIdResponse,
   CheckIdResponse,
   CheckEmailResponse,

@@ -7,7 +7,7 @@ import {
   CreateSocialUserRequest,
   SendEmailResponse,
   SignupRequest,
-  SignUpResponse,
+  SignupResponse,
   FindIdResponse,
   CheckIdResponse,
   CheckEmailResponse,
@@ -31,7 +31,7 @@ const VALIDATION_EMAIL_API_URL = "/users/validations";
 // 회원가입 api
 // TODO: 제대로 되는지 확인 필요
 export const signupApi = async (userData: SignupRequest) => {
-  const response = await axiosInstance.post<SignUpResponse>(
+  const response = await axiosInstance.post<SignupResponse>(
     SIGNUP_API_BASE_URL,
     userData,
   );
@@ -133,6 +133,9 @@ export const findIdFromEmailApi = async (email: string) => {
 // 토큰 재발급 api
 export const reissueTokenApi = async () => {
   const refreshToken = localStorage.getItem("refreshToken");
+  if (!refreshToken) {
+    throw new Error("리프레시 토큰이 없습니다.");
+  }
   try {
     const response = await axiosInstance.patch<ReissueResponse>(
       REISSUE_TOKEN_API_URL,
