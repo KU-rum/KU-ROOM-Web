@@ -90,9 +90,6 @@ export const deleteAllMapRecentSearchApi = async () => {
   const response = await axiosInstance.request({
     url: DELETE_RECENT_ALL_SEARCH,
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
   });
   return response.data;
 };
@@ -102,9 +99,6 @@ export const deleteMapRecentSearchApi = async (deleteData: number) => {
   const response = await axiosInstance.request({
     url: DELETE_RECENT_SEARCH + deleteData,
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
   });
   return response.data;
 };
