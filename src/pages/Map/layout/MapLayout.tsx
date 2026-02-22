@@ -1,8 +1,12 @@
 import { useState, useRef } from "react";
 import { Outlet } from "react-router-dom";
 
-import { Coordinate, MarkerData } from "@/shared/types/mapTypes";
-import { DetailPlaceData, PlaceData } from "@/apis/types";
+import {
+  Coordinate,
+  MarkerData,
+  DetailPlaceData,
+  PlaceData,
+} from "@apis/types";
 
 export interface MapLayoutContext {
   /** 내 현재 위치를 따라가는지 상태 */

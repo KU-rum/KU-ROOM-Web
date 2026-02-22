@@ -74,6 +74,8 @@ export type {
 } from "./auth";
 
 export type {
+  Coordinate,
+  MarkerData,
   ShareStatusData,
   ShareStatusResponse,
   PlaceNameData,

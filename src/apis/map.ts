@@ -3,6 +3,7 @@ import axiosInstance from "./axiosInstance";
 import {
   ApiResponse,
   CategoryLocationsResponse,
+  Coordinate,
   LocationDetailResponse,
   MapRecentSearchReponse,
   MapSearchResultResponse,
@@ -11,7 +12,7 @@ import {
 } from "./types";
 
 const CHECK_SHARE_STATE_API = "/places/sharing/status";
-const GET_PLACE_NAME = "/places/sharing";
+const GET_LOCATION_NAME = "/places/sharing";
 const SHARE_USER_LOCATION = "/places/sharing/confirm";
 const UNSHARE_LOCATION = "/places/sharing/confirm";
 const GET_CHIP_LOCATION = "/places";
@@ -24,43 +25,19 @@ const DELETE_RECENT_SEARCH = "/places/search/history/"; // 최근 검색어 하�
 
 // 위치 공유 상태 조회 api
 export const checkShareStatusApi = async () => {
-  try {
-    const response = await axiosInstance.get<ShareStatusResponse>(
-      CHECK_SHARE_STATE_API,
-    );
-    return response.data.data;
-  } catch (error: any) {
-    console.error(
-      "위치 공유 상태 확인 실패:",
-      error.response?.data || error.message,
-    );
-    throw new Error(
-      error.response?.data?.message || "위치 공유 상태 확인 중 오류 발생",
-    );
-  }
+  const response = await axiosInstance.get<ShareStatusResponse>(
+    CHECK_SHARE_STATE_API,
+  );
+  return response.data;
 };
 
 // 좌표 기준 건물명 받아오는 api
-export const getPlaceNameApi = async (latitude: number, longitude: number) => {
-  try {
-    const response = await axiosInstance.post<PlaceNameResponse>(
-      GET_PLACE_NAME,
-      {
-        latitude,
-        longitude,
-      },
-    );
-    return response.data;
-  } catch (error: any) {
-    console.error(
-      "유저의 가장 가까운 건물명 조회 실패:",
-      error.response?.data || error.message,
-    );
-    throw new Error(
-      error.response?.data?.message ||
-        "유저의 가장 가까운 건물명 조회 중 오류 발생",
-    );
-  }
+export const getLocationNameApi = async (coord?: Coordinate) => {
+  const response = await axiosInstance.post<PlaceNameResponse>(
+    GET_LOCATION_NAME,
+    coord,
+  );
+  return response.data;
 };
 
 // 위치 공유 시작 api

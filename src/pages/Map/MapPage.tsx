@@ -2,12 +2,13 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 
-import { MapSearchResult, PlaceData } from "@apis/types";
-import { MarkerData } from "@/shared/types/mapTypes";
-import { checkShareStatusApi, getCategoryLocationsApi } from "@apis/map";
+import { MarkerData, MapSearchResult, PlaceData } from "@apis/types";
+import { getCategoryLocationsApi } from "@apis/map";
 import DefaultProfileImg from "@assets/defaultProfileImg.svg";
 import BottomBar from "@components/BottomBar/BottomBar";
 import ShareLocationModal from "@components/ShareLocationModal/ShareLocationModal";
+import { isMyLocationInSchool } from "@utils/mapRangeUtils";
+import { useCheckShareStatusQuery } from "@/queries";
 
 import styles from "./MapPage.module.css";
 import MapSearchBar from "./components/MapSearchBar/MapSearchBar";
@@ -16,7 +17,6 @@ import KuroomMap from "./components/KuroomMap";
 import MapSearch from "./components/MapSearch/MapSearch";
 import LocationsBottomSheet from "./components/LocationsBottomSheet/LocationsBottomSheet";
 import FocusedLocationBottomSheet from "./components/FocusedLocationBottomSheet/FocusedLocationBottomSheet";
-import { isMyLocationInSchool } from "@utils/mapRangeUtils";
 
 import {
   clearAllMarkers,
@@ -54,8 +54,6 @@ const MapPage = () => {
     searchMode,
     isInSchool,
     ableToShare,
-    isSharedLocation,
-    locationSharedRefreshKey,
     selectedCategoryTitle,
     selectedCategoryEnum,
     modalState,
@@ -73,8 +71,6 @@ const MapPage = () => {
     setDetailLocationData,
     setSearchMode,
     setIsInSchool,
-    setIsSharedLocation,
-    setLocationSharedRefreshKey,
     setSelectedCategoryTitle,
     setSelectedCategoryEnum,
     setModalState,
@@ -82,16 +78,10 @@ const MapPage = () => {
     setMarkerFlag,
   } = useOutletContext<MapLayoutContext>();
 
+  const { isSharedLocation, isPendingShareStatus, isErrorShareStatus } =
+    useCheckShareStatusQuery();
+
   // 서버로부터 데이터 fetching ***********************************************
-  // 현재 내 위치 공유 상태 확인 함수
-  const getIsMySharedInfo = async () => {
-    try {
-      const response = await checkShareStatusApi();
-      setIsSharedLocation(response.isActive);
-    } catch (error) {
-      console.error("위치 공유 상태 확인 실패 : ", error);
-    }
-  };
 
   // 친구 제외 카테고리 칩을 눌렀을 때 서버에 카테고리 ENUM 을 이용하여 요청
   const getCategoryLocations = async (selectedCategory: string) => {
@@ -143,6 +133,7 @@ const MapPage = () => {
       navigate("/share-location");
     }
   };
+
   // 시트에서 위치 클릭 시 이동하는 로직
   const clickToLocationMarker = (location: PlaceData) => {
     if (!isExpandedSheet) return;
@@ -215,11 +206,6 @@ const MapPage = () => {
     // 현재 내 위치가 학교 내부인지 검증
     return isMyLocationInSchool(setIsInSchool);
   }, []);
-
-  // 사이드 이펙트 (useEffect) *********************************************
-  useEffect(() => {
-    getIsMySharedInfo();
-  }, [locationSharedRefreshKey]);
 
   useEffect(() => {
     if (!detailLocationData) {
@@ -376,6 +362,8 @@ const MapPage = () => {
               />
               <LocationShareButton
                 isSharedLocation={isSharedLocation}
+                isPendingShareStatus={isPendingShareStatus}
+                isErrorShareStatus={isErrorShareStatus}
                 isInSchool={isInSchool}
                 handleShareLocation={handleShareLocation}
               />
@@ -410,9 +398,6 @@ const MapPage = () => {
         ableToShare={ableToShare}
         nearLocation={nearLocation}
         setModalState={setModalState}
-        refreshSharedStatus={() =>
-          setLocationSharedRefreshKey((prev) => prev + 1)
-        }
       />
     </div>
   );

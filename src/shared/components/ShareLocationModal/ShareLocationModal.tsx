@@ -9,11 +9,10 @@ import styles from "./ShareLocationModal.module.css";
 
 interface ShareLocationModalProps {
   modalState: boolean;
-  isSharedLocation: boolean;
+  isSharedLocation?: boolean;
   ableToShare?: boolean;
   nearLocation?: string;
   setModalState: React.Dispatch<React.SetStateAction<boolean>>;
-  refreshSharedStatus: () => void;
 }
 
 const ShareLocationModal: React.FC<ShareLocationModalProps> = ({
@@ -22,7 +21,6 @@ const ShareLocationModal: React.FC<ShareLocationModalProps> = ({
   ableToShare,
   nearLocation,
   setModalState,
-  refreshSharedStatus,
 }) => {
   const handleCloseModal = () => setModalState(false);
 
@@ -33,7 +31,6 @@ const ShareLocationModal: React.FC<ShareLocationModalProps> = ({
       const response = await shareUserLocationApi(nearLocation);
       console.log(response);
 
-      refreshSharedStatus();
       setModalState(false);
     } catch (error) {
       console.error("위치 공유 실패 : ", error);
@@ -45,7 +42,6 @@ const ShareLocationModal: React.FC<ShareLocationModalProps> = ({
       console.log("서버에 공유 해제 요청");
       console.log(response);
 
-      refreshSharedStatus();
       setModalState(false);
     } catch (error) {
       console.error("위치 공유 해제 실패 : ", error);

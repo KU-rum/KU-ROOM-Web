@@ -11,7 +11,7 @@ import styles from "./FriendLocation.module.css";
 import { getCategoryLocationsApi } from "@apis/map";
 
 interface FriendLocationProps {
-  userSharedLocation: string | null;
+  userSharedLocation?: string | null;
 }
 
 const FriendLocation: React.FC<FriendLocationProps> = ({

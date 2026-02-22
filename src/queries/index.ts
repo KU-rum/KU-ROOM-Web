@@ -51,3 +51,5 @@ export {
   useVerifyCodeMutation,
   useFindIdMutation,
 } from "./auth";
+
+export { useCheckShareStatusQuery, useGetLocationNameQuery } from "./map";
