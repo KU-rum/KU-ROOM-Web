@@ -53,19 +53,9 @@ export const shareUserLocationApi = async (placeName: string) => {
 
 // 위치 공유 해제 api
 export const unshareLocationApi = async () => {
-  try {
-    const response =
-      await axiosInstance.delete<ShareStatusResponse>(UNSHARE_LOCATION);
-    return response.data;
-  } catch (error: any) {
-    console.error(
-      "위치 공유 해제 실패:",
-      error.response?.data || error.message,
-    );
-    throw new Error(
-      error.response?.data?.message || "위치 공유 해제 중 오류 발생",
-    );
-  }
+  const response =
+    await axiosInstance.delete<ShareStatusResponse>(UNSHARE_LOCATION);
+  return response.data;
 };
 
 // 카테고리 칩(핀) 클릭 시 위치 정보 조회 api / 홈에서 친구 위치 조회에서도 사용
