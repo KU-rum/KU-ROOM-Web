@@ -1,9 +1,14 @@
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import useToast from "@hooks/use-toast";
 import useDebounce from "@hooks/use-debounce";
-import { checkShareStatusApi, getLocationNameApi } from "@apis/map";
+import {
+  checkShareStatusApi,
+  getLocationNameApi,
+  shareUserLocationApi,
+  unshareLocationApi,
+} from "@apis/map";
 import {
   Coordinate,
   PlaceNameResponse,
@@ -19,8 +24,8 @@ export const useCheckShareStatusQuery = () => {
   } = useQuery<ShareStatusResponse>({
     queryKey: MAP_QUERY_KEY.USER_SHARE_STATUS,
     queryFn: () => checkShareStatusApi(),
-    staleTime: 1000 * 60 * 30,
-    gcTime: 1000 * 60 * 60,
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 30,
   });
 
   const isSharedLocation = data?.data.isActive;
@@ -61,4 +66,34 @@ export const useGetLocationNameQuery = (coord?: Coordinate) => {
   const placeName = data?.data?.placeName;
 
   return { placeName, isPendingGetLocationName };
+};
+
+export const useShareUserLocationMutation = () => {
+  const toast = useToast();
+  const qc = useQueryClient();
+
+  const { mutate: shareUserLocation } = useMutation({
+    mutationFn: (placeName: string) => shareUserLocationApi(placeName),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: MAP_QUERY_KEY.USER_SHARE_STATUS });
+    },
+    onError: (error) => {
+      toast.error(`위치 공유 실패 : ${error.message}`);
+    },
+  });
+
+  const { mutate: unshareUserLocation } = useMutation({
+    mutationFn: () => unshareLocationApi(),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: MAP_QUERY_KEY.USER_SHARE_STATUS });
+    },
+    onError: (error) => {
+      toast.error(`위치 공유 해제 실패 : ${error.message}`);
+    },
+  });
+
+  return {
+    shareUserLocation,
+    unshareUserLocation,
+  };
 };

@@ -1,9 +1,9 @@
 import React from "react";
 import ReactModal from "react-modal";
 
-import { shareUserLocationApi, unshareLocationApi } from "@apis/map";
 import cautionIcon from "@assets/icon/editFriend/cautionIcon.svg";
 import Button from "@components/Button/Button";
+import { useShareUserLocationMutation } from "@/queries";
 
 import styles from "./ShareLocationModal.module.css";
 
@@ -11,7 +11,7 @@ interface ShareLocationModalProps {
   modalState: boolean;
   isSharedLocation?: boolean;
   ableToShare?: boolean;
-  nearLocation?: string;
+  placeName?: string;
   setModalState: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -19,33 +19,23 @@ const ShareLocationModal: React.FC<ShareLocationModalProps> = ({
   modalState,
   isSharedLocation,
   ableToShare,
-  nearLocation,
+  placeName,
   setModalState,
 }) => {
+  const { shareUserLocation, unshareUserLocation } =
+    useShareUserLocationMutation();
+
   const handleCloseModal = () => setModalState(false);
 
-  // 서버에 각각 요청
-  const handleSharingLocation = async () => {
-    if (!nearLocation) return;
-    try {
-      const response = await shareUserLocationApi(nearLocation);
-      console.log(response);
-
-      setModalState(false);
-    } catch (error) {
-      console.error("위치 공유 실패 : ", error);
-    }
+  const handleSharingLocation = () => {
+    if (!placeName) return;
+    shareUserLocation(placeName, {
+      onSuccess: () => handleCloseModal(),
+    });
   };
-  const handleUnSharingLocation = async () => {
-    try {
-      const response = await unshareLocationApi();
-      console.log("서버에 공유 해제 요청");
-      console.log(response);
 
-      setModalState(false);
-    } catch (error) {
-      console.error("위치 공유 해제 실패 : ", error);
-    }
+  const handleUnSharingLocation = () => {
+    unshareUserLocation(undefined, { onSuccess: () => handleCloseModal() });
   };
 
   return (
@@ -77,7 +67,7 @@ const ShareLocationModal: React.FC<ShareLocationModalProps> = ({
         ) : (
           <>
             <span className={styles.InformText}>
-              <span className={styles.BoldText}>{nearLocation}</span>(으)로
+              <span className={styles.BoldText}>{placeName}</span>(으)로
               <br />
               <span className={styles.BoldText}>위치를 공유</span>
               하시겠습니까?

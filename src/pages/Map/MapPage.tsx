@@ -57,7 +57,6 @@ const MapPage = () => {
     selectedCategoryTitle,
     selectedCategoryEnum,
     modalState,
-    nearLocation,
     markers,
     markerFlag,
     mapInstanceRef,
@@ -396,7 +395,6 @@ const MapPage = () => {
         modalState={modalState}
         isSharedLocation={isSharedLocation}
         ableToShare={ableToShare}
-        nearLocation={nearLocation}
         setModalState={setModalState}
       />
     </div>

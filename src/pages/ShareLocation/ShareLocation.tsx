@@ -74,7 +74,7 @@ const ShareLocation = () => {
         modalState={modalState}
         isSharedLocation={false}
         ableToShare={true}
-        nearLocation={placeName}
+        placeName={placeName}
         setModalState={setModalState}
       />
     </div>

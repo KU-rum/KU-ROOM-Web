@@ -42,23 +42,13 @@ export const getLocationNameApi = async (coord?: Coordinate) => {
 
 // 위치 공유 시작 api
 export const shareUserLocationApi = async (placeName: string) => {
-  try {
-    const response = await axiosInstance.post<PlaceNameResponse>(
-      SHARE_USER_LOCATION,
-      {
-        placeName: placeName,
-      },
-    );
-    return response.data.data; // 성공 응답 반환
-  } catch (error: any) {
-    console.error(
-      "유저의 위치 공유 실패:",
-      error.response?.data || error.message,
-    );
-    throw new Error(
-      error.response?.data?.message || "유저의 위치 공유 중 오류 발생",
-    );
-  }
+  const response = await axiosInstance.post<PlaceNameResponse>(
+    SHARE_USER_LOCATION,
+    {
+      placeName: placeName,
+    },
+  );
+  return response.data; // 성공 응답 반환
 };
 
 // 위치 공유 해제 api
