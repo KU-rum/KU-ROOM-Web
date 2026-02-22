@@ -58,6 +58,57 @@ export const unshareLocationApi = async () => {
   return response.data;
 };
 
+// 위치 검색 시 검색 결과(타이틀) api.
+export const getMapSearchResultApi = async (search: string) => {
+  const response = await axiosInstance.get<MapSearchResultResponse>(
+    GET_SEARCH_LOCATION_RESULT,
+    { params: { query: search.trim() } },
+  );
+  return response.data;
+};
+
+// 최근 위치 검색어 가져오기 api
+export const getMapRecentSearchApi = async () => {
+  const response =
+    await axiosInstance.get<MapRecentSearchReponse>(GET_RECENT_SEARCH);
+
+  return response.data;
+};
+
+// 최근 위치 검색어 저장 api
+export const saveMapRecentSearchApi = async (search: string) => {
+  const response = await axiosInstance.post<ApiResponse>(
+    SAVE_SEARCH_LOCATION_KEYWORD,
+    {},
+    { params: { query: search.trim() } },
+  );
+  return response.data;
+};
+
+// 최근 검색어 모두 삭제 api
+export const deleteAllMapRecentSearchApi = async () => {
+  const response = await axiosInstance.request({
+    url: DELETE_RECENT_ALL_SEARCH,
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
+// 최근 검색어 하나 삭제 api
+export const deleteMapRecentSearchApi = async (deleteData: number) => {
+  const response = await axiosInstance.request({
+    url: DELETE_RECENT_SEARCH + deleteData,
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
 // 카테고리 칩(핀) 클릭 시 위치 정보 조회 api / 홈에서 친구 위치 조회에서도 사용
 export const getCategoryLocationsApi = async (category: string) => {
   try {
@@ -95,55 +146,4 @@ export const getLocationDetailDataApi = async (placeId: number) => {
         "하나의 위치에 대한 디테일 정보 조회 중 오류 발생",
     );
   }
-};
-
-// 위치 검색 시 검색 결과(타이틀) api.
-export const getMapSearchResultApi = async (search: string) => {
-  const response = await axiosInstance.get<MapSearchResultResponse>(
-    GET_SEARCH_LOCATION_RESULT,
-    { params: { query: search.trim() } },
-  );
-  return response.data.data;
-};
-
-// 최근 위치 검색어 가져오기 api
-export const getMapRecentSearchApi = async () => {
-  const response =
-    await axiosInstance.get<MapRecentSearchReponse>(GET_RECENT_SEARCH);
-
-  return response.data.data;
-};
-
-// 최근 위치 검색어 저장 api
-export const saveMapRecentSearchApi = async (search: string) => {
-  const response = await axiosInstance.post<ApiResponse>(
-    SAVE_SEARCH_LOCATION_KEYWORD,
-    {},
-    { params: { query: search.trim() } },
-  );
-  return response.data;
-};
-
-// 최근 검색어 모두 삭제 api
-export const deleteAllMapRecentSearchApi = async () => {
-  const response = await axiosInstance.request({
-    url: DELETE_RECENT_ALL_SEARCH,
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  return response.data;
-};
-
-// 최근 검색어 하나 삭제 api
-export const deleteMapRecentSearchApi = async (deleteData: number) => {
-  const response = await axiosInstance.request({
-    url: DELETE_RECENT_SEARCH + deleteData,
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  return response.data;
 };

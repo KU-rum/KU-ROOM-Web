@@ -56,4 +56,6 @@ export {
   useCheckShareStatusQuery,
   useGetLocationNameQuery,
   useShareUserLocationMutation,
+  useMapSearchQuery,
+  useMapSearchMutation,
 } from "./map";
