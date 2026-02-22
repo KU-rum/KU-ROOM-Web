@@ -15,6 +15,21 @@ export interface MarkerData extends Coordinate {
   numOfFriends?: number;
 }
 
+// 카테고리 ENUM 정보
+export type CategoryEnum =
+  | "FRIEND"
+  | "BUILDING"
+  | "COLLEGE"
+  | "K_CUBE"
+  | "K_HUB"
+  | "CONVENIENCE_STORE"
+  | "CAFE"
+  | "COPY_ROOM"
+  | "STUDENT_CAFETERIA"
+  | "DORMITORY"
+  | "BANK"
+  | "POST_OFFICE";
+
 // 위치 공유한 친구 정보
 interface FriendData {
   nickname: string;
@@ -73,6 +88,6 @@ export interface MapRecentSearchData {
   placeHistoryId: number;
 }
 
-export interface MapRecentSearchReponse extends ApiResponse {
+export interface MapRecentSearchResponse extends ApiResponse {
   data: MapRecentSearchData[];
 }

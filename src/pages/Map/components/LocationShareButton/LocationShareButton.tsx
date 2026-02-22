@@ -18,7 +18,13 @@ export default function LocationShareButton({
   isInSchool,
   handleShareLocation,
 }: LocationShareButtonProps) {
-  if (isPendingShareStatus || isErrorShareStatus) return null;
+  if (isPendingShareStatus || isErrorShareStatus)
+    return (
+      <button className={styles.ShareLocationButton} disabled={true}>
+        <span className={styles.DisabledToShareText}>위치 공유 불가</span>
+      </button>
+    );
+
   return isSharedLocation ? (
     <button
       className={styles.UnshareLocationButton}

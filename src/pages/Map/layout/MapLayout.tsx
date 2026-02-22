@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom";
 import {
   Coordinate,
   MarkerData,
+  CategoryEnum,
   DetailPlaceData,
   PlaceData,
 } from "@apis/types";
@@ -36,7 +37,7 @@ export interface MapLayoutContext {
   /** 선택된 카테고리 이름 */
   selectedCategoryTitle: string;
   /** 선택된 카테고리 ENUM 값 */
-  selectedCategoryEnum: string;
+  selectedCategoryEnum: CategoryEnum;
   /** 위치 공유 모달 상태 */
   modalState: boolean;
   /** 현재 좌표 */

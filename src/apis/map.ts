@@ -2,10 +2,11 @@
 import axiosInstance from "./axiosInstance";
 import {
   ApiResponse,
+  CategoryEnum,
   CategoryLocationsResponse,
   Coordinate,
   LocationDetailResponse,
-  MapRecentSearchReponse,
+  MapRecentSearchResponse,
   MapSearchResultResponse,
   PlaceNameResponse,
   ShareStatusResponse,
@@ -70,7 +71,7 @@ export const getMapSearchResultApi = async (search: string) => {
 // 최근 위치 검색어 가져오기 api
 export const getMapRecentSearchApi = async () => {
   const response =
-    await axiosInstance.get<MapRecentSearchReponse>(GET_RECENT_SEARCH);
+    await axiosInstance.get<MapRecentSearchResponse>(GET_RECENT_SEARCH);
 
   return response.data;
 };
@@ -104,7 +105,7 @@ export const deleteMapRecentSearchApi = async (deleteData: number) => {
 };
 
 // 카테고리 칩(핀) 클릭 시 위치 정보 조회 api / 홈에서 친구 위치 조회에서도 사용
-export const getCategoryLocationsApi = async (category: string) => {
+export const getCategoryLocationsApi = async (category: CategoryEnum) => {
   try {
     const response = await axiosInstance.get<CategoryLocationsResponse>(
       GET_CHIP_LOCATION,

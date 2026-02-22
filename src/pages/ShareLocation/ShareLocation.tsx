@@ -19,7 +19,7 @@ const ShareLocation = () => {
   const [center, setCenter] = useState<Coordinate>();
   const [modalState, setModalState] = useState(false);
 
-  const { placeName, isPendingGetLocationName } =
+  const { placeName, isLoadingGetLocationName } =
     useGetLocationNameQuery(center);
 
   const handleOpenShareModal = () => {
@@ -43,9 +43,7 @@ const ShareLocation = () => {
       <div className={styles.SharePinWrapper}>
         <div className={styles.SharePinText}>
           {placeName === "" || !placeName
-            ? isPendingGetLocationName
-              ? "· · ·"
-              : "현재 위치한 건물 위로 움직여주세요"
+            ? "현재 위치한 건물 위로 움직여주세요"
             : placeName}
         </div>
         <img
@@ -56,7 +54,7 @@ const ShareLocation = () => {
       </div>
       {placeName && (
         <div className={styles.BottomSheetWrapper}>
-          {isPendingGetLocationName ? (
+          {isLoadingGetLocationName ? (
             <Loading type="section" sectionHeight={100} />
           ) : (
             <div className={styles.BottomSheetContent}>

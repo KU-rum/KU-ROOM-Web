@@ -76,6 +76,7 @@ export type {
 export type {
   Coordinate,
   MarkerData,
+  CategoryEnum,
   ShareStatusData,
   ShareStatusResponse,
   PlaceNameData,
@@ -87,5 +88,5 @@ export type {
   MapSearchResult,
   MapSearchResultResponse,
   MapRecentSearchData,
-  MapRecentSearchReponse,
+  MapRecentSearchResponse,
 } from "./map";

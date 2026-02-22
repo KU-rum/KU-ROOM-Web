@@ -2,7 +2,12 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 
-import { MarkerData, MapSearchResult, PlaceData } from "@apis/types";
+import {
+  MarkerData,
+  MapSearchResult,
+  PlaceData,
+  CategoryEnum,
+} from "@apis/types";
 import { getCategoryLocationsApi } from "@apis/map";
 import DefaultProfileImg from "@assets/defaultProfileImg.svg";
 import BottomBar from "@components/BottomBar/BottomBar";
@@ -83,7 +88,7 @@ const MapPage = () => {
   // 서버로부터 데이터 fetching ***********************************************
 
   // 친구 제외 카테고리 칩을 눌렀을 때 서버에 카테고리 ENUM 을 이용하여 요청
-  const getCategoryLocations = async (selectedCategory: string) => {
+  const getCategoryLocations = async (selectedCategory: CategoryEnum) => {
     if (!selectedCategory) return;
     try {
       const locations = await getCategoryLocationsApi(selectedCategory);

@@ -16,7 +16,7 @@ import {
 } from "@apis/map";
 import {
   Coordinate,
-  MapRecentSearchReponse,
+  MapRecentSearchResponse,
   MapSearchResultResponse,
   PlaceNameResponse,
   ShareStatusResponse,
@@ -46,14 +46,13 @@ export const useCheckShareStatusQuery = () => {
   };
 };
 
-// 좌표가 자주 바뀔 수 있기 때문에 과도한 캐싱 이슈로 useMutation 사용
 export const useGetLocationNameQuery = (coord?: Coordinate) => {
   const toast = useToast();
   const debounced = useDebounce(coord, 500);
 
   const {
     data,
-    isPending: isPendingGetLocationName,
+    isLoading: isLoadingGetLocationName,
     isError,
   } = useQuery<PlaceNameResponse>({
     queryKey: MAP_QUERY_KEY.PLACE_NAME(debounced),
@@ -72,7 +71,7 @@ export const useGetLocationNameQuery = (coord?: Coordinate) => {
 
   const placeName = data?.data?.placeName;
 
-  return { placeName, isPendingGetLocationName };
+  return { placeName, isLoadingGetLocationName };
 };
 
 export const useShareUserLocationMutation = () => {
@@ -126,7 +125,7 @@ export const useMapSearchQuery = (search: string) => {
     data: recentSearchData,
     isPending: isPendingRecentSearch,
     isError: isErrorKeyword,
-  } = useQuery<MapRecentSearchReponse>({
+  } = useQuery<MapRecentSearchResponse>({
     queryKey: MAP_QUERY_KEY.RECENT_SEARCH,
     queryFn: () => getMapRecentSearchApi(),
     staleTime: 1000 * 60 * 20,
@@ -135,7 +134,7 @@ export const useMapSearchQuery = (search: string) => {
 
   useEffect(() => {
     if (isErrorSearch) {
-      toast.error(`검색 실패 : ${searchError.message}`);
+      toast.error(`검색 실패 : ${searchError?.message}`);
     }
   }, [toast, isErrorSearch, searchError]);
 
