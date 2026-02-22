@@ -106,31 +106,21 @@ export const deleteMapRecentSearchApi = async (deleteData: number) => {
 
 // 카테고리 칩(핀) 클릭 시 위치 정보 조회 api / 홈에서 친구 위치 조회에서도 사용
 export const getCategoryLocationsApi = async (category: CategoryEnum) => {
-  try {
-    const response = await axiosInstance.get<CategoryLocationsResponse>(
-      GET_CHIP_LOCATION,
-      { params: { chip: category.trim() } },
-    );
+  const response = await axiosInstance.get<CategoryLocationsResponse>(
+    GET_CHIP_LOCATION,
+    { params: { chip: category.trim() } },
+  );
 
-    return response.data.data; // 성공 응답 반환
-  } catch (error: any) {
-    console.error(
-      "위치 카테고리 데이터 조회 실패:",
-      error.response?.data || error.message,
-    );
-    throw new Error(
-      error.response?.data?.message || "위치 카테고리 데이터 조회 중 오류 발생",
-    );
-  }
+  return response.data;
 };
 
 // 하나의 위치에 대한 디테일 정보 조회 api
-export const getLocationDetailDataApi = async (placeId: number) => {
+export const getLocationDetailDataApi = async (placeId?: number) => {
   try {
     const response = await axiosInstance.get<LocationDetailResponse>(
       GET_LOCATION_DETAIL_DATA + placeId,
     );
-    return response.data.data; // 성공 응답 반환
+    return response.data;
   } catch (error: any) {
     console.error(
       "하나의 위치에 대한 디테일 정보 조회 실패:",

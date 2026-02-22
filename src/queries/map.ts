@@ -7,6 +7,7 @@ import {
   checkShareStatusApi,
   deleteAllMapRecentSearchApi,
   deleteMapRecentSearchApi,
+  getCategoryLocationsApi,
   getLocationNameApi,
   getMapRecentSearchApi,
   getMapSearchResultApi,
@@ -15,6 +16,8 @@ import {
   unshareLocationApi,
 } from "@apis/map";
 import {
+  CategoryEnum,
+  CategoryLocationsResponse,
   Coordinate,
   MapRecentSearchResponse,
   MapSearchResultResponse,
@@ -201,4 +204,25 @@ export const useMapSearchMutation = () => {
     deleteMapRecentSearch,
     deleteAllMapRecentSearch,
   };
+};
+
+export const useCategoryLocationsQuery = (category: CategoryEnum) => {
+  const toast = useToast();
+  const { data, isError } = useQuery<CategoryLocationsResponse>({
+    queryKey: MAP_QUERY_KEY.CATEGORY_LOCATIONS(category),
+    queryFn: () => getCategoryLocationsApi(category),
+    enabled: !!category,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 20,
+  });
+
+  useEffect(() => {
+    if (isError) {
+      toast.error("장소 조회 중 오류가 발생했습니다.");
+    }
+  }, [toast, isError]);
+
+  const categoryLocations = data?.data;
+
+  return { categoryLocations };
 };

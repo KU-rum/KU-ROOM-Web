@@ -58,4 +58,5 @@ export {
   useShareUserLocationMutation,
   useMapSearchQuery,
   useMapSearchMutation,
+  useCategoryLocationsQuery,
 } from "./map";

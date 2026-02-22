@@ -2,18 +2,12 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 
-import {
-  MarkerData,
-  MapSearchResult,
-  PlaceData,
-  CategoryEnum,
-} from "@apis/types";
-import { getCategoryLocationsApi } from "@apis/map";
+import { MarkerData, MapSearchResult, PlaceData } from "@apis/types";
 import DefaultProfileImg from "@assets/defaultProfileImg.svg";
 import BottomBar from "@components/BottomBar/BottomBar";
 import ShareLocationModal from "@components/ShareLocationModal/ShareLocationModal";
 import { isMyLocationInSchool } from "@utils/mapRangeUtils";
-import { useCheckShareStatusQuery } from "@/queries";
+import { useCategoryLocationsQuery, useCheckShareStatusQuery } from "@/queries";
 
 import styles from "./MapPage.module.css";
 import MapSearchBar from "./components/MapSearchBar/MapSearchBar";
@@ -85,19 +79,11 @@ const MapPage = () => {
   const { isSharedLocation, isPendingShareStatus, isErrorShareStatus } =
     useCheckShareStatusQuery();
 
-  // 서버로부터 데이터 fetching ***********************************************
+  const { categoryLocations } = useCategoryLocationsQuery(selectedCategoryEnum);
 
-  // 친구 제외 카테고리 칩을 눌렀을 때 서버에 카테고리 ENUM 을 이용하여 요청
-  const getCategoryLocations = async (selectedCategory: CategoryEnum) => {
-    if (!selectedCategory) return;
-    try {
-      const locations = await getCategoryLocationsApi(selectedCategory);
-      setSelectedCategoryLocations(locations);
-    } catch (error) {
-      console.error(error);
-      alert("서버 상태 또는 네트워크에 문제가 있습니다.");
-    }
-  };
+  useEffect(() => {
+    if (categoryLocations) setSelectedCategoryLocations(categoryLocations);
+  }, [categoryLocations, setSelectedCategoryLocations]);
 
   // 이벤트 핸들러 함수 *******************************************************
   const resetSelectSearch = () => {
@@ -105,6 +91,7 @@ const MapPage = () => {
     setDetailLocationData(null);
     setSelectedCategoryTitle("");
     setSelectedCategoryEnum("");
+    setSelectedCategoryLocations([]);
     setMarkerFlag(0);
     setMarkers([]);
     setIsExpandedSheet(false);
@@ -260,7 +247,6 @@ const MapPage = () => {
       return;
     }
 
-    getCategoryLocations(selectedCategoryEnum);
     if (selectedCategoryTitle !== "친구") {
       setVisibleBottomSheet(true);
     }

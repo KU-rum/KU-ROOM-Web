@@ -198,7 +198,7 @@ async function makeFocusMarker(
 
   try {
     const response = await getLocationDetailDataApi(placeId);
-    setDetailLocationData(response);
+    setDetailLocationData(response.data);
   } catch (error) {
     console.error("디테일 위치 정보 가져오기 mapUtils에서 오류 : ", error);
   }
