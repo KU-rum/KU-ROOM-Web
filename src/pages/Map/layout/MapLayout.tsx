@@ -95,7 +95,9 @@ const MapLayout = () => {
   const [locationSharedRefreshKey, setLocationSharedRefreshKey] = useState(0);
   const [selectedCategoryTitle, setSelectedCategoryTitle] =
     useState<string>("");
-  const [selectedCategoryEnum, setSelectedCategoryEnum] = useState<string>("");
+  const [selectedCategoryEnum, setSelectedCategoryEnum] = useState<
+    CategoryEnum | ""
+  >("");
   const [modalState, setModalState] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<Coordinate | null>(
     null,
