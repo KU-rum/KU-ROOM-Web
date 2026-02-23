@@ -7,7 +7,11 @@ import DefaultProfileImg from "@assets/defaultProfileImg.svg";
 import BottomBar from "@components/BottomBar/BottomBar";
 import ShareLocationModal from "@components/ShareLocationModal/ShareLocationModal";
 import { isMyLocationInSchool } from "@utils/mapRangeUtils";
-import { useCategoryLocationsQuery, useCheckShareStatusQuery } from "@/queries";
+import {
+  useCategoryLocationsQuery,
+  useCheckShareStatusQuery,
+  useLocationDetailQuery,
+} from "@/queries";
 
 import styles from "./MapPage.module.css";
 import MapSearchBar from "./components/MapSearchBar/MapSearchBar";
@@ -42,7 +46,6 @@ const MapPage = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const {
-    // ================== 상태 ==================
     isTracking,
     visibleBottomSheet,
     isExpandedSheet,
@@ -50,6 +53,7 @@ const MapPage = () => {
     isExpandedFocusedSheet,
     selectedCategoryLocations,
     detailLocationData,
+    detailLocationPlaceId,
     searchMode,
     isInSchool,
     ableToShare,
@@ -59,7 +63,6 @@ const MapPage = () => {
     markers,
     markerFlag,
     mapInstanceRef,
-
     setIsTracking,
     setVisibleBottomSheet,
     setIsExpandedSheet,
@@ -67,6 +70,7 @@ const MapPage = () => {
     setIsExpandedFocusedSheet,
     setSelectedCategoryLocations,
     setDetailLocationData,
+    setDetailLocationPlaceId,
     setSearchMode,
     setIsInSchool,
     setSelectedCategoryTitle,
@@ -80,15 +84,21 @@ const MapPage = () => {
     useCheckShareStatusQuery();
 
   const { categoryLocations } = useCategoryLocationsQuery(selectedCategoryEnum);
+  const { locationDetailData } = useLocationDetailQuery(detailLocationPlaceId);
 
   useEffect(() => {
     if (categoryLocations) setSelectedCategoryLocations(categoryLocations);
   }, [categoryLocations, setSelectedCategoryLocations]);
 
+  useEffect(() => {
+    if (locationDetailData) setDetailLocationData(locationDetailData);
+  }, [locationDetailData, setDetailLocationData]);
+
   // 이벤트 핸들러 함수 *******************************************************
   const resetSelectSearch = () => {
     setSearchMode(false);
     setDetailLocationData(null);
+    setDetailLocationPlaceId(undefined);
     setSelectedCategoryTitle("");
     setSelectedCategoryEnum("");
     setSelectedCategoryLocations([]);
@@ -111,6 +121,7 @@ const MapPage = () => {
       setIsTracking(false);
       resetFocusedMarker(setHasFocusedMarker);
       setDetailLocationData(null);
+      setDetailLocationPlaceId(undefined);
     } else {
       resetSelectSearch();
     }
@@ -126,21 +137,20 @@ const MapPage = () => {
   };
 
   // 시트에서 위치 클릭 시 이동하는 로직
-  const clickToLocationMarker = (location: PlaceData) => {
+  const clickBottomSheetToLocationMarker = (location: PlaceData) => {
     if (!isExpandedSheet) return;
     // 다음 frame에 마커 포커스하기
     const target = renderedMarkers.find(
       ({ marker }) => marker.getTitle() === location.name,
     );
     if (target && mapInstanceRef.current) {
-      setHasFocusedMarker(true);
       makeFocusMarker(
         location.placeId,
         mapInstanceRef.current,
         target.marker,
         setIsTracking,
         setHasFocusedMarker,
-        setDetailLocationData,
+        setDetailLocationPlaceId,
       );
     }
 
@@ -152,7 +162,7 @@ const MapPage = () => {
     setSelectedCategoryTitle(title);
     const name = getCategoryEnum(title);
     if (!name) {
-      return console.error("잘못된 칩 클릭");
+      return null;
     }
     setSelectedCategoryEnum(name);
     setIsTracking(false);
@@ -163,12 +173,7 @@ const MapPage = () => {
     setSelectedCategoryLocations([]);
     setSelectedCategoryTitle(searchResult.name);
     const markerIcon = makeMarkerIcon("default");
-    if (
-      mapInstanceRef.current &&
-      setIsTracking &&
-      setHasFocusedMarker &&
-      setDetailLocationData
-    ) {
+    if (mapInstanceRef.current && setIsTracking && setHasFocusedMarker) {
       renderMarkers(
         mapInstanceRef.current,
         [
@@ -183,7 +188,7 @@ const MapPage = () => {
         searchResult.name,
         setIsTracking,
         setHasFocusedMarker,
-        setDetailLocationData,
+        setDetailLocationPlaceId,
       );
     }
   };
@@ -203,8 +208,6 @@ const MapPage = () => {
       setMarkers([]);
       return;
     }
-    setVisibleBottomSheet(true);
-    setHasFocusedMarker(true);
     // 마커 아이콘 반영
     const markerIcon = makeMarkerIcon("default");
     setMarkers([
@@ -234,7 +237,7 @@ const MapPage = () => {
           target.marker,
           setIsTracking,
           setHasFocusedMarker,
-          setDetailLocationData,
+          setDetailLocationPlaceId,
         );
       }
     }
@@ -300,7 +303,7 @@ const MapPage = () => {
         selectedCategoryTitle={selectedCategoryTitle}
         setIsTracking={setIsTracking}
         setHasFocusedMarker={setHasFocusedMarker}
-        setDetailLocationData={setDetailLocationData}
+        setDetailLocationPlaceId={setDetailLocationPlaceId}
       />
 
       {/* 검색 모드일 때 MapSearch만 덮어씌우기 */}
@@ -370,7 +373,7 @@ const MapPage = () => {
             isExpandedSheet={isExpandedSheet}
             hasFocusedMarker={hasFocusedMarker}
             setIsExpandedSheet={setIsExpandedSheet}
-            clickToLocationMarker={clickToLocationMarker}
+            clickBottomSheetToLocationMarker={clickBottomSheetToLocationMarker}
           />
           <BottomBar />
         </>

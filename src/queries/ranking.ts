@@ -77,7 +77,7 @@ export const useFriendSharingRankingQuery = (friendId: string) => {
   };
 };
 
-export const useLocationTop3RankQuery = (placeId: number) => {
+export const useLocationTop3RankQuery = (placeId?: number) => {
   const toast = useToast();
 
   const {
@@ -107,7 +107,7 @@ export const useLocationTop3RankQuery = (placeId: number) => {
   };
 };
 
-export const useLocationTotalRankQuery = (placeId: number) => {
+export const useLocationTotalRankQuery = (placeId?: number) => {
   const toast = useToast();
 
   const { ref: listBottomRef, inView } = useInView();

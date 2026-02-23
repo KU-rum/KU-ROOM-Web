@@ -9,4 +9,5 @@ export const MAP_QUERY_KEY = {
     "category-locations",
     category,
   ],
+  LOCATION_DETAIL: (placeId?: number) => ["location-detail", placeId],
 } as const;

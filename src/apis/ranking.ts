@@ -12,9 +12,9 @@ import {
 const GET_USER_SHARING_RANKING = "/places/users/ranks";
 const FRIEND_RANKING = (friendId: string) => `/places/users/${friendId}/ranks`;
 const LOCATION_RANK_URL = {
-  TOP3: (placeId: number) => `/places/${placeId}/top`,
-  TOTAL: (placeId: number) => `/places/${placeId}/ranks`,
-  ME: (placeId: number) => `/places/${placeId}/ranks/me`,
+  TOP3: (placeId?: number) => `/places/${placeId}/top`,
+  TOTAL: (placeId?: number) => `/places/${placeId}/ranks`,
+  ME: (placeId?: number) => `/places/${placeId}/ranks/me`,
 };
 
 // 유저의 내 장소 랭킹 조회 api
@@ -35,7 +35,9 @@ export const getFriendRankingApi = async (friendId: string) => {
 };
 
 // 위치별 top3 조회 api
-export const getLocationTop3RankApi = async (placeId: number) => {
+export const getLocationTop3RankApi = async (placeId?: number) => {
+  if (!placeId) throw Error("위치 상위 랭킹 조회 불가");
+
   const response = await axiosInstance.get<LocationTop3RankResponse>(
     LOCATION_RANK_URL.TOP3(placeId),
   );
@@ -45,9 +47,10 @@ export const getLocationTop3RankApi = async (placeId: number) => {
 
 // 위치별 랭킹 조회 무한스크롤 api
 export const getLocationTotalRankApi = async (
-  placeId: number,
+  placeId?: number,
   lastKnown?: string,
 ) => {
+  if (!placeId) throw Error("위치 랭킹 조회 불가");
   const response = await axiosInstance.get<LocationTotalRankResponse>(
     LOCATION_RANK_URL.TOTAL(placeId),
     { params: { lastKnown, limit: PAGE_SIZE } },
@@ -57,7 +60,8 @@ export const getLocationTotalRankApi = async (
 };
 
 // 위치별 내 랭킹 조회 api
-export const getLocationMyRankApi = async (placeId: number) => {
+export const getLocationMyRankApi = async (placeId?: number) => {
+  if (!placeId) throw Error("위치 유저 랭킹 조회 불가");
   const response = await axiosInstance.get<LocationMyRankResponse>(
     LOCATION_RANK_URL.ME(placeId),
   );

@@ -17,12 +17,13 @@ const GET_LOCATION_NAME = "/places/sharing";
 const SHARE_USER_LOCATION = "/places/sharing/confirm";
 const UNSHARE_LOCATION = "/places/sharing/confirm";
 const GET_CHIP_LOCATION = "/places";
-const GET_LOCATION_DETAIL_DATA = "/places/";
+const GET_LOCATION_DETAIL_DATA = (placeId: number) => `/places/${placeId}`;
 const GET_SEARCH_LOCATION_RESULT = "/places/search";
 const SAVE_SEARCH_LOCATION_KEYWORD = "/places/search/keyword";
 const GET_RECENT_SEARCH = "/places/search/history"; // 최근 검색어 5개
 const DELETE_RECENT_ALL_SEARCH = "/places/search/history"; // 최근 검색어 모두 삭제
-const DELETE_RECENT_SEARCH = "/places/search/history/"; // 최근 검색어 하나 삭제
+const DELETE_RECENT_SEARCH = (deleteData: number) =>
+  `/places/search/history/${deleteData}`; // 최근 검색어 하나 삭제
 
 // 위치 공유 상태 조회 api
 export const checkShareStatusApi = async () => {
@@ -98,7 +99,7 @@ export const deleteAllMapRecentSearchApi = async () => {
 // 최근 검색어 하나 삭제 api
 export const deleteMapRecentSearchApi = async (deleteData: number) => {
   const response = await axiosInstance.request({
-    url: DELETE_RECENT_SEARCH + deleteData,
+    url: DELETE_RECENT_SEARCH(deleteData),
     method: "DELETE",
   });
   return response.data;
@@ -116,19 +117,9 @@ export const getCategoryLocationsApi = async (category: CategoryEnum) => {
 
 // 하나의 위치에 대한 디테일 정보 조회 api
 export const getLocationDetailDataApi = async (placeId?: number) => {
-  try {
-    const response = await axiosInstance.get<LocationDetailResponse>(
-      GET_LOCATION_DETAIL_DATA + placeId,
-    );
-    return response.data;
-  } catch (error: any) {
-    console.error(
-      "하나의 위치에 대한 디테일 정보 조회 실패:",
-      error.response?.data || error.message,
-    );
-    throw new Error(
-      error.response?.data?.message ||
-        "하나의 위치에 대한 디테일 정보 조회 중 오류 발생",
-    );
-  }
+  if (!placeId) throw Error("위치 상세정보 조회 불가");
+  const response = await axiosInstance.get<LocationDetailResponse>(
+    GET_LOCATION_DETAIL_DATA(placeId),
+  );
+  return response.data;
 };

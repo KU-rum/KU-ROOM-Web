@@ -8,6 +8,7 @@ import {
   deleteAllMapRecentSearchApi,
   deleteMapRecentSearchApi,
   getCategoryLocationsApi,
+  getLocationDetailDataApi,
   getLocationNameApi,
   getMapRecentSearchApi,
   getMapSearchResultApi,
@@ -214,7 +215,7 @@ export const useCategoryLocationsQuery = (category: CategoryEnum) => {
     queryKey: MAP_QUERY_KEY.CATEGORY_LOCATIONS(category),
     queryFn: () => getCategoryLocationsApi(category),
     enabled: !!category,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 20,
   });
 
@@ -227,4 +228,27 @@ export const useCategoryLocationsQuery = (category: CategoryEnum) => {
   const categoryLocations = data?.data;
 
   return { categoryLocations };
+};
+
+export const useLocationDetailQuery = (placeId?: number) => {
+  const toast = useToast();
+  const { data, isError } = useQuery({
+    queryKey: MAP_QUERY_KEY.LOCATION_DETAIL(placeId),
+    queryFn: () => getLocationDetailDataApi(placeId),
+    enabled: !!placeId,
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 20,
+  });
+
+  useEffect(() => {
+    if (isError) {
+      toast.error("상세 정보 조회 중 오류가 발생했습니다.");
+    }
+  }, [toast, isError]);
+
+  const locationDetailData = data?.data;
+
+  return {
+    locationDetailData,
+  };
 };

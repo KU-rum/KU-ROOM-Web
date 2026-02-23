@@ -1,5 +1,3 @@
-import { getLocationDetailDataApi } from "@apis/map";
-
 import myMarkerIcon from "@assets/map/mylocationMarker.svg";
 import focusedMarkerIcon from "@assets/map/focusedMarker.png";
 import collegeMarker from "@assets/map/markers/collegeMarker.svg";
@@ -13,7 +11,7 @@ import dormitoryMarker from "@assets/map/markers/dormitoryMarker.svg";
 import bankMarker from "@assets/map/markers/bankMarker.svg";
 import postMarker from "@assets/map/markers/postMarker.svg";
 import defaultMarker from "@assets/map/defaultMarkerIcon.svg";
-import { MarkerData, DetailPlaceData } from "@apis/types";
+import { MarkerData } from "@apis/types";
 
 interface KuroomMarker {
   marker: naver.maps.Marker;
@@ -61,7 +59,7 @@ export function renderMarkers(
   selectedCategoryTitle: string,
   setIsTracking: (value: boolean) => void,
   setHasFocusedMarker: (value: boolean) => void,
-  setDetailLocationData: (value: DetailPlaceData) => void,
+  setDetailLocationPlaceId: (value?: number) => void,
 ): void {
   // 기존 마커 제거
   renderedMarkers.forEach(({ marker }) => marker.setMap(null));
@@ -127,7 +125,7 @@ export function renderMarkers(
           marker,
           setIsTracking,
           setHasFocusedMarker,
-          setDetailLocationData,
+          setDetailLocationPlaceId,
           isFriendMarker,
         );
       });
@@ -152,7 +150,7 @@ export function renderMarkers(
         renderedMarkers[0].marker,
         setIsTracking,
         setHasFocusedMarker,
-        setDetailLocationData,
+        setDetailLocationPlaceId,
       );
     }, 10);
   }
@@ -182,7 +180,7 @@ async function makeFocusMarker(
   marker: naver.maps.Marker,
   setIsTracking: (value: boolean) => void,
   setHasFocusedMarker: (value: boolean) => void,
-  setDetailLocationData: (value: DetailPlaceData) => void,
+  setDetailLocationPlaceId: (value?: number) => void,
   isFriendMarker?: boolean,
 ) {
   const position = marker.getPosition() as naver.maps.LatLng;
@@ -196,12 +194,7 @@ async function makeFocusMarker(
   map.setZoom(17);
   setIsTracking(false);
 
-  try {
-    const response = await getLocationDetailDataApi(placeId);
-    setDetailLocationData(response.data);
-  } catch (error) {
-    console.error("디테일 위치 정보 가져오기 mapUtils에서 오류 : ", error);
-  }
+  setDetailLocationPlaceId(placeId);
 
   focusedMarker = marker; // 현재 포커스 마커 기억
   setHasFocusedMarker(true); // 포커스 되었음을 알림
