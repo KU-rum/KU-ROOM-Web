@@ -121,6 +121,13 @@ export const getNoticeDetail = async (
     const response = await noticeAxiosInstance.get<NoticeDetailApiResponse>(
       `/notices/${noticeId}`,
     );
+
+    if (response.data.status === "NOT_FOUND") {
+      const error = new Error(response.data.message);
+      (error as any).status = response.data.status;
+      throw error;
+    }
+
     return response.data.data;
   } catch (error: any) {
     console.error("공지사항 상세 조회 실패:", error);

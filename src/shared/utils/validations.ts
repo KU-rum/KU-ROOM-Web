@@ -43,7 +43,7 @@ export const handleSettingPassword = (
 
   if (isPwValid && isPwMatch) {
     console.log("설정 성공!");
-    navigate("/identityverifictaion", {
+    navigate("/identityverification", {
       state: { signupId: signupId, signupPw: inputPw },
     });
   } else {

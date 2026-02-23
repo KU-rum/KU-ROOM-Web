@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import type { NoticeResponse } from "@apis/notice";
 import { getNoticeDetail } from "@apis/notice";
 import { addBookmark, removeBookmark } from "@apis/bookmark";
@@ -15,6 +16,7 @@ export const useNoticeDetail = (
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const fetchedKeyRef = useRef<string | null>(null);
+  const navigate = useNavigate();
   const toast = useToast();
 
   useEffect(() => {
@@ -61,7 +63,12 @@ export const useNoticeDetail = (
           isBookMarked: detailData.isBookmark,
           bookmarkId: detailData.bookmarkId,
         });
-      } catch (err) {
+      } catch (err: any) {
+        if (err?.status === "NOT_FOUND") {
+          toast.error(NOTICE_DETAIL_MESSAGES.NOT_FOUND);
+          navigate("/alarm", { replace: true });
+          return;
+        }
         setError(NOTICE_DETAIL_MESSAGES.FETCH_ERROR);
         console.error("Failed to fetch notice detail:", err);
       } finally {

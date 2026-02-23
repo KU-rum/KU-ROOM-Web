@@ -10,7 +10,7 @@ import kuroomIcon from "@/assets/icon/cloud.svg";
 import homeAlarmIcon from "@/assets/icon/homealarm.svg";
 import infoButtonIcon from "@/assets/icon/info-button.svg";
 
-import "./Header.css";
+import styles from "./Header.module.css";
 
 interface HeaderProps {
   children?: React.ReactNode;
@@ -33,8 +33,8 @@ const renderHeaderContent = (
   switch (children) {
     case "홈":
       return (
-        <div className="home-header-wrapper">
-          <h1 className="home-header-title">KUROOM</h1>
+        <div className={styles["home-header-wrapper"]}>
+          <h1 className={styles["home-header-title"]}>KUROOM</h1>
           <div style={{ position: "relative" }}>
             <img
               src={homeAlarmIcon}
@@ -42,7 +42,7 @@ const renderHeaderContent = (
               onClick={() => navigate("/alarm")}
             />
             {hasUnreadAlarm && unreadCount ? (
-              <span className="new-alarm-marker">
+              <span className={styles["new-alarm-marker"]}>
                 {unreadCount <= 99 ? unreadCount : "99+"}
               </span>
             ) : (
@@ -53,7 +53,7 @@ const renderHeaderContent = (
       );
     case "공지사항":
       return (
-        <div className="notice-header-content-wrapper">
+        <div className={styles["notice-header-content-wrapper"]}>
           <img
             src={bookmarkIcon}
             alt="북마크"
@@ -70,13 +70,13 @@ const renderHeaderContent = (
       return (
         <>
           <img
-            className="profilechange-header-content"
+            className={styles["profilechange-header-content"]}
             src={arrowBackIcon}
             alt="뒤로가기"
             onClick={() => navigate(-1)}
           />
           <img
-            className="header-info-button-icon"
+            className={styles["header-info-button-icon"]}
             src={infoButtonIcon}
             alt="툴팁 트리거 버튼"
             data-tooltip-id="my-location-ranking"
@@ -106,7 +106,7 @@ const renderHeaderContent = (
       return onlyIcon ? (
         <>
           <img
-            className="header-kuroom-icon"
+            className={styles["header-kuroom-icon"]}
             src={kuroomIcon}
             alt="쿠룸 아이콘"
           />
@@ -114,13 +114,13 @@ const renderHeaderContent = (
       ) : (
         <>
           <img
-            className="profilechange-header-content"
+            className={styles["profilechange-header-content"]}
             src={arrowBackIcon}
             alt="뒤로가기"
             onClick={() => navigate(-1)}
           />
           <img
-            className="header-kuroom-icon"
+            className={styles["header-kuroom-icon"]}
             src={kuroomIcon}
             alt="쿠룸 아이콘"
           />
@@ -132,13 +132,13 @@ const renderHeaderContent = (
         return (
           <>
             <img
-              className="profilechange-header-content"
+              className={styles["profilechange-header-content"]}
               src={arrowBackIcon}
               alt="뒤로가기"
               onClick={() => navigate(-1)}
             />
             <img
-              className="notice-detail-bookmark-icon"
+              className={styles["notice-detail-bookmark-icon"]}
               src={isBookmarked ? bookmarkFillIcon : bookmarkIcon}
               alt={isBookmarked ? "북마크됨" : "북마크"}
               onClick={onBookmarkClick}
@@ -149,7 +149,7 @@ const renderHeaderContent = (
 
       return (
         <img
-          className="profilechange-header-content"
+          className={styles["profilechange-header-content"]}
           src={arrowBackIcon}
           alt="뒤로가기"
           onClick={() => navigate(-1)}
@@ -172,13 +172,13 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <>
       <header
-        className="header-container"
+        className={styles["header-container"]}
         style={children === "알림" ? { backgroundColor: "white" } : {}}
       >
         {children === "홈" ? (
           <></>
         ) : (
-          <span className="header-title">{children}</span>
+          <span className={styles["header-title"]}>{children}</span>
         )}
         {renderHeaderContent(
           children,

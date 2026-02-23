@@ -17,7 +17,7 @@ import { isValidStudentId } from "@utils/validations";
 import Select from "./components/Select/Select";
 import BottomSheet from "./components/BottomSheet/BottomSheet";
 import SelectItem from "./components/SelectItem/SelectItem";
-import "./ProfileSetting.css";
+import styles from "./ProfileSetting.module.css";
 
 const ProfileSetting: React.FC = () => {
   const navigate = useNavigate();
@@ -151,16 +151,16 @@ const ProfileSetting: React.FC = () => {
   return (
     <>
       <Header onlyIcon={true} />
-      <div className="profile-setting">
-        <div className="profile-setting-header">
-          <h1 className="profile-setting-title">
-            <span className="text-primary">쿠룸</span>에 필요한
+      <div className={styles["profile-setting"]}>
+        <div className={styles["profile-setting-header"]}>
+          <h1 className={styles["profile-setting-title"]}>
+            <span className={styles["text-primary"]}>쿠룸</span>에 필요한
             <br />
             프로필을 설정해주세요.
           </h1>
         </div>
 
-        <div className="profile-setting-form">
+        <div className={styles["profile-setting-form"]}>
           <InputBar
             label="닉네임"
             type="text"
@@ -169,12 +169,12 @@ const ProfileSetting: React.FC = () => {
             placeholder="닉네임을 입력해주세요 (10자 이하)"
           />
           {!isNicknameValid && nickname && (
-            <span className="ErrorMsg">
+            <span className={styles.ErrorMsg}>
               한글 또는 영어 포함 2자 이상 10자 이내로 입력해주세요.
             </span>
           )}
           {isDuplicatedNickname && (
-            <span className="ErrorMsg">이미 있는 닉네임입니다.</span>
+            <span className={styles.ErrorMsg}>이미 있는 닉네임입니다.</span>
           )}
           {/* 닉네임이 유효할 때만 단과대학 선택 표시 */}
           {isNicknameValid && (

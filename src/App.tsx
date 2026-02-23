@@ -42,36 +42,44 @@ import ShareLocation from "@pages/ShareLocation/ShareLocation";
 import PwaGuide from "@pages/PwaGuide/PwaGuide";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
+import { AuthLayout } from "@/layout/AuthLayout";
 
-// PWA 가이드 표시 여부에 따라 Home 또는 가이드로 분기
+// 인증이 불필요한 Public 경로 목록 (백그라운드 복귀 시 토큰 재발급 제외 대상)
+const PUBLIC_PATHS = [
+  "/login",
+  "/signup",
+  "/identityverification",
+  "/agreement",
+  "/profilesetting",
+  "/welcome",
+  "/findidpw",
+  "/social/callback",
+  "/pwa-guide",
+];
+
+// PWA 가이드 → 인증 순서로 분기 (PWA 가이드는 비로그인 상태에서도 표시되어야 함)
 const RootIndex = () => {
   if (shouldShowPwaGuide()) {
     return <Navigate to="/pwa-guide" replace />;
   }
+
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
   return <Home />;
 };
 
 function App() {
+  // 백그라운드 복귀 시 인증된 페이지에서 Access Token 재발급
   useEffect(() => {
-    const path = window.location.pathname;
-    // 아래에 해당하는 페이지들은 다른 앱을 사용하다가 돌아오면 Access Token을 재발급함
-    const includedPaths = [
-      "alarm",
-      "myinfo",
-      "profilechange",
-      "changepw",
-      "changenickname",
-      "alarmsetting",
-      "friendadd",
-      "friendlist",
-      "departmentsetting",
-      "bookmark",
-    ];
-
     const handleVisibilityChange = async () => {
+      const path = window.location.pathname;
       if (
         document.visibilityState === "visible" &&
-        includedPaths.includes(path)
+        path !== "/" &&
+        !PUBLIC_PATHS.some((p) => path.startsWith(p))
       ) {
         await reissueTokenApi();
       }
@@ -87,61 +95,22 @@ function App() {
     {
       path: "/",
       children: [
+        // Public — 인증 불필요
         {
-          index: true,
-          element: <RootIndex />,
-        },
-        {
-          path: "pwa-guide",
-          element: <PwaGuide />,
-        },
-        {
-          path: "alarm",
-          element: <Alarm />,
-        },
-        {
-          path: "notice",
-          element: <Notice />,
-        },
-        {
-          path: "notice/:id",
-          element: <NoticeDetail />,
-        },
-        {
-          path: "notice/:category/:id",
-          element: <NoticeDetail />,
-        },
-        {
-          path: "chatbot-main",
-          element: <ChatbotMain />,
-        },
-        {
-          path: "chat",
-          element: <ChatPage />,
+          path: "login",
+          element: <Login />,
         },
         {
           path: "signup",
           element: <SignupInfo />,
         },
         {
-          path: "identityverifictaion",
+          path: "identityverification",
           element: <IdentityVerify />,
         },
         {
           path: "agreement",
           element: <Agreement />,
-        },
-        {
-          path: "login",
-          element: <Login />,
-        },
-        {
-          path: "findidpw",
-          element: <FindIdPw />,
-        },
-        {
-          path: "social/callback",
-          element: <SocialCallback />,
         },
         {
           path: "profilesetting",
@@ -152,76 +121,122 @@ function App() {
           element: <Welcome />,
         },
         {
-          path: "map",
-          element: <MapLayout />,
-          children: [
-            {
-              index: true,
-              element: <MapPage />,
-            },
-            {
-              path: "location-total-rank/:placeName?",
-              element: <LocationTotalRank />,
-            },
-          ],
+          path: "findidpw",
+          element: <FindIdPw />,
         },
         {
-          path: "share-location",
-          element: <ShareLocation />,
+          path: "social/callback",
+          element: <SocialCallback />,
         },
         {
-          path: "myinfo",
-          element: <MyPage />,
+          path: "pwa-guide",
+          element: <PwaGuide />,
         },
         {
-          path: "profilechange",
-          element: <ProfileChange />,
-        },
-        {
-          path: "changepw",
-          element: <ChangePw />,
-        },
-        {
-          path: "changenickname",
-          element: <ChangeNickname />,
-        },
-        {
-          path: "alarmsetting",
-          element: <AlarmSetting />,
-        },
-        {
-          path: "friendadd",
-          element: <FriendAdd />,
-        },
-        {
-          path: "friendlist",
-          element: <FriendList />,
-        },
-        {
-          path: "departmentsetting",
-          element: <DepartmentSetting />,
-        },
-        {
-          path: "mylocationranking",
-          children: [
-            {
-              index: true,
-              element: <MyLocationRanking />,
-            },
-            {
-              path: "friendlocationranking",
-              element: <FriendLocationRanking />,
-            },
-          ],
+          index: true,
+          element: <RootIndex />,
         },
 
+        // Protected — AuthLayout으로 인증 보호
         {
-          path: "bookmark",
-          element: <Bookmark />,
-        },
-        {
-          path: "search",
-          element: <Search />,
+          element: <AuthLayout />,
+          children: [
+            {
+              path: "alarm",
+              element: <Alarm />,
+            },
+            {
+              path: "notice",
+              element: <Notice />,
+            },
+            {
+              path: "notice/:id",
+              element: <NoticeDetail />,
+            },
+            {
+              path: "notice/:category/:id",
+              element: <NoticeDetail />,
+            },
+            {
+              path: "chatbot-main",
+              element: <ChatbotMain />,
+            },
+            {
+              path: "chat",
+              element: <ChatPage />,
+            },
+            {
+              path: "map",
+              element: <MapLayout />,
+              children: [
+                {
+                  index: true,
+                  element: <MapPage />,
+                },
+                {
+                  path: "location-total-rank/:placeName?",
+                  element: <LocationTotalRank />,
+                },
+              ],
+            },
+            {
+              path: "share-location",
+              element: <ShareLocation />,
+            },
+            {
+              path: "myinfo",
+              element: <MyPage />,
+            },
+            {
+              path: "profilechange",
+              element: <ProfileChange />,
+            },
+            {
+              path: "changepw",
+              element: <ChangePw />,
+            },
+            {
+              path: "changenickname",
+              element: <ChangeNickname />,
+            },
+            {
+              path: "alarmsetting",
+              element: <AlarmSetting />,
+            },
+            {
+              path: "friendadd",
+              element: <FriendAdd />,
+            },
+            {
+              path: "friendlist",
+              element: <FriendList />,
+            },
+            {
+              path: "departmentsetting",
+              element: <DepartmentSetting />,
+            },
+            {
+              path: "mylocationranking",
+              children: [
+                {
+                  index: true,
+                  element: <MyLocationRanking />,
+                },
+                {
+                  path: "friendlocationranking",
+                  element: <FriendLocationRanking />,
+                },
+              ],
+            },
+            {
+              path: "bookmark",
+              element: <Bookmark />,
+            },
+            {
+              path: "search",
+              element: <Search />,
+            },
+          ],
         },
       ],
     },

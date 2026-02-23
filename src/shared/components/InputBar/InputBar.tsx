@@ -3,7 +3,7 @@ import React, { ChangeEvent, useState } from "react";
 import visibilityOffIcon from "@/assets/icon/visibility_off.svg";
 import visibilityOnIcon from "@/assets/icon/visibility_on.svg";
 
-import "./InputBar.css";
+import styles from "./InputBar.module.css";
 
 interface InputProps {
   label: string;
@@ -36,11 +36,11 @@ const InputBar: React.FC<InputProps> = ({
   };
 
   return (
-    <div className="input-container">
-      <label className="input-label">{label}</label>
-      <div className="input-field-container">
+    <div className={styles["input-container"]}>
+      <label className={styles["input-label"]}>{label}</label>
+      <div className={styles["input-field-container"]}>
         <input
-          className="input-field"
+          className={styles["input-field"]}
           type={type === "password" && isPasswordVisible ? "text" : type}
           value={value}
           onChange={onChange}
@@ -53,13 +53,13 @@ const InputBar: React.FC<InputProps> = ({
           src={isPasswordVisible ? visibilityOffIcon : visibilityOnIcon}
           alt="비밀번호 보기"
           onClick={onClickPwVisibility}
-          className="visible-button"
+          className={styles["visible-button"]}
         />
       )}
       {isExceedingMaxLength && (
-        <div className="input-warning">{maxLength}자 이내로 입력해주세요.</div>
+        <div className={styles["input-warning"]}>{maxLength}자 이내로 입력해주세요.</div>
       )}
-      {isInvalid && <div className="input-warning">{errorMessage}</div>}
+      {isInvalid && <div className={styles["input-warning"]}>{errorMessage}</div>}
     </div>
   );
 };

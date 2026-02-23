@@ -3,7 +3,7 @@ import React from "react";
 import NotAgreeIcon from "@assets/icon/notagree.svg";
 import CheckAgreeIcon from "@assets/icon/checkagree.svg";
 
-import "./AgreementLabel.css";
+import styles from "./AgreementLabel.module.css";
 
 interface LabelProps {
   children: React.ReactNode;
@@ -21,14 +21,14 @@ const AgreementLabel: React.FC<LabelProps> = ({
   bold = false,
 }) => {
   return (
-    <label className={`agree-container ${bold ? "bold" : ""}`}>
+    <label className={`${styles["agree-container"]} ${bold ? styles.bold : ""}`}>
       <div style={{ position: "relative" }}>
         <img src={NotAgreeIcon} alt="동의 여부" />
         {checked && (
           <img
             src={CheckAgreeIcon}
             alt="동의"
-            className={`green-check ${bold ? "bold" : ""}`}
+            className={`${styles["green-check"]} ${bold ? styles.bold : ""}`}
           />
         )}
       </div>
@@ -38,7 +38,7 @@ const AgreementLabel: React.FC<LabelProps> = ({
         disabled={disabled}
         checked={checked}
         onChange={onChange}
-        className="hidden-checkbox"
+        className={styles["hidden-checkbox"]}
       />
       {children}
     </label>

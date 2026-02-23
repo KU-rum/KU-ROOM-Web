@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 import { clearAuthStorage } from "@utils/storageUtils";
 import { useCheckShareStatusQuery, useUnreadAlarmQuery } from "@/queries";
-// import Splash from "@components/Splash";
 import BottomBar from "@components/BottomBar/BottomBar";
 import Header from "@components/Header/Header";
 import ShareLocationModal from "@components/ShareLocationModal/ShareLocationModal";
@@ -27,7 +26,6 @@ const Home = () => {
     isPendingShareStatus,
     isErrorShareStatus,
   } = useCheckShareStatusQuery();
-  // const [showSplash, setShowSplash] = useState(true);
 
   // 내 위치 공유 버튼 모달 상태
   const [shareModalState, setShareModalState] = useState(false);
