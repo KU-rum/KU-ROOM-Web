@@ -6,8 +6,9 @@ import Rank1Icon from "@assets/icon/ranking/rank1.png";
 import Rank2Icon from "@assets/icon/ranking/rank2.png";
 import Rank3Icon from "@assets/icon/ranking/rank3.png";
 import ArrowRight from "@assets/nav/arrowRight.svg";
-import { DetailPlaceData } from "@/shared/types";
+import { DetailPlaceData } from "@apis/types";
 import { useLocationTop3RankQuery } from "@/queries";
+import Loading from "@components/Loading/Loading";
 
 import styles from "./FocusedLocationInfo.module.css";
 
@@ -30,14 +31,11 @@ const FocusedLocationInfo: React.FC<FocusedLocationInfo> = ({
 
   const handleNavigateToTotalRank = () => {
     if (!detailInfo) return;
-    navigate(
-      `/map/location-total-rank/${encodeURIComponent(detailInfo.name)}`,
-      { state: { placeId: detailInfo.placeId } },
-    );
+    navigate(`/map/location-total-rank/${encodeURIComponent(detailInfo.name)}`);
   };
 
   if (isTop3Pending) {
-    return <div>Loading...</div>;
+    return <Loading type="section" sectionHeight={400} />;
   }
 
   return (
