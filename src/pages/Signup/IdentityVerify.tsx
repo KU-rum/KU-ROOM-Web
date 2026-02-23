@@ -3,13 +3,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import checkedIcon from "@assets/icon/roundcheck.svg";
 import uncheckedIcon from "@assets/icon/roundUncheck.svg";
-import { checkValidationEmailApi } from "@apis/signup";
-import { sendEmailApi, verifyCodeApi } from "@apis/mails";
 import InputBar from "@components/InputBar/InputBar";
 import Button from "@components/Button/Button";
 import Header from "@components/Header/Header";
 import InformModal from "@components/InformModal/InformModal";
 import { isValidEmail } from "@utils/validations";
+import {
+  useCheckIsEmailDuplicatedMutation,
+  useSendEmailMutation,
+  useVerifyCodeMutation,
+} from "@/queries";
 
 import styles from "./IdentityVerify.module.css";
 
@@ -27,6 +30,11 @@ const IdentityVerify = () => {
   const [isDuplicatedEmail, setIsDuplicatedEmail] = useState(false);
   const [verifyCode, setVerifyCode] = useState("");
   const [isAttemptVerify, setIsAttemptVerify] = useState(false); // 인증코드를 확인한 적 있는지 여부
+
+  const { checkIsEmailDuplicated } = useCheckIsEmailDuplicatedMutation();
+  const { sendEmail } = useSendEmailMutation();
+  const { verifyEmailCode } = useVerifyCodeMutation();
+
   const handleVerifiedEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     setVerifiedEmail(e.target.value);
   };
@@ -40,23 +48,49 @@ const IdentityVerify = () => {
   };
 
   // 인증코드 발송 로직
-  const sendVerifyCode = async () => {
-    const checkingEmail = { email: verifiedEmail };
-    const response = await checkValidationEmailApi(
-      checkingEmail,
-      setIsDuplicatedEmail,
-      setModalType,
-      setModalState,
-    );
-    console.log(response);
-    if (response === "OK") {
-      console.log("인증코드 발송");
-      // 서버에 전송 요청
-      const sendResponse = await sendEmailApi(checkingEmail);
-      console.log(sendResponse);
-      setIsAttemptSend(true);
-      setModalState(true);
-    }
+  const sendVerifyCode = () => {
+    checkIsEmailDuplicated(verifiedEmail, {
+      onSuccess: () => {
+        sendEmail(verifiedEmail, {
+          onSuccess: () => {
+            setIsAttemptSend(true);
+            setModalState(true);
+          },
+        });
+      },
+      onError: (error: any) => {
+        if (error.response?.data?.code === 305) {
+          setIsDuplicatedEmail(true);
+        } else if (error.response?.data?.code === 900) {
+          setModalType("EmailFailed");
+          setModalState(true);
+        }
+      },
+    });
+  };
+
+  const handleVerifyCode = async () => {
+    const verifyData = {
+      email: verifiedEmail,
+      code: verifyCode,
+    };
+    // 서버에 요청해서 같은지 확인
+    verifyEmailCode(verifyData, {
+      onSuccess: (response) => {
+        if (response.data?.verified) {
+          navigate("/agreement", {
+            state: {
+              signupId,
+              signupPw,
+              signupEmail: verifiedEmail,
+            },
+          });
+        }
+      },
+      onError: () => {
+        setIsAttemptVerify(true);
+      },
+    });
   };
 
   useEffect(() => {
@@ -65,29 +99,6 @@ const IdentityVerify = () => {
     setVerifyCode("");
     setIsDuplicatedEmail(false);
   }, [verifiedEmail]);
-
-  const handleVerifyCode = async () => {
-    const verifyData = {
-      email: verifiedEmail,
-      code: verifyCode,
-    };
-    // 서버에 요청해서 같은지 확인
-    try {
-      const response = await verifyCodeApi(verifyData);
-      if (response) {
-        console.log("여기");
-        navigate("/agreement", {
-          state: {
-            signupId: signupId,
-            signupPw: signupPw,
-            signupEmail: verifiedEmail,
-          },
-        });
-      }
-    } catch (_) {
-      setIsAttemptVerify(true);
-    }
-  };
 
   return (
     <>

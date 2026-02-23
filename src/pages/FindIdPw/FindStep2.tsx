@@ -14,7 +14,6 @@ interface Step2Props {
   errorCode: number | null;
   isCheckedPw: boolean;
   isAttemptReset: boolean;
-  handleuserIdChange: (value: string) => void;
   handleNewPwChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleCheckPwChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleResetPassword: () => void;

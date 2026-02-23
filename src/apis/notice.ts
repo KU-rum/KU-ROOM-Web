@@ -1,6 +1,6 @@
 import axios from "axios";
-import { ApiResponse } from "@/shared/types";
 import axiosInstance from "./axiosInstance";
+import { ApiResponse } from "./types";
 
 export interface NoticeResponse {
   id: number;

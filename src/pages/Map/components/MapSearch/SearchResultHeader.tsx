@@ -2,7 +2,7 @@ import React from "react";
 
 import arrowBack from "@assets/nav/arrowback.svg";
 import deleteIcon from "@assets/icon/deleteIcon.svg";
-import { MapSearchResult } from "@/shared/types";
+import { MapSearchResult } from "@apis/types";
 
 import styles from "./SearchResultHeader.module.css";
 

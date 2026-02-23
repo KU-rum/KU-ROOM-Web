@@ -4,16 +4,27 @@ import UnshareLocationIcon from "@assets/map/shareLocationWhite.svg";
 import styles from "./LocationShareButton.module.css";
 
 interface LocationShareButtonProps {
-  isSharedLocation: boolean;
+  isSharedLocation?: boolean;
+  isPendingShareStatus?: boolean;
+  isErrorShareStatus?: boolean;
   isInSchool: boolean;
   handleShareLocation: () => void;
 }
 
 export default function LocationShareButton({
   isSharedLocation,
+  isPendingShareStatus,
+  isErrorShareStatus,
   isInSchool,
   handleShareLocation,
 }: LocationShareButtonProps) {
+  if (isPendingShareStatus || isErrorShareStatus)
+    return (
+      <button className={styles.ShareLocationButton} disabled={true}>
+        <span className={styles.DisabledToShareText}>위치 공유 불가</span>
+      </button>
+    );
+
   return isSharedLocation ? (
     <button
       className={styles.UnshareLocationButton}

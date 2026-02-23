@@ -1,4 +1,4 @@
-import { CategoryEnum } from "@/shared/types";
+import { CategoryEnum } from "@apis/types";
 
 export const getCategoryEnum = (title: string): CategoryEnum | undefined => {
   switch (title) {

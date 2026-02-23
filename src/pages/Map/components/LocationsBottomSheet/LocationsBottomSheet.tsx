@@ -1,11 +1,11 @@
 import React, { useRef, useEffect } from "react";
 
+import { PlaceData } from "@apis/types";
 import useBottomSheetDrag from "@pages/Map/hooks/useBottomSheetDrag";
 import DefaultProfileImg from "@assets/defaultProfileImg.svg";
 import mapListIcon from "@assets/map/mapListIcon.svg";
 
 import styles from "./LocationsBottomSheet.module.css";
-import { PlaceData } from "@/shared/types";
 
 interface LocationsBottomSheetProps {
   visibleBottomSheet: boolean;
@@ -13,7 +13,7 @@ interface LocationsBottomSheetProps {
   isExpandedSheet: boolean;
   hasFocusedMarker: boolean;
   setIsExpandedSheet: (value: boolean) => void;
-  clickToLocationMarker: (value: PlaceData) => void;
+  clickBottomSheetToLocationMarker: (value: PlaceData) => void;
 }
 
 const LocationsBottomSheet: React.FC<LocationsBottomSheetProps> = ({
@@ -22,7 +22,7 @@ const LocationsBottomSheet: React.FC<LocationsBottomSheetProps> = ({
   isExpandedSheet,
   hasFocusedMarker,
   setIsExpandedSheet,
-  clickToLocationMarker,
+  clickBottomSheetToLocationMarker,
 }) => {
   const sheetRef = useRef<HTMLDivElement>(null);
 
@@ -73,7 +73,7 @@ const LocationsBottomSheet: React.FC<LocationsBottomSheetProps> = ({
             key={info.placeId}
             className={styles.LocationInfoWrapper}
             style={isExpandedSheet ? {} : { pointerEvents: "none" }}
-            onClick={() => clickToLocationMarker(info)}
+            onClick={() => clickBottomSheetToLocationMarker(info)}
           >
             <div className={styles.TitleWrapper}>
               <span className={styles.TitleText}>{info.name}</span>

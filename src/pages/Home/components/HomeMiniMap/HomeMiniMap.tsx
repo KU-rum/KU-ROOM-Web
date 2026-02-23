@@ -2,21 +2,26 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Button from "@components/Button/Button";
+import Loading from "@components/Loading/Loading";
 import KuroomMap from "@pages/Map/components/KuroomMap";
 
 import styles from "./HomeMiniMap.module.css";
 import { isMyLocationInSchool } from "@/shared/utils/mapRangeUtils";
 
 interface HomeMiniMapProps {
-  isSharedLocation: boolean;
+  isSharedLocation?: boolean;
+  sharedLocationName?: string | null;
+  isLoading: boolean;
+  isError: boolean;
   setModalState: (value: boolean) => void;
-  sharedLocationName: string | null;
 }
 
 const HomeMiniMap: React.FC<HomeMiniMapProps> = ({
   isSharedLocation,
-  setModalState,
   sharedLocationName,
+  isLoading,
+  isError,
+  setModalState,
 }) => {
   const navigate = useNavigate();
 
@@ -62,27 +67,36 @@ const HomeMiniMap: React.FC<HomeMiniMapProps> = ({
 
   const disabled = !isInSchool && !isSharedLocation;
 
+  // TODO: 추후 스켈레톤 또는 에러 결과 UI 표시
+  if (isError) {
+    return null;
+  }
+
   return (
     <div className={styles.HomeMiniMapBackground}>
-      <div className={styles.HomeMiniMapWrapper}>
-        <div className={styles.MiniMapTextContainer}>
-          <h1 className={styles.MiniMapBoldText}>{title}</h1>
-          <span className={styles.MiniMapNormalText}>{subtitle}</span>
+      {isLoading ? (
+        <Loading type="section" sectionHeight={398} />
+      ) : (
+        <div className={styles.HomeMiniMapWrapper}>
+          <div className={styles.MiniMapTextContainer}>
+            <h1 className={styles.MiniMapBoldText}>{title}</h1>
+            <span className={styles.MiniMapNormalText}>{subtitle}</span>
+          </div>
+
+          <button className={styles.HomeMiniMap} onClick={handleSeeMap}>
+            <KuroomMap
+              height="180px"
+              isTracking={true}
+              draggable={false}
+              zoomable={false}
+            />
+          </button>
+
+          <Button onClick={handleButtonClick} disabled={disabled}>
+            {buttonText}
+          </Button>
         </div>
-
-        <button className={styles.HomeMiniMap} onClick={handleSeeMap}>
-          <KuroomMap
-            height="180px"
-            isTracking={true}
-            draggable={false}
-            zoomable={false}
-          />
-        </button>
-
-        <Button onClick={handleButtonClick} disabled={disabled}>
-          {buttonText}
-        </Button>
-      </div>
+      )}
     </div>
   );
 };

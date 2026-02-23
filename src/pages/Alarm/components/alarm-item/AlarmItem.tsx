@@ -1,13 +1,15 @@
-import { AlarmDataType, AlarmType } from "@pages/Alarm/types";
+import { useNavigate } from "react-router-dom";
+
+import useToast from "@hooks/use-toast";
+import { AlarmDataType, AlarmType } from "@apis/types";
+
 import {
   getCategory,
   getCategoryIcon,
 } from "@pages/Alarm/utils/alarm-category";
 import { formatDateTime } from "@pages/Alarm/utils/format-time";
 import styles from "./AlarmItem.module.css";
-import { useCheckAlarm } from "../../hooks/use-check-alarm";
-import { useNavigate } from "react-router-dom";
-import useToast from "@/shared/hooks/use-toast";
+import { useCheckAlarmMutation } from "@/queries";
 
 interface AlarmItemProps {
   alarm: AlarmDataType;
@@ -16,7 +18,7 @@ interface AlarmItemProps {
 const AlarmItem = ({ alarm }: AlarmItemProps) => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { checkAlarm } = useCheckAlarm();
+  const { checkAlarm } = useCheckAlarmMutation();
 
   const handleCheckAlarm = () => {
     checkAlarm({ alarmId: alarm.id, alarmCategory: alarm.alarmCategory });

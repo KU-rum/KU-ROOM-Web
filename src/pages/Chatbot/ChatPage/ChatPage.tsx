@@ -2,7 +2,7 @@ import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 
-import { getChatbotAnswerApi } from "@/apis/chatbot";
+import { getChatbotAnswerApi } from "@apis/chatbot";
 import Header from "@/shared/components/Header/Header";
 
 import ChatInput from "../components/ChatInput/ChatInput";
@@ -36,7 +36,7 @@ const ChatPage = () => {
         console.error("챗봇 답변 중 클라 측 오류", error);
       }
     },
-    [setIsAnswerLoading, setChatHistory]
+    [setIsAnswerLoading, setChatHistory],
   );
 
   const handleChangeInputText = (e: ChangeEvent<HTMLTextAreaElement>) => {

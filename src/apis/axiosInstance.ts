@@ -1,4 +1,8 @@
-import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
+import axios, {
+  AxiosError,
+  AxiosRequestConfig,
+  InternalAxiosRequestConfig,
+} from "axios";
 
 import { clearAuthStorage } from "@utils/storageUtils";
 
@@ -17,7 +21,7 @@ axiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 axiosInstance.interceptors.response.use(
@@ -36,13 +40,39 @@ axiosInstance.interceptors.response.use(
       } catch (error: any) {
         console.warn(
           "재발급 실패 (기타 이유)",
-          error.response?.data || error.message
+          error.response?.data || error.message,
         );
         throw error;
       }
     }
     return response;
-  }
+  },
+  async (error: AxiosError) => {
+    const status = error.response?.status;
+    const originalRequest = error.config as AxiosRequestConfig & {
+      _retry?: boolean;
+    };
+
+    // HTTP 401인 경우만 토큰 재발급 시도
+    if (status === 401 && originalRequest && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const newAccessToken = await reissueTokenApi();
+
+        originalRequest.headers = {
+          ...(originalRequest.headers ?? {}),
+          Authorization: `Bearer ${newAccessToken}`,
+        };
+
+        return axiosInstance(originalRequest); // 원래 요청 재시도
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    }
+
+    return Promise.reject(error);
+  },
 );
 // 토큰 재발급 api
 interface ReissueResponse {
@@ -62,7 +92,7 @@ export const reissueTokenApi = async (): Promise<string> => {
   try {
     const response = await axios.patch<ReissueResponse>(
       `${import.meta.env.VITE_API_BASE_URL}/auth/reissue`,
-      { refreshToken }
+      { refreshToken },
     );
 
     const tokenData = response.data.data;

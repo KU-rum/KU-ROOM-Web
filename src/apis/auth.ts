@@ -1,205 +1,154 @@
+// tanstack query 리팩토링 완료
+// Auth 관련 api
 import axiosInstance from "./axiosInstance";
-import axios from "axios";
+import {
+  LoginResponse,
+  LogoutResponse,
+  WithdrawResponse,
+  ReissueResponse,
+  CreateSocialUserRequest,
+  SendEmailResponse,
+  SignupRequest,
+  SignupResponse,
+  FindIdResponse,
+  CheckIdResponse,
+  CheckEmailResponse,
+  VerifyCodeResponse,
+  LoginRequest,
+} from "./types";
 
 const LOGIN_API_URL = "/auth/login";
 const LOGOUT_API_URL = "/auth/logout";
 const WITHDRAW_API_URL = "/users/deactivate";
-const REISSUE_TOKEN_API_URL = "/auth/reissue";
 const OAUTH_TOKEN_API_URL = "/auth/token";
+const REISSUE_TOKEN_API_URL = "/auth/reissue";
 const CREATE_SOCIAL_USER_API_URL = "/users/social";
+const SIGNUP_API_BASE_URL = "/users";
+const VERIFY_MAIL_API_URL = "/mails/auth-codes";
+const VERIFY_CODE_API_URL = "/mails/verification_codes";
+const FIND_ID_API_URL = "/users/loginId";
+const VALIDATION_ID_API_URL = "/users/check-id";
+const VALIDATION_EMAIL_API_URL = "/users/validations";
 
-interface LoginResponse {
-  code: number;
-  status: string;
-  message: string;
-  data: {
-    tokenResponse: {
-      accessToken: string;
-      refreshToken: string;
-      accessExpireIn: number;
-      refreshExpireIn: number;
-      isFirstLogin?: boolean;
-    };
-    userResponse: {
-      id: number;
-      oauthId: string | null;
-      loginId: string;
-      email: string;
-      nickname: string;
-      studentId: string;
-      imageUrl: string | null;
-      departmentResponse: {
-        departmentId: number;
-        departmentName: string;
-      }[];
-    };
-  };
-}
-
-export const loginApi = async (userData: {
-  loginId: string;
-  password: string;
-}) => {
-  try {
-    const response = await axiosInstance.post<LoginResponse>(
-      LOGIN_API_URL,
-      userData,
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-    return response.data; // 성공 시 반환
-  } catch (error: any) {
-    if (error.response?.status === 401) {
-      return error.response.data; // 401이면 throw하지 않고 반환
-    }
-    throw new Error(error.response?.data?.message || "로그인 중 오류 발생"); // 서버 문제(500 등)만 throw
-  }
+// 회원가입 api
+// TODO: 제대로 되는지 확인 필요
+export const signupApi = async (userData: SignupRequest) => {
+  const response = await axiosInstance.post<SignupResponse>(
+    SIGNUP_API_BASE_URL,
+    userData,
+  );
+  return response.data; // 성공 응답 반환
 };
 
-// 로그아웃 관련 api
-interface LogoutResponse {
-  code: number;
-  status: string;
-  message: string;
-  data: string;
-}
+// 소셜 로그인 회원가입 api (PreSignupToken 사용)
+export const createSocialUserApi = async (
+  socialUserData: CreateSocialUserRequest,
+) => {
+  const response = await axiosInstance.post<LoginResponse>(
+    CREATE_SOCIAL_USER_API_URL,
+    socialUserData,
+  );
+  return response.data;
+};
+
+// 로그인 api
+export const loginApi = async ({ loginId, password }: LoginRequest) => {
+  const response = await axiosInstance.post<LoginResponse>(LOGIN_API_URL, {
+    loginId,
+    password,
+  });
+  return response.data;
+};
+
+// 로그아웃 api
 export const logoutApi = async () => {
-  // 토큰 필요 시 이렇게 요청
-  try {
-    const response = await axiosInstance.patch<LogoutResponse>(
-      LOGOUT_API_URL,
-      {} // 요청 바디 없음
-    );
-
-    return response.data.data; // 성공 시 반환
-  } catch (error: any) {
-    if (error.response?.status === 401) {
-      return error.response.data; // 401이면 throw하지 않고 반환
-    }
-    throw new Error(error.response?.data?.message || "로그아웃 중 오류 발생"); // 서버 문제(500 등)만 throw
-  }
+  const response = await axiosInstance.patch<LogoutResponse>(LOGOUT_API_URL);
+  return response.data;
 };
 
-// 회원 탈퇴 관련 api
+// 회원 탈퇴 api
 export const withdrawApi = async () => {
-  try {
-    const response = await axiosInstance.delete(WITHDRAW_API_URL, {
-      headers: { "Content-Type": "application/json" },
-    });
-    return response.data;
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message || "회원탈퇴 중 오류 발생");
-  }
+  const response =
+    await axiosInstance.delete<WithdrawResponse>(WITHDRAW_API_URL);
+  return response.data;
+};
+
+// 소셜 로그인 api. TempToken으로 실제 AccessToken/RefreshToken 발급받는 api
+export const getTokenByTempTokenApi = async (tempToken: string) => {
+  const response = await axiosInstance.post<LoginResponse>(
+    OAUTH_TOKEN_API_URL,
+    null,
+    { params: { authCode: tempToken } },
+  );
+  return response.data;
+};
+
+// 아이디 중복확인 api
+export const checkIsIdDuplicatedApi = async (value: string) => {
+  const response = await axiosInstance.get<CheckIdResponse>(
+    VALIDATION_ID_API_URL,
+    {
+      params: { value },
+    },
+  );
+  return response.data;
+};
+
+// 이메일 중복확인 api
+export const checkIsEmailDuplicatedApi = async (email: string) => {
+  const response = await axiosInstance.post<CheckEmailResponse>(
+    VALIDATION_EMAIL_API_URL,
+    { email },
+  );
+  return response.data;
+};
+
+// 이메일 전송 요청 api
+export const sendEmailApi = async (email: string) => {
+  const response = await axiosInstance.post<SendEmailResponse>(
+    VERIFY_MAIL_API_URL,
+    { email },
+  );
+  return response.data;
+};
+
+// 이메일 인증 코드 검증 api
+export const verifyCodeApi = async (verifyData: {
+  email: string;
+  code: string;
+}) => {
+  const response = await axiosInstance.post<VerifyCodeResponse>(
+    VERIFY_CODE_API_URL,
+    verifyData,
+  );
+  return response.data;
+};
+
+// 아이디 찾기 api (이메일 사용)
+export const findIdFromEmailApi = async (email: string) => {
+  const response = await axiosInstance.get<FindIdResponse>(FIND_ID_API_URL, {
+    params: { email },
+  });
+  return response.data;
 };
 
 // 토큰 재발급 api
-interface ReissueResponse {
-  code: number;
-  status: string;
-  message: string;
-  data: {
-    accessToken: string;
-    refreshToken: string;
-    accessExpireIn: number;
-    refreshExpireIn: number;
-  };
-}
 export const reissueTokenApi = async () => {
   const refreshToken = localStorage.getItem("refreshToken");
+  if (!refreshToken) {
+    throw new Error("리프레시 토큰이 없습니다.");
+  }
   try {
     const response = await axiosInstance.patch<ReissueResponse>(
       REISSUE_TOKEN_API_URL,
       {
-        refreshToken: refreshToken,
+        refreshToken,
       },
-      {
-        headers: { "Content-Type": "application/json" },
-      }
     );
     return response.data.data;
   } catch (error: any) {
     throw new Error(
-      error.response?.data?.message || "토큰 재발급 중 오류 발생"
-    );
-  }
-};
-
-// TempToken으로 실제 AccessToken/RefreshToken 발급받는 API (기존 유저)
-export const getTokenByTempToken = async (tempToken: string) => {
-  try {
-    const response = await axios.post<LoginResponse>(
-      `${import.meta.env.VITE_API_BASE_URL}${OAUTH_TOKEN_API_URL}?authCode=${tempToken}`,
-      null,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message || "토큰 발급 중 오류 발생");
-  }
-};
-
-// 임시 토큰(authCode)으로 실제 토큰 발급받는 API (기존 로직 - 사용 안 함)
-export const getTokenByAuthCode = async (authCode: string) => {
-  try {
-    const response = await axiosInstance.post<LoginResponse>(
-      OAUTH_TOKEN_API_URL,
-      null,
-      {
-        params: { authCode },
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-    return response.data;
-  } catch (error: any) {
-    if (error.response?.status === 401) {
-      return error.response.data;
-    }
-    throw new Error(
-      error.response?.data?.message || "OAuth 토큰 교환 중 오류 발생"
-    );
-  }
-};
-
-// 소셜 로그인 신규 회원 생성 API (PreSignupToken 사용)
-interface CreateSocialUserRequest {
-  studentId: string;
-  department: string;
-  nickname: string;
-  agreementStatus: string;
-}
-
-export const createSocialUserApi = async (
-  preSignupToken: string,
-  userData: CreateSocialUserRequest,
-  setIsDuplicatedNickname: (value: boolean) => void
-) => {
-  try {
-    const response = await axios.post<LoginResponse>(
-      `${import.meta.env.VITE_API_BASE_URL}${CREATE_SOCIAL_USER_API_URL}`,
-      {
-        token: preSignupToken,
-        ...userData,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  } catch (error: any) {
-    const errorMessage =
-      error.response?.data?.message || "회원가입 중 오류 발생";
-    if (errorMessage === "이미 존재하는 닉네임입니다.") {
-      setIsDuplicatedNickname(true);
-    }
-    throw new Error(
-      error.response?.data?.message || "소셜 로그인 회원 생성 중 오류 발생"
+      error.response?.data?.message || "토큰 재발급 중 오류 발생",
     );
   }
 };

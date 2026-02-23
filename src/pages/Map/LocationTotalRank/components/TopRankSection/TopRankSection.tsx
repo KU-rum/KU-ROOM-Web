@@ -1,7 +1,7 @@
+import { LocationTop3RankType } from "@apis/types";
 import Rank1Icon from "@assets/icon/ranking/rank1.png";
 import Rank2Icon from "@assets/icon/ranking/rank2.png";
 import Rank3Icon from "@assets/icon/ranking/rank3.png";
-import { LocationTop3RankType } from "@/shared/types/rankTypes";
 
 import styles from "./TopRankSection.module.css";
 
