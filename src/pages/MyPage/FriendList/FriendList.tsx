@@ -55,8 +55,8 @@ const FriendList = () => {
               </div>
             ) : (
               (searchNickname ? filteredFriends : friendListData).map(
-                (friend, index) => (
-                  <div key={index}>
+                (friend) => (
+                  <div key={friend.id}>
                     <FriendContainer
                       friend={friend}
                       setEditPopupState={setEditPopupState}

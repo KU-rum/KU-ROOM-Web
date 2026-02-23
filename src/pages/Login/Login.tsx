@@ -59,7 +59,9 @@ const Login = () => {
     );
   };
 
-  const OAUTH2_BASE_URI = import.meta.env.VITE_OAUTH2_BASE_URI;
+  const OAUTH2_BASE_URI =
+    import.meta.env.VITE_OAUTH2_BASE_URI ||
+    `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization`;
 
   // 구글 로그인 처리 함수
   const handleGoogleLogin = () => {

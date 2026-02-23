@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useOutletContext, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 
 import { LocationTop3RankType } from "@apis/types";
 import Header from "@components/Header/Header";
@@ -15,8 +15,14 @@ import { MapLayoutContext } from "../layout/MapLayout";
 import styles from "./LocationTotalRank.module.css";
 
 const LocationTotalRank = () => {
+  const navigate = useNavigate();
   const { placeName } = useParams();
   const { detailLocationPlaceId } = useOutletContext<MapLayoutContext>();
+
+  const [modalState, setModalState] = useState(false);
+  const [modalRankData, setModalRankData] = useState<
+    LocationTop3RankType | undefined
+  >(undefined);
 
   const {
     listBottomRef,
@@ -26,10 +32,12 @@ const LocationTotalRank = () => {
     isPagePending,
   } = useLocationTotalRankQuery(detailLocationPlaceId);
 
-  const [modalState, setModalState] = useState(false);
-  const [modalRankData, setModalRankData] = useState<
-    LocationTop3RankType | undefined
-  >(undefined);
+  useEffect(() => {
+    if (!detailLocationPlaceId) {
+      navigate("/map");
+      return;
+    }
+  }, [detailLocationPlaceId, navigate]);
 
   const handleOpenModal = (rankData: LocationTop3RankType) => {
     setModalState(true);
