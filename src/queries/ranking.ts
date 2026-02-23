@@ -18,7 +18,6 @@ import {
 } from "@apis/types";
 import { RANKING_QUERY_KEY } from "@/queryKey";
 
-// TODO: 위치 공유 취소 시 캐시 초기화. map 관련 api 리팩토링 시 추가
 export const useUserSharingRankingQuery = () => {
   const toast = useToast();
 
@@ -89,8 +88,8 @@ export const useLocationTop3RankQuery = (placeId: number) => {
     queryKey: RANKING_QUERY_KEY.LOCATION_TOP3(placeId),
     queryFn: () => getLocationTop3RankApi(placeId),
     enabled: !!placeId,
-    staleTime: 1000 * 60 * 10,
-    gcTime: 1000 * 60 * 30,
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 3,
   });
 
   const top3RankData = top3RankResponse?.data;
@@ -136,11 +135,10 @@ export const useLocationTotalRankQuery = (placeId: number) => {
       }
     },
     enabled: !!placeId,
-    staleTime: 1000 * 60 * 10,
-    gcTime: 1000 * 60 * 30,
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 3,
   });
 
-  // TODO: 위치 공유 취소 시 캐시 초기화. map 관련 api 리팩토링 시 추가
   const {
     data: myRankResponse,
     isPending: isMyRankPending,
@@ -149,8 +147,8 @@ export const useLocationTotalRankQuery = (placeId: number) => {
     queryKey: RANKING_QUERY_KEY.LOCATION_USER(placeId),
     queryFn: () => getLocationMyRankApi(placeId),
     enabled: !!placeId,
-    staleTime: 1000 * 60 * 10,
-    gcTime: 1000 * 60 * 30,
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 3,
   });
 
   const totalRankData =

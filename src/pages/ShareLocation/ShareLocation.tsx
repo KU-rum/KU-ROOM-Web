@@ -13,7 +13,7 @@ import Loading from "@components/Loading/Loading";
 import styles from "./ShareLocation.module.css";
 
 const ShareLocation = () => {
-  const [init, setInit] = useState(true);
+  const [isTracking, setIsTracking] = useState(true);
   const [isInSchool, setIsInSchool] = useState(false);
 
   const [center, setCenter] = useState<Coordinate>();
@@ -28,7 +28,7 @@ const ShareLocation = () => {
 
   useEffect(() => {
     // 현재 내 위치가 학교 내부인지 검증
-    setInit(false);
+    setIsTracking(false);
     return isMyLocationInSchool(setIsInSchool);
   }, []);
 
@@ -37,7 +37,7 @@ const ShareLocation = () => {
       <Header>내 위치 공유</Header>
       <KuroomMap
         height="100dvh"
-        isTracking={init}
+        isTracking={isTracking}
         handleCenterChanged={setCenter}
       />
       <div className={styles.SharePinWrapper}>

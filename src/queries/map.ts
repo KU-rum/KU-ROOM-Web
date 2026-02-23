@@ -24,7 +24,7 @@ import {
   PlaceNameResponse,
   ShareStatusResponse,
 } from "@apis/types";
-import { MAP_QUERY_KEY } from "@/queryKey";
+import { MAP_QUERY_KEY, RANKING_QUERY_KEY } from "@/queryKey";
 
 export const useCheckShareStatusQuery = () => {
   const {
@@ -95,6 +95,8 @@ export const useShareUserLocationMutation = () => {
     mutationFn: () => unshareLocationApi(),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: MAP_QUERY_KEY.USER_SHARE_STATUS });
+      qc.invalidateQueries({ queryKey: RANKING_QUERY_KEY.USER });
+      qc.invalidateQueries({ queryKey: RANKING_QUERY_KEY.LOCATION_DEFAULT });
     },
     onError: (error) => {
       toast.error(`위치 공유 해제 실패 : ${error.message}`);
