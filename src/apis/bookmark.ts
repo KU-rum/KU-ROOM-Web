@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 export interface BookmarkResponse {
   bookmarkId: number;
@@ -14,16 +14,6 @@ export interface BookmarkApiResponse {
   status: string;
   message: string;
   data: BookmarkResponse[];
-}
-
-export interface BookmarkListParams {
-  page?: number;
-  size?: number;
-  sort?: string[];
-}
-
-export interface AddBookmarkRequest {
-  noticeId: number;
 }
 
 export interface AddBookmarkData {
@@ -43,50 +33,21 @@ export interface RemoveBookmarkApiResponse {
   message: string;
 }
 
-const BOOKMARK_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-const bookmarkAxiosInstance = axios.create({
-  baseURL: BOOKMARK_BASE_URL,
-  timeout: 8000,
-  headers: { "Content-Type": "application/json" },
-});
-
-bookmarkAxiosInstance.interceptors.request.use(
-  (config) => {
-    let token: string | null = null;
-    if (typeof window !== "undefined") {
-      try {
-        token = localStorage.getItem("accessToken");
-      } catch (_) {
-        token = null;
-      }
-    }
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error),
-);
-
 export const getBookmarks = async (): Promise<BookmarkResponse[]> => {
-  const response =
-    await bookmarkAxiosInstance.get<BookmarkApiResponse>("/bookmark");
+  const response = await axiosInstance.get<BookmarkApiResponse>("/bookmark");
   return response.data.data;
 };
 
 export const addBookmark = async (noticeId: number): Promise<number> => {
-  const response = await bookmarkAxiosInstance.post<AddBookmarkApiResponse>(
+  const response = await axiosInstance.post<AddBookmarkApiResponse>(
     "/bookmark",
-    {
-      noticeId,
-    },
+    { noticeId },
   );
   return response.data.data.bookmarkId;
 };
 
 export const removeBookmark = async (bookmarkId: number): Promise<void> => {
-  await bookmarkAxiosInstance.delete<RemoveBookmarkApiResponse>(
+  await axiosInstance.delete<RemoveBookmarkApiResponse>(
     `/bookmark/${bookmarkId}`,
   );
 };

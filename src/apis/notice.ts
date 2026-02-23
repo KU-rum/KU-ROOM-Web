@@ -1,4 +1,3 @@
-import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { ApiResponse } from "./types";
 
@@ -70,47 +69,18 @@ export interface NoticeDetailApiResponse {
   data: NoticeDetailData;
 }
 
-const NOTICE_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-const noticeAxiosInstance = axios.create({
-  baseURL: NOTICE_BASE_URL,
-  timeout: 8000,
-  headers: { "Content-Type": "application/json" },
-});
-
-noticeAxiosInstance.interceptors.request.use(
-  (config) => {
-    let token: string | null = null;
-    if (typeof window !== "undefined") {
-      try {
-        token = localStorage.getItem("accessToken");
-      } catch (_) {
-        token = null;
-      }
-    }
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error),
-);
-
 export const getNotices = async (
   params: NoticeListParams = {},
 ): Promise<NoticeListResponse> => {
-  const response = await noticeAxiosInstance.get<NoticeListResponse>(
-    "/notices",
-    {
-      params: {
-        category: params.category,
-        keyword: params.keyword,
-        page: params.page || 0,
-        size: params.size || 20,
-        sort: params.sort,
-      },
+  const response = await axiosInstance.get<NoticeListResponse>("/notices", {
+    params: {
+      category: params.category,
+      keyword: params.keyword,
+      page: params.page || 0,
+      size: params.size || 20,
+      sort: params.sort,
     },
-  );
+  });
   return response.data;
 };
 
@@ -118,7 +88,7 @@ export const getNoticeDetail = async (
   noticeId: string,
 ): Promise<NoticeDetailData> => {
   try {
-    const response = await noticeAxiosInstance.get<NoticeDetailApiResponse>(
+    const response = await axiosInstance.get<NoticeDetailApiResponse>(
       `/notices/${noticeId}`,
     );
 
@@ -144,7 +114,7 @@ export interface PopularNoticeResponse {
 
 export const getPopularNotices = async (): Promise<NoticeResponse[]> => {
   const response =
-    await noticeAxiosInstance.get<PopularNoticeResponse>("/notices/popular");
+    await axiosInstance.get<PopularNoticeResponse>("/notices/popular");
   return response.data.data;
 };
 
@@ -157,7 +127,7 @@ export interface PrimaryNoticeResponse {
 
 export const getPrimaryNotices = async (): Promise<NoticeResponse[]> => {
   const response =
-    await noticeAxiosInstance.get<PrimaryNoticeResponse>("/notices/primary");
+    await axiosInstance.get<PrimaryNoticeResponse>("/notices/primary");
   return response.data.data;
 };
 
