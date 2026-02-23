@@ -5,7 +5,7 @@ export const MAP_QUERY_KEY = {
   PLACE_NAME: (coord?: Coordinate) => ["place-name", coord],
   SEARCH_RESULT: (searchText: string) => ["map-search", searchText],
   RECENT_SEARCH: ["map-recent-search"],
-  CATEGORY_LOCATIONS: (category: CategoryEnum) => [
+  CATEGORY_LOCATIONS: (category: CategoryEnum | "") => [
     "category-locations",
     category,
   ],

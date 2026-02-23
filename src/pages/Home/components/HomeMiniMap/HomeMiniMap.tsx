@@ -67,6 +67,7 @@ const HomeMiniMap: React.FC<HomeMiniMapProps> = ({
 
   const disabled = !isInSchool && !isSharedLocation;
 
+  // TODO: 추후 스켈레톤 또는 에러 결과 UI 표시
   if (isError) {
     return null;
   }

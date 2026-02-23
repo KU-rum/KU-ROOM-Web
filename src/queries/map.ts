@@ -209,7 +209,7 @@ export const useMapSearchMutation = () => {
   };
 };
 
-export const useCategoryLocationsQuery = (category: CategoryEnum) => {
+export const useCategoryLocationsQuery = (category: CategoryEnum | "") => {
   const toast = useToast();
   const { data, isError } = useQuery<CategoryLocationsResponse>({
     queryKey: MAP_QUERY_KEY.CATEGORY_LOCATIONS(category),

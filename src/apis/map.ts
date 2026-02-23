@@ -106,7 +106,8 @@ export const deleteMapRecentSearchApi = async (deleteData: number) => {
 };
 
 // 카테고리 칩(핀) 클릭 시 위치 정보 조회 api / 홈에서 친구 위치 조회에서도 사용
-export const getCategoryLocationsApi = async (category: CategoryEnum) => {
+export const getCategoryLocationsApi = async (category: CategoryEnum | "") => {
+  if (category === "") throw Error("잘못된 카테고리");
   const response = await axiosInstance.get<CategoryLocationsResponse>(
     GET_CHIP_LOCATION,
     { params: { chip: category.trim() } },
