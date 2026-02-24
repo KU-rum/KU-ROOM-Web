@@ -19,7 +19,11 @@ export const useSearchNoticesQuery = (keyword: string) => {
   const toast = useToast();
   const debouncedKeyword = useDebounce(keyword, 500);
 
-  const query = useQuery({
+  const {
+    data: searchData,
+    isPending: isPendingSearch,
+    isError: isErrorSearch,
+  } = useQuery({
     queryKey: SEARCH_QUERY_KEY.RESULTS(debouncedKeyword),
     queryFn: () => searchNoticesApi({ keyword: debouncedKeyword }),
     enabled: !!debouncedKeyword.trim(),
@@ -28,38 +32,42 @@ export const useSearchNoticesQuery = (keyword: string) => {
   });
 
   useEffect(() => {
-    if (query.isError) {
+    if (isErrorSearch) {
       toast.error("검색에 실패했어요");
     }
-  }, [query.isError, toast]);
+  }, [isErrorSearch, toast]);
 
-  const searchResult = query.data?.content ?? [];
+  const searchResult = searchData?.content ?? [];
 
   return {
     searchResult,
-    isPending: query.isPending && !!debouncedKeyword.trim(),
-    isError: query.isError,
+    isPendingSearch: isPendingSearch && !!debouncedKeyword.trim(),
+    isErrorSearch,
   };
 };
 
 // 최근 검색어 목록
 export const useRecentSearchesQuery = () => {
-  return useQuery({
+  const { data: recentSearchesData } = useQuery({
     queryKey: SEARCH_QUERY_KEY.RECENT,
     queryFn: () => getRecentSearchesApi(20),
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
   });
+
+  return { recentSearchesData };
 };
 
 // 키워드 알림 목록
 export const useKeywordsQuery = () => {
-  return useQuery({
+  const { data: keywordsData } = useQuery({
     queryKey: SEARCH_QUERY_KEY.KEYWORDS,
     queryFn: () => getKeywordsApi(),
     staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 30,
   });
+
+  return { keywordsData };
 };
 
 // 최근 검색어 저장/삭제 뮤테이션

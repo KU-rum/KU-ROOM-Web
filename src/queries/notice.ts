@@ -24,7 +24,12 @@ const NOTICE_PAGE_SIZE = 20;
 
 // 공지사항 목록 (무한 스크롤)
 export const useNoticesInfiniteQuery = (categoryId: string) => {
-  return useInfiniteQuery({
+  const {
+    data: noticesData,
+    isFetching: isFetchingNotices,
+    hasNextPage: hasNextNoticesPage,
+    fetchNextPage: fetchNextNoticesPage,
+  } = useInfiniteQuery({
     queryKey: NOTICE_QUERY_KEY.LIST(categoryId),
     queryFn: ({ pageParam = 0 }) =>
       getNoticesApi({ category: categoryId, page: pageParam, size: NOTICE_PAGE_SIZE }),
@@ -35,6 +40,8 @@ export const useNoticesInfiniteQuery = (categoryId: string) => {
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 15,
   });
+
+  return { noticesData, isFetchingNotices, hasNextNoticesPage, fetchNextNoticesPage };
 };
 
 // 공지사항 상세 조회
@@ -45,7 +52,12 @@ export const useNoticeDetailQuery = (
   const toast = useToast();
   const navigate = useNavigate();
 
-  const query = useQuery({
+  const {
+    data: noticeDetailData,
+    isPending: isPendingNoticeDetail,
+    isError: isErrorNoticeDetail,
+    error: noticeDetailError,
+  } = useQuery({
     queryKey: NOTICE_QUERY_KEY.DETAIL(id),
     queryFn: async () => {
       const detailData = await getNoticeDetailApi(id!);
@@ -86,16 +98,16 @@ export const useNoticeDetailQuery = (
   });
 
   useEffect(() => {
-    if (query.error) {
-      const err = query.error as any;
+    if (noticeDetailError) {
+      const err = noticeDetailError as any;
       if (err?.status === "NOT_FOUND") {
         toast.error("공지사항을 찾을 수 없습니다.");
         navigate("/alarm", { replace: true });
       }
     }
-  }, [query.error, toast, navigate]);
+  }, [noticeDetailError, toast, navigate]);
 
-  return query;
+  return { noticeDetailData, isPendingNoticeDetail, isErrorNoticeDetail };
 };
 
 // 북마크 토글 (공지사항 상세에서 사용)
@@ -141,7 +153,11 @@ export const useNoticeBookmarkMutation = (id: string | undefined) => {
 export const usePopularNoticesQuery = () => {
   const toast = useToast();
 
-  const query = useQuery({
+  const {
+    data: popularNoticesData,
+    isPending: isPendingPopularNotices,
+    isError: isErrorPopularNotices,
+  } = useQuery({
     queryKey: NOTICE_QUERY_KEY.POPULAR,
     queryFn: async () => {
       const response = await getPopularNoticesApi();
@@ -152,19 +168,23 @@ export const usePopularNoticesQuery = () => {
   });
 
   useEffect(() => {
-    if (query.isError) {
+    if (isErrorPopularNotices) {
       toast.error("인기 공지를 불러오지 못했어요");
     }
-  }, [query.isError, toast]);
+  }, [isErrorPopularNotices, toast]);
 
-  return query;
+  return { popularNoticesData, isPendingPopularNotices, isErrorPopularNotices };
 };
 
 // 주요 공지사항
 export const usePrimaryNoticesQuery = () => {
   const toast = useToast();
 
-  const query = useQuery({
+  const {
+    data: primaryNoticesData,
+    isPending: isPendingPrimaryNotices,
+    isError: isErrorPrimaryNotices,
+  } = useQuery({
     queryKey: NOTICE_QUERY_KEY.PRIMARY,
     queryFn: async () => {
       const response = await getPrimaryNoticesApi();
@@ -175,19 +195,23 @@ export const usePrimaryNoticesQuery = () => {
   });
 
   useEffect(() => {
-    if (query.isError) {
+    if (isErrorPrimaryNotices) {
       toast.error("주요 공지를 불러오지 못했어요");
     }
-  }, [query.isError, toast]);
+  }, [isErrorPrimaryNotices, toast]);
 
-  return query;
+  return { primaryNoticesData, isPendingPrimaryNotices, isErrorPrimaryNotices };
 };
 
 // 기타 탭 (학과 링크)
 export const useNoticeOthersQuery = () => {
   const toast = useToast();
 
-  const query = useQuery({
+  const {
+    data: noticeOthersData,
+    isPending: isPendingNoticeOthers,
+    isError: isErrorNoticeOthers,
+  } = useQuery({
     queryKey: NOTICE_QUERY_KEY.OTHERS,
     queryFn: () => getNoticeOthersApi(),
     staleTime: 1000 * 60 * 5,
@@ -195,10 +219,10 @@ export const useNoticeOthersQuery = () => {
   });
 
   useEffect(() => {
-    if (query.isError) {
+    if (isErrorNoticeOthers) {
       toast.error("학과 정보 조회를 실패했습니다.");
     }
-  }, [query.isError, toast]);
+  }, [isErrorNoticeOthers, toast]);
 
-  return query;
+  return { noticeOthersData, isPendingNoticeOthers, isErrorNoticeOthers };
 };

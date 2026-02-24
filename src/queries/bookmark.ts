@@ -10,7 +10,12 @@ import useToast from "@hooks/use-toast";
 export const useBookmarksQuery = () => {
   const toast = useToast();
 
-  const query = useQuery({
+  const {
+    data: bookmarksData,
+    isPending: isPendingBookmarks,
+    isError: isErrorBookmarks,
+    refetch: refetchBookmarks,
+  } = useQuery({
     queryKey: BOOKMARK_QUERY_KEY.LIST,
     queryFn: async () => {
       const apiData = await getBookmarksApi();
@@ -21,12 +26,12 @@ export const useBookmarksQuery = () => {
   });
 
   useEffect(() => {
-    if (query.isError) {
+    if (isErrorBookmarks) {
       toast.error("북마크 데이터를 불러오는데 실패했습니다.");
     }
-  }, [query.isError, toast]);
+  }, [isErrorBookmarks, toast]);
 
-  return query;
+  return { bookmarksData, isPendingBookmarks, isErrorBookmarks, refetchBookmarks };
 };
 
 // 북마크 삭제 (북마크 목록 페이지에서 사용)

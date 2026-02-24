@@ -25,14 +25,14 @@ const Search = () => {
   const [searchText, setSearchText] = useState("");
 
   // 데이터 조회 쿼리
-  const { data: popularNotices = [], isPending: isPendingPopular } =
+  const { popularNoticesData = [], isPendingPopularNotices } =
     usePopularNoticesQuery();
-  const { data: primaryNotices = [], isPending: isPendingPrimary } =
+  const { primaryNoticesData = [], isPendingPrimaryNotices } =
     usePrimaryNoticesQuery();
-  const { searchResult, isPending: isPendingSearch } =
+  const { searchResult, isPendingSearch } =
     useSearchNoticesQuery(searchText);
-  const { data: recentSearches = [] } = useRecentSearchesQuery();
-  const { data: subscribedKeywords = [] } = useKeywordsQuery();
+  const { recentSearchesData = [] } = useRecentSearchesQuery();
+  const { keywordsData = [] } = useKeywordsQuery();
 
   // 뮤테이션
   const { saveSearch, deleteSearch, deleteAllSearches } =
@@ -44,7 +44,7 @@ const Search = () => {
   };
 
   const handleRemoveSearchTerm = (term: string) => {
-    const target = recentSearches.find((s) => s.keyword === term);
+    const target = recentSearchesData.find((s) => s.keyword === term);
     if (target) {
       deleteSearch(target.id);
     }
@@ -62,7 +62,7 @@ const Search = () => {
   };
 
   const navigateToNoticeDetail = (noticeId: number) => {
-    const allNotices = [...popularNotices, ...primaryNotices, ...searchResult];
+    const allNotices = [...popularNoticesData, ...primaryNoticesData, ...searchResult];
     const notice = allNotices.find((n) => n.id === noticeId);
     if (notice?.link) {
       window.open(notice.link, "_blank");
@@ -84,7 +84,7 @@ const Search = () => {
       {!isSearching ? (
         <>
           <SearchHistory
-            searchTerms={recentSearches.map((s) => s.keyword)}
+            searchTerms={recentSearchesData.map((s) => s.keyword)}
             onRemoveTerm={handleRemoveSearchTerm}
             onSelectTerm={handleSelectSearchTerm}
             onClearHistory={deleteAllSearches}
@@ -105,13 +105,13 @@ const Search = () => {
           />
 
           <h2 className={styles.sectionTitle}>인기 공지</h2>
-          {isPendingPopular ? (
+          {isPendingPopularNotices ? (
             <LoadingState />
-          ) : popularNotices.length === 0 ? (
+          ) : popularNoticesData.length === 0 ? (
             <EmptyState message="인기 공지가 없어요" />
           ) : (
             <NoticeList
-              notices={popularNotices}
+              notices={popularNoticesData}
               onItemClick={(noticeId: number) =>
                 navigateToNoticeDetail(noticeId)
               }
@@ -119,13 +119,13 @@ const Search = () => {
           )}
 
           <h2 className={styles.sectionTitle}>주요 공지</h2>
-          {isPendingPrimary ? (
+          {isPendingPrimaryNotices ? (
             <LoadingState />
-          ) : primaryNotices.length === 0 ? (
+          ) : primaryNoticesData.length === 0 ? (
             <EmptyState message="주요 공지가 없어요" />
           ) : (
             <NoticeList
-              notices={primaryNotices}
+              notices={primaryNoticesData}
               onItemClick={(noticeId: number) =>
                 navigateToNoticeDetail(noticeId)
               }
@@ -137,7 +137,7 @@ const Search = () => {
         <>
           <NotificationBadge
             keyword={searchText}
-            isSubscribed={subscribedKeywords.includes(searchText)}
+            isSubscribed={keywordsData.includes(searchText)}
             onToggle={() => toggleKeyword(searchText)}
           />
           <SearchResult

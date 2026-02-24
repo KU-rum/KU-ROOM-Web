@@ -1,10 +1,10 @@
 import { useNoticeOthersQuery } from "@/queries";
 
 export const useNoticeOthers = () => {
-  const { data: noticeOtehrsData, isPending } = useNoticeOthersQuery();
+  const { noticeOthersData, isPendingNoticeOthers } = useNoticeOthersQuery();
 
   return {
-    noticeOtehrsData,
-    isPending,
+    noticeOtehrsData: noticeOthersData,
+    isPending: isPendingNoticeOthers,
   };
 };

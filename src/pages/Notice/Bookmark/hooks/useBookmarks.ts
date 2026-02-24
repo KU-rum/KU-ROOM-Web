@@ -1,10 +1,10 @@
 import { useBookmarksQuery, useRemoveBookmarkMutation } from "@/queries";
 
 export const useBookmarks = () => {
-  const { data, isPending, isError, refetch } = useBookmarksQuery();
+  const { bookmarksData, isPendingBookmarks, isErrorBookmarks, refetchBookmarks } = useBookmarksQuery();
   const { removeBookmarkItem } = useRemoveBookmarkMutation();
 
-  const bookmarks = data ?? [];
+  const bookmarks = bookmarksData ?? [];
 
   const handleBookmarkToggle = (noticeId: number) => {
     const bookmark = bookmarks.find((b) => b.id === noticeId);
@@ -15,9 +15,9 @@ export const useBookmarks = () => {
 
   return {
     bookmarks,
-    loading: isPending,
-    error: isError ? "북마크 데이터를 불러오는데 실패했습니다." : null,
-    fetchBookmarks: refetch,
+    loading: isPendingBookmarks,
+    error: isErrorBookmarks ? "북마크 데이터를 불러오는데 실패했습니다." : null,
+    fetchBookmarks: refetchBookmarks,
     handleBookmarkToggle,
   };
 };
