@@ -1,78 +1,35 @@
+// tanstack query 리팩토링 완료
+// 공지사항 관련 api
 import axiosInstance from "./axiosInstance";
-import { ApiResponse } from "./types";
+import {
+  NoticeListResponse,
+  NoticeListParams,
+  NoticeDetailData,
+  NoticeDetailApiResponse,
+  NoticeListApiResponse,
+  DepartmentUrlData,
+  NoticeOthersResponse,
+} from "./types";
 
-export interface NoticeResponse {
-  id: number;
-  categoryId: number;
-  categoryName: string;
-  title: string;
-  link: string;
-  content: string;
-  pubDate: string;
-  author: string;
-  description: string;
-  isBookMarked: boolean;
-  bookmarkId?: number;
-}
+export type {
+  NoticeResponse,
+  NoticeListResponse,
+  NoticeListParams,
+  NoticeDetailData,
+  DepartmentUrlData,
+} from "./types";
 
-export interface PageableSort {
-  empty: boolean;
-  unsorted: boolean;
-  sorted: boolean;
-}
+const GET_NOTICES = "/notices";
+const GET_NOTICE_DETAIL = (noticeId: string) => `/notices/${noticeId}`;
+const GET_POPULAR_NOTICES = "/notices/popular";
+const GET_PRIMARY_NOTICES = "/notices/primary";
+const GET_NOTICE_OTHERS = "/departments/url";
 
-export interface Pageable {
-  pageNumber: number;
-  pageSize: number;
-  sort: PageableSort;
-  offset: number;
-  paged: boolean;
-  unpaged: boolean;
-}
-
-export interface NoticeListResponse {
-  content: NoticeResponse[];
-  pageable: Pageable;
-  last: boolean;
-  totalPages: number;
-  totalElements: number;
-  first: boolean;
-  size: number;
-  number: number;
-  sort: PageableSort;
-  numberOfElements: number;
-  empty: boolean;
-}
-
-export interface NoticeListParams {
-  category?: string;
-  keyword?: string;
-  page?: number;
-  size?: number;
-  sort?: string[];
-}
-
-export interface NoticeDetailData {
-  id: number;
-  content: string;
-  link: string;
-  title: string;
-  pubdate: string;
-  isBookmark: boolean;
-  bookmarkId?: number;
-}
-
-export interface NoticeDetailApiResponse {
-  code: number;
-  status: string;
-  message: string;
-  data: NoticeDetailData;
-}
-
-export const getNotices = async (
+// 공지사항 목록 조회 api
+export const getNoticesApi = async (
   params: NoticeListParams = {},
 ): Promise<NoticeListResponse> => {
-  const response = await axiosInstance.get<NoticeListResponse>("/notices", {
+  const response = await axiosInstance.get<NoticeListResponse>(GET_NOTICES, {
     params: {
       category: params.category,
       keyword: params.keyword,
@@ -84,66 +41,40 @@ export const getNotices = async (
   return response.data;
 };
 
-export const getNoticeDetail = async (
+// 공지사항 상세 조회 api
+export const getNoticeDetailApi = async (
   noticeId: string,
 ): Promise<NoticeDetailData> => {
-  try {
-    const response = await axiosInstance.get<NoticeDetailApiResponse>(
-      `/notices/${noticeId}`,
-    );
+  const response = await axiosInstance.get<NoticeDetailApiResponse>(
+    GET_NOTICE_DETAIL(noticeId),
+  );
 
-    if (response.data.status === "NOT_FOUND") {
-      const error = new Error(response.data.message);
-      (error as any).status = response.data.status;
-      throw error;
-    }
-
-    return response.data.data;
-  } catch (error: any) {
-    console.error("공지사항 상세 조회 실패:", error);
+  if (response.data.status === "NOT_FOUND") {
+    const error = new Error(response.data.message);
+    (error as any).status = response.data.status;
     throw error;
   }
-};
 
-export interface PopularNoticeResponse {
-  code: number;
-  status: string;
-  message: string;
-  data: NoticeResponse[];
-}
-
-export const getPopularNotices = async (): Promise<NoticeResponse[]> => {
-  const response =
-    await axiosInstance.get<PopularNoticeResponse>("/notices/popular");
   return response.data.data;
 };
 
-export interface PrimaryNoticeResponse {
-  code: number;
-  status: string;
-  message: string;
-  data: NoticeResponse[];
-}
-
-export const getPrimaryNotices = async (): Promise<NoticeResponse[]> => {
+// 인기 공지사항 조회 api
+export const getPopularNoticesApi = async (): Promise<NoticeListApiResponse> => {
   const response =
-    await axiosInstance.get<PrimaryNoticeResponse>("/notices/primary");
-  return response.data.data;
+    await axiosInstance.get<NoticeListApiResponse>(GET_POPULAR_NOTICES);
+  return response.data;
 };
 
-// 공지사항 기타 탭
-export interface DepartmentUrlData {
-  name: string;
-  url: string;
-}
-
-interface NoticeOthersResponse extends ApiResponse {
-  data: DepartmentUrlData[];
-}
-
-const NOTICE_OTHERS_URL = "/departments/url";
-export const getNoticeOthersApi = async () => {
+// 주요 공지사항 조회 api
+export const getPrimaryNoticesApi = async (): Promise<NoticeListApiResponse> => {
   const response =
-    await axiosInstance.get<NoticeOthersResponse>(NOTICE_OTHERS_URL);
+    await axiosInstance.get<NoticeListApiResponse>(GET_PRIMARY_NOTICES);
+  return response.data;
+};
+
+// 공지사항 기타 탭 (학과 링크) 조회 api
+export const getNoticeOthersApi = async (): Promise<DepartmentUrlData[]> => {
+  const response =
+    await axiosInstance.get<NoticeOthersResponse>(GET_NOTICE_OTHERS);
   return response.data.data;
 };

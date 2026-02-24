@@ -2,13 +2,13 @@ import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
-  searchNotices,
-  getKeywords,
-  getRecentSearches,
-  registerKeyword,
-  saveRecentSearch,
-  deleteRecentSearch,
-  deleteAllRecentSearches,
+  searchNoticesApi,
+  getKeywordsApi,
+  getRecentSearchesApi,
+  registerKeywordApi,
+  saveRecentSearchApi,
+  deleteRecentSearchApi,
+  deleteAllRecentSearchesApi,
 } from "@apis/search";
 import useDebounce from "@hooks/use-debounce";
 import { SEARCH_QUERY_KEY } from "@/queryKey";
@@ -21,7 +21,7 @@ export const useSearchNoticesQuery = (keyword: string) => {
 
   const query = useQuery({
     queryKey: SEARCH_QUERY_KEY.RESULTS(debouncedKeyword),
-    queryFn: () => searchNotices({ keyword: debouncedKeyword }),
+    queryFn: () => searchNoticesApi({ keyword: debouncedKeyword }),
     enabled: !!debouncedKeyword.trim(),
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
@@ -46,7 +46,7 @@ export const useSearchNoticesQuery = (keyword: string) => {
 export const useRecentSearchesQuery = () => {
   return useQuery({
     queryKey: SEARCH_QUERY_KEY.RECENT,
-    queryFn: () => getRecentSearches(20),
+    queryFn: () => getRecentSearchesApi(20),
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
   });
@@ -56,7 +56,7 @@ export const useRecentSearchesQuery = () => {
 export const useKeywordsQuery = () => {
   return useQuery({
     queryKey: SEARCH_QUERY_KEY.KEYWORDS,
-    queryFn: () => getKeywords(),
+    queryFn: () => getKeywordsApi(),
     staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 30,
   });
@@ -68,7 +68,7 @@ export const useRecentSearchMutation = () => {
   const qc = useQueryClient();
 
   const { mutate: saveSearch } = useMutation({
-    mutationFn: (keyword: string) => saveRecentSearch(keyword),
+    mutationFn: (keyword: string) => saveRecentSearchApi(keyword),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: SEARCH_QUERY_KEY.RECENT });
     },
@@ -78,7 +78,7 @@ export const useRecentSearchMutation = () => {
   });
 
   const { mutate: deleteSearch } = useMutation({
-    mutationFn: (id: number) => deleteRecentSearch(id),
+    mutationFn: (id: number) => deleteRecentSearchApi(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: SEARCH_QUERY_KEY.RECENT });
     },
@@ -88,7 +88,7 @@ export const useRecentSearchMutation = () => {
   });
 
   const { mutate: deleteAllSearches } = useMutation({
-    mutationFn: () => deleteAllRecentSearches(),
+    mutationFn: () => deleteAllRecentSearchesApi(),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: SEARCH_QUERY_KEY.RECENT });
     },
@@ -106,7 +106,7 @@ export const useKeywordMutation = () => {
   const qc = useQueryClient();
 
   const { mutate: toggleKeyword } = useMutation({
-    mutationFn: (keyword: string) => registerKeyword(keyword),
+    mutationFn: (keyword: string) => registerKeywordApi(keyword),
     onSuccess: (_, keyword) => {
       // 현재 캐시 상태를 기준으로 토글 처리
       qc.setQueryData<string[]>(SEARCH_QUERY_KEY.KEYWORDS, (prev = []) => {

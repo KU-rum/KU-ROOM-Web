@@ -1,53 +1,34 @@
+// tanstack query 리팩토링 완료
+// 북마크 관련 api
 import axiosInstance from "./axiosInstance";
+import {
+  BookmarkListApiResponse,
+  AddBookmarkApiResponse,
+} from "./types";
 
-export interface BookmarkResponse {
-  bookmarkId: number;
-  noticeId: number;
-  noticeName: string;
-  noticePubDate: string;
-  bookmarkDate: string;
-  categoryId?: number;
-}
+export type { BookmarkResponse } from "./types";
 
-export interface BookmarkApiResponse {
-  code: number;
-  status: string;
-  message: string;
-  data: BookmarkResponse[];
-}
+const GET_BOOKMARKS = "/bookmark";
+const ADD_BOOKMARK = "/bookmark";
+const REMOVE_BOOKMARK = (bookmarkId: number) => `/bookmark/${bookmarkId}`;
 
-export interface AddBookmarkData {
-  bookmarkId: number;
-}
-
-export interface AddBookmarkApiResponse {
-  code: number;
-  status: string;
-  message: string;
-  data: AddBookmarkData;
-}
-
-export interface RemoveBookmarkApiResponse {
-  code: number;
-  status: string;
-  message: string;
-}
-
-export const getBookmarks = async (): Promise<BookmarkResponse[]> => {
-  const response = await axiosInstance.get<BookmarkApiResponse>("/bookmark");
+// 북마크 목록 조회 api
+export const getBookmarksApi = async () => {
+  const response =
+    await axiosInstance.get<BookmarkListApiResponse>(GET_BOOKMARKS);
   return response.data.data;
 };
 
-export const addBookmark = async (noticeId: number): Promise<number> => {
+// 북마크 추가 api
+export const addBookmarkApi = async (noticeId: number): Promise<number> => {
   const response = await axiosInstance.post<AddBookmarkApiResponse>(
-    "/bookmark",
+    ADD_BOOKMARK,
     { noticeId },
   );
   return response.data.data.bookmarkId;
 };
 
-export const removeBookmark = async (bookmarkId: number): Promise<void> => {
-  await axiosInstance.delete<RemoveBookmarkApiResponse>(
-    `/bookmark/${bookmarkId}`,
-  );
+// 북마크 삭제 api
+export const removeBookmarkApi = async (bookmarkId: number): Promise<void> => {
+  await axiosInstance.delete(REMOVE_BOOKMARK(bookmarkId));
 };

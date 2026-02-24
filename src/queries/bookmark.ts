@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { getBookmarks, removeBookmark } from "@apis/bookmark";
+import { getBookmarksApi, removeBookmarkApi } from "@apis/bookmark";
 import { transformBookmarkToNotice } from "@pages/Notice/Bookmark/utils/bookmarkTransform";
 import { BOOKMARK_QUERY_KEY } from "@/queryKey";
 import useToast from "@hooks/use-toast";
@@ -13,7 +13,7 @@ export const useBookmarksQuery = () => {
   const query = useQuery({
     queryKey: BOOKMARK_QUERY_KEY.LIST,
     queryFn: async () => {
-      const apiData = await getBookmarks();
+      const apiData = await getBookmarksApi();
       return transformBookmarkToNotice(apiData);
     },
     staleTime: 1000 * 60 * 5,
@@ -35,7 +35,7 @@ export const useRemoveBookmarkMutation = () => {
   const qc = useQueryClient();
 
   const { mutate: removeBookmarkItem } = useMutation({
-    mutationFn: (bookmarkId: number) => removeBookmark(bookmarkId),
+    mutationFn: (bookmarkId: number) => removeBookmarkApi(bookmarkId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: BOOKMARK_QUERY_KEY.LIST });
     },

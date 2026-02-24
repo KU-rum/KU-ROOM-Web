@@ -8,13 +8,13 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import {
-  getNotices,
-  getNoticeDetail,
-  getPopularNotices,
-  getPrimaryNotices,
+  getNoticesApi,
+  getNoticeDetailApi,
+  getPopularNoticesApi,
+  getPrimaryNoticesApi,
   getNoticeOthersApi,
 } from "@apis/notice";
-import { addBookmark, removeBookmark } from "@apis/bookmark";
+import { addBookmarkApi, removeBookmarkApi } from "@apis/bookmark";
 import { decodeBase64ToUTF8 } from "@/shared/utils/base64";
 import { getCategoryId } from "@constant/categoryMapping";
 import { NOTICE_QUERY_KEY, BOOKMARK_QUERY_KEY } from "@/queryKey";
@@ -27,7 +27,7 @@ export const useNoticesInfiniteQuery = (categoryId: string) => {
   return useInfiniteQuery({
     queryKey: NOTICE_QUERY_KEY.LIST(categoryId),
     queryFn: ({ pageParam = 0 }) =>
-      getNotices({ category: categoryId, page: pageParam, size: NOTICE_PAGE_SIZE }),
+      getNoticesApi({ category: categoryId, page: pageParam, size: NOTICE_PAGE_SIZE }),
     initialPageParam: 0,
     getNextPageParam: (lastPage, _, lastPageParam) =>
       lastPage.last ? undefined : lastPageParam + 1,
@@ -48,7 +48,7 @@ export const useNoticeDetailQuery = (
   const query = useQuery({
     queryKey: NOTICE_QUERY_KEY.DETAIL(id),
     queryFn: async () => {
-      const detailData = await getNoticeDetail(id!);
+      const detailData = await getNoticeDetailApi(id!);
       const decodedContent = decodeBase64ToUTF8(detailData.content);
 
       let categoryId = 0;
@@ -114,10 +114,10 @@ export const useNoticeBookmarkMutation = (id: string | undefined) => {
       noticeId: number;
     }) => {
       if (isBookMarked && bookmarkId) {
-        await removeBookmark(bookmarkId);
+        await removeBookmarkApi(bookmarkId);
         return { isBookMarked: false, bookmarkId: undefined };
       } else {
-        const newBookmarkId = await addBookmark(noticeId);
+        const newBookmarkId = await addBookmarkApi(noticeId);
         return { isBookMarked: true, bookmarkId: newBookmarkId };
       }
     },
@@ -143,7 +143,10 @@ export const usePopularNoticesQuery = () => {
 
   const query = useQuery({
     queryKey: NOTICE_QUERY_KEY.POPULAR,
-    queryFn: () => getPopularNotices(),
+    queryFn: async () => {
+      const response = await getPopularNoticesApi();
+      return response.data;
+    },
     staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 30,
   });
@@ -163,7 +166,10 @@ export const usePrimaryNoticesQuery = () => {
 
   const query = useQuery({
     queryKey: NOTICE_QUERY_KEY.PRIMARY,
-    queryFn: () => getPrimaryNotices(),
+    queryFn: async () => {
+      const response = await getPrimaryNoticesApi();
+      return response.data;
+    },
     staleTime: 1000 * 60 * 10,
     gcTime: 1000 * 60 * 30,
   });
