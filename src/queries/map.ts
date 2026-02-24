@@ -211,12 +211,16 @@ export const useMapSearchMutation = () => {
 
 export const useCategoryLocationsQuery = (category: CategoryEnum | "") => {
   const toast = useToast();
+  let staleTime = 0;
+  if (category !== "FRIEND") {
+    staleTime = 1000 * 60 * 10;
+  }
   const { data, isError } = useQuery<CategoryLocationsResponse>({
     queryKey: MAP_QUERY_KEY.CATEGORY_LOCATIONS(category),
     queryFn: () => getCategoryLocationsApi(category),
     enabled: !!category,
-    staleTime: 1000 * 60 * 10,
-    gcTime: 1000 * 60 * 20,
+    staleTime: staleTime,
+    gcTime: staleTime * 2,
   });
 
   useEffect(() => {
