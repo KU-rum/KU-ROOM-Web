@@ -59,7 +59,7 @@ export const useFriendSharingRankingQuery = (friendId: string) => {
     queryKey: RANKING_QUERY_KEY.FRIEND(friendId),
     queryFn: () => getFriendRankingApi(friendId),
     enabled: !!friendId,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 3,
     gcTime: 1000 * 60 * 10,
   });
 
