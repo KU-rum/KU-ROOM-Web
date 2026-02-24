@@ -29,7 +29,6 @@ export const useSearchedUserListQuery = (nickname: string) => {
     queryKey: USER_LIST_QUERY_KEY.SEARCHED_USER(debouncedText),
     queryFn: () => getSearchedUserListApi(debouncedText),
     enabled: !!debouncedText.trim(),
-    staleTime: 1000 * 60,
   });
 
   const searchedUserList = data?.data;
@@ -49,7 +48,6 @@ export const useSentRequestListQuery = () => {
   } = useQuery<GetFriendRequestReceivedListResponse>({
     queryKey: USER_LIST_QUERY_KEY.REQUEST(),
     queryFn: () => getSentRequestListApi(),
-    staleTime: 1000 * 60 * 3,
   });
 
   const sentRequestList = data?.data;

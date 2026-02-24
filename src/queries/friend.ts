@@ -21,7 +21,6 @@ export const useFriendListQuery = () => {
   } = useQuery<GetUserFriendListResponse>({
     queryKey: FRIEND_QUERY_KEY.DEFAULT,
     queryFn: () => getFriendListApi(),
-    staleTime: 1000 * 60 * 3,
   });
 
   const friendListData = data?.data;
