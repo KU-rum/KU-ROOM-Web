@@ -1,5 +1,5 @@
 import React from 'react';
-import './Select.css';
+import styles from './Select.module.css';
 
 interface SelectProps {
   label: string;
@@ -17,30 +17,30 @@ const Select: React.FC<SelectProps> = ({
   disabled = false
 }) => {
   return (
-    <div className="select-container">
-      <label className="select-label">{label}</label>
-      <div 
-        className={`select-field ${disabled ? 'disabled' : ''}`} 
+    <div className={styles["select-container"]}>
+      <label className={styles["select-label"]}>{label}</label>
+      <div
+        className={`${styles["select-field"]} ${disabled ? styles.disabled : ''}`}
         onClick={disabled ? undefined : onClick}
       >
         {value ? (
-          <span className="select-value">{value}</span>
+          <span className={styles["select-value"]}>{value}</span>
         ) : (
-          <span className="select-placeholder">{placeholder}</span>
+          <span className={styles["select-placeholder"]}>{placeholder}</span>
         )}
-        <svg 
-          width="18" 
-          height="18" 
-          viewBox="0 0 16 16" 
-          fill="none" 
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 16 16"
+          fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="select-arrow"
+          className={styles["select-arrow"]}
         >
-          <path 
-            d="M4 6L8 10L12 6" 
-            stroke="currentColor" 
-            strokeWidth="1.5" 
-            strokeLinecap="round" 
+          <path
+            d="M4 6L8 10L12 6"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
             strokeLinejoin="round"
           />
         </svg>

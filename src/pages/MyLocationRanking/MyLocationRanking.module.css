@@ -1,8 +1,7 @@
 .PageContentWrapper {
-  height: calc(100vh - 130px);
+  height: calc(100vh - 56px);
   margin-top: 56px;
   padding: 0 14px;
-  padding-bottom: 70px;
   overflow-y: auto;
 }
 .MyRankingContainer {

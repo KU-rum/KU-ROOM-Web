@@ -1,0 +1,61 @@
+.Overlay {
+  position: fixed;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  z-index: 5000;
+
+  height: 100dvh;
+  width: 100%;
+  max-width: 600px;
+  background: rgba(0, 0, 0, 0.5);
+  transition: opacity 300ms ease-in-out;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.BottomSheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  width: 100%;
+  max-width: 600px;
+
+  transition: transform 300ms ease-in-out;
+
+  border-top-left-radius: 32px;
+  border-top-right-radius: 32px;
+
+  background: #fff;
+  padding-left: 25px;
+  padding-right: 25px;
+
+  box-sizing: border-box;
+  will-change: transform;
+}
+
+.Indicator {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+  height: 3.5px;
+  width: 41px;
+
+  border-radius: 100px;
+  background: #d1d5db;
+}
+
+.Content {
+  margin-bottom: 34px;
+}

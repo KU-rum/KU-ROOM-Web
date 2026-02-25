@@ -1,9 +1,9 @@
 import React from "react";
 
 import noResultIcon from "@assets/icon/noResultSearch.svg";
+import { useSearchedDepartmentQuery } from "@/queries";
 
 import styles from "./SearchDepartmentList.module.css";
-import { useSearchDepartments } from "../../hooks/use-search-departments";
 
 interface SearchDepartmentListProps {
   searchText: string;
@@ -18,7 +18,7 @@ const SearchDepartmentList: React.FC<SearchDepartmentListProps> = ({
     debouncedText,
     searchedDepartmentsData,
     isPendingSearchedDepartments,
-  } = useSearchDepartments(searchText);
+  } = useSearchedDepartmentQuery(searchText);
 
   const trimmed = searchText.trim();
   const isDebouncing = trimmed !== debouncedText.trim();

@@ -1,26 +1,28 @@
-import { useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 
-import Header from "@/shared/components/Header/Header";
+import { LocationTop3RankType } from "@apis/types";
+import Header from "@components/Header/Header";
+import Loading from "@components/Loading/Loading";
+import { useLocationTotalRankQuery } from "@/queries";
+
+import MyRankSection from "./components/MyRankSection/MyRankSection";
+import TopRankSection from "./components/TopRankSection/TopRankSection";
+import LowRankSection from "./components/LowRankSection/LowRankSection";
+import TopRankModal from "./components/TopRankModal/TopRankModal";
+import { MapLayoutContext } from "../layout/MapLayout";
 
 import styles from "./LocationTotalRank.module.css";
-import { LocationTop3RankType } from "@/shared/types/rankTypes";
-import { useLocationTotalRank } from "./hooks/use-location-total-rank";
-import TopRankModal from "@pages/Map/LocationTotalRank/components/TopRankModal/TopRankModal";
-import TopRankSection from "@pages/Map/LocationTotalRank/components/TopRankSection/TopRankSection";
-import LowRankSection from "@pages/Map/LocationTotalRank/components/LowRankSection/LowRankSection";
-import MyRankSection from "./components/MyRankSection/MyRankSection";
 
 const LocationTotalRank = () => {
+  const navigate = useNavigate();
   const { placeName } = useParams();
-  const { state } = useLocation();
-  const placeId = state?.placeId;
+  const { detailLocationPlaceId } = useOutletContext<MapLayoutContext>();
 
-  // TODO: 추후 toast 및 접근 방지 추가
-  // if (!placeId) {
-  //   alert("장소 ID가 잘못되었습니다.");
-  //   throw new Error();
-  // }
+  const [modalState, setModalState] = useState(false);
+  const [modalRankData, setModalRankData] = useState<
+    LocationTop3RankType | undefined
+  >(undefined);
 
   const {
     listBottomRef,
@@ -28,12 +30,14 @@ const LocationTotalRank = () => {
     totalRankData,
     myRankData,
     isPagePending,
-  } = useLocationTotalRank(placeId);
+  } = useLocationTotalRankQuery(detailLocationPlaceId);
 
-  const [modalState, setModalState] = useState(false);
-  const [modalRankData, setModalRankData] = useState<
-    LocationTop3RankType | undefined
-  >(undefined);
+  useEffect(() => {
+    if (!detailLocationPlaceId) {
+      navigate("/map");
+      return;
+    }
+  }, [detailLocationPlaceId, navigate]);
 
   const handleOpenModal = (rankData: LocationTop3RankType) => {
     setModalState(true);
@@ -46,7 +50,7 @@ const LocationTotalRank = () => {
 
   if (isPagePending) {
     // TODO:로딩 페이지 만들기
-    return <div>로딩중...</div>;
+    return <Loading />;
   }
 
   return (

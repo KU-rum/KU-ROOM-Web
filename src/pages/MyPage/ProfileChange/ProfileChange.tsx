@@ -1,10 +1,10 @@
 import Header from "@components/Header/Header";
 import { getProfileChangeSectionData } from "@constant/sectionDatas";
+import { useUserStore } from "@stores/userStore";
 
 import MyProfileComponent from "../components/MyProfileComponent/MyProfileComponent";
 import ProfileSection from "../components/ProfileSection/ProfileSection";
 import styles from "./ProfileChange.module.css";
-import { useUserStore } from "@/shared/stores/userStore";
 
 const ProfileChange = () => {
   const loginType = useUserStore((state) => state.user?.loginType);

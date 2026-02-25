@@ -1,84 +1,35 @@
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-import { getAllFriends } from "@apis/friend";
 import Header from "@components/Header/Header";
 import FriendContainer from "@components/FriendContainer/FriendContainer";
-import { handleOutsideClick } from "@utils/friendUtils";
+import Loading from "@components/Loading/Loading";
 
 import FriendEdit from "./components/FriendEdit/FriendEdit";
 import FriendSearch from "../components/FriendSearch/FriendSearch";
 import FriendModal from "../components/FriendModal/FriendModal";
+import useFriendList from "./hooks";
+
 import styles from "./FriendList.module.css";
 
-interface Friend {
-  id: number;
-  nickname: string;
-  imageUrl: string;
-}
-
 const FriendList = () => {
-  const navigate = useNavigate();
-  const [friendList, setFriendList] = useState<Friend[]>([]);
-  const [searchNickname, setSearchNickname] = useState("");
+  const {
+    friendListData,
+    searchNickname,
+    filteredFriends,
+    isPendingFriendList,
+    editPopupState,
+    popupRef,
+    modalState,
+    modalType,
+    setSearchNickname,
+    setEditPopupState,
+    setModalState,
+    setModalType,
+    handleToFriendAdd,
+    handleClosePopup,
+  } = useFriendList();
 
-  const [refreshList, setRefreshList] = useState(false);
-
-  // 검색어가 포함되어 필터링된 친구 목록
-  const filteredFriends = friendList.filter((friend) =>
-    friend.nickname.includes(searchNickname)
-  );
-
-  // 친구 수정 관련 상태
-  const [editPopupState, setEditPopupState] = useState<{
-    isPopupOpen: boolean;
-    popupPosition: { top: number; left: number };
-    editFriend: string;
-    editFriendId: number;
-  }>({
-    isPopupOpen: false,
-    popupPosition: { top: 0, left: 0 },
-    editFriend: "",
-    editFriendId: 0,
-  });
-
-  // 친구 삭제, 차단, 신고하기 팝업 관련 상태
-  const popupRef = useRef<HTMLDivElement | null>(null);
-
-  // 친구 관련 수정 모달 상태
-  const [modalState, setModalState] = useState(false);
-  const [modalType, setModalType] = useState("");
-
-  const getMyFriends = async () => {
-    try {
-      const response = await getAllFriends();
-      console.log(response);
-      const friends = response ?? [];
-      if (!Array.isArray(friends)) {
-        setFriendList([]);
-        return [];
-      }
-      setFriendList(friends);
-
-      return friends;
-    } catch (error) {
-      console.error("친구 목록 불러오기 실패", error);
-    }
-  };
-
-  useEffect(() => {
-    getMyFriends();
-  }, [refreshList]);
-
-  // 팝업 외부 클릭 시 닫기
-  useEffect(() => {
-    handleOutsideClick(popupRef, editPopupState.isPopupOpen, () => {
-      setEditPopupState((prev) => ({
-        ...prev,
-        isPopupOpen: false,
-      }));
-    });
-  }, [editPopupState.isPopupOpen]);
+  if (isPendingFriendList) {
+    return <Loading />;
+  }
 
   return (
     <div>
@@ -91,28 +42,29 @@ const FriendList = () => {
           />
         </div>
         <div className={styles.FriendListWrapper}>
-          {friendList.length === 0 ? (
-            <div className={styles.NoFriendsContainer}>
-              <span>현재 친구가 없습니다!</span>
-              <span
-                className={styles.ToFriendAdd}
-                onClick={() => navigate("/friendadd")}
-              >
-                친구 추가하러 가기
-              </span>
-            </div>
-          ) : (
-            (searchNickname ? filteredFriends : friendList).map(
-              (friend, index) => (
-                <div key={index}>
-                  <FriendContainer
-                    friend={friend}
-                    setEditPopupState={setEditPopupState}
-                  />
-                </div>
+          {friendListData &&
+            (friendListData.length === 0 ? (
+              <div className={styles.NoFriendsContainer}>
+                <span>현재 친구가 없습니다!</span>
+                <span
+                  className={styles.ToFriendAdd}
+                  onClick={handleToFriendAdd}
+                >
+                  친구 추가하러 가기
+                </span>
+              </div>
+            ) : (
+              (searchNickname ? filteredFriends : friendListData).map(
+                (friend) => (
+                  <div key={friend.id}>
+                    <FriendContainer
+                      friend={friend}
+                      setEditPopupState={setEditPopupState}
+                    />
+                  </div>
+                ),
               )
-            )
-          )}
+            ))}
         </div>
       </div>
 
@@ -128,12 +80,7 @@ const FriendList = () => {
         >
           <FriendEdit
             editFriend={editPopupState.editFriend}
-            onClose={() =>
-              setEditPopupState((prev) => ({
-                ...prev,
-                isPopupOpen: false,
-              }))
-            }
+            onClose={handleClosePopup}
             setModalType={setModalType}
             setModalState={setModalState}
           />
@@ -145,7 +92,6 @@ const FriendList = () => {
         modalState={modalState}
         modalType={modalType}
         setModalState={setModalState}
-        setRefreshList={setRefreshList}
       />
     </div>
   );

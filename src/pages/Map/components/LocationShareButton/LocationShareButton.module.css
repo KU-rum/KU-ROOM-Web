@@ -1,0 +1,28 @@
+.ShareLocationButton,
+.UnshareLocationButton {
+  position: absolute;
+  right: 15px;
+  bottom: 128px;
+  z-index: 100;
+  display: flex;
+  padding: 13px 23px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 22.5px;
+  background: #fff;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
+
+  color: #009733;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 120%;
+}
+.UnshareLocationButton {
+  background: #009733;
+  color: #fff;
+}
+.DisabledToShareText {
+  color: #9eaab5;
+}

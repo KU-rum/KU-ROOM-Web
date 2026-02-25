@@ -1,0 +1,6 @@
+.TrackingIcon {
+  position: absolute;
+  left: 15px;
+  bottom: 120px;
+  z-index: 100;
+}

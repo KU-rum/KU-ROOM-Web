@@ -1,38 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { useCategoryLocationsQuery } from "@/queries";
 import arrowRight from "@assets/nav/arrowRight.svg";
 import locationIcon from "@assets/icon/locationIcon.png";
 import DefaultProfileImg from "@assets/defaultProfileImg.svg";
 import kuroomEmptyIcon from "@assets/icon/kuroom-icon/kuroom-gray.svg";
-import { PlaceData } from "@/shared/types";
 
 import styles from "./FriendLocation.module.css";
-import { getCategoryLocationsApi } from "@/apis/map";
 
 interface FriendLocationProps {
-  userSharedLocation: string | null;
+  userSharedLocation?: string | null;
 }
 
 const FriendLocation: React.FC<FriendLocationProps> = ({
   userSharedLocation,
 }) => {
   const navigate = useNavigate();
-  const [friendSharedLocationData, setFriendSharedLocationData] = useState<
-    PlaceData[]
-  >([]);
+  const { categoryLocations } = useCategoryLocationsQuery("FRIEND");
+
   // 화면 너비에 따라 개수 다르게 보이기. 크기에 따라 최대 3 혹은 4개
   const [maxVisibleFriends, setMaxVisibleFriends] = useState(4);
-
-  const getFriendLocation = async () => {
-    try {
-      const response = await getCategoryLocationsApi("FRIEND");
-      console.log("위치 공유한 친구 배열 : ", response);
-      setFriendSharedLocationData(response);
-    } catch (error) {
-      console.error("위치 공유한 친구 배열 조회 중 오류 : ", error);
-    }
-  };
 
   useEffect(() => {
     const updateVisibleFriends = () => {
@@ -42,14 +30,12 @@ const FriendLocation: React.FC<FriendLocationProps> = ({
     updateVisibleFriends(); // 초기 실행
     window.addEventListener("resize", updateVisibleFriends);
 
-    getFriendLocation();
-
     return () => window.removeEventListener("resize", updateVisibleFriends);
   }, []);
 
   const handleClickArrow = () => {
     console.log("지도로 이동");
-    navigate("/map");
+    navigate("/map", { state: { isFriendChip: true } });
   };
 
   return (
@@ -69,7 +55,7 @@ const FriendLocation: React.FC<FriendLocationProps> = ({
         />
       </div>
 
-      {friendSharedLocationData.length === 0 && (
+      {categoryLocations?.length === 0 && (
         <div className={styles.EmptyViewContainer}>
           <img src={kuroomEmptyIcon} className={styles.EmptyIcon} />
           <span className={styles.EmptyText}>
@@ -80,7 +66,7 @@ const FriendLocation: React.FC<FriendLocationProps> = ({
         </div>
       )}
 
-      {friendSharedLocationData.map((item, index) => {
+      {categoryLocations?.map((item, index) => {
         const shouldShowMore = item.friends.length > maxVisibleFriends;
         const visibleFriends = item.friends.slice(0, maxVisibleFriends);
 
@@ -103,8 +89,8 @@ const FriendLocation: React.FC<FriendLocationProps> = ({
               {visibleFriends.map((friend, index) => (
                 <div key={index} className={styles.EachFriendProfile}>
                   <img
-                    style={{ width: "49px", height: "49px" }}
-                    src={friend.profileURL || DefaultProfileImg}
+                    className={styles.ProfileImage}
+                    src={friend.profileUrl || DefaultProfileImg}
                     alt="프로필 사진"
                   />
                   <span className={styles.Nickname}>{friend.nickname}</span>

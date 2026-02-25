@@ -1,57 +1,51 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import rank1Icon from "@assets/icon/ranking/rank1.png";
 import rank2Icon from "@assets/icon/ranking/rank2.png";
 import rank3Icon from "@assets/icon/ranking/rank3.png";
 import kuroomEmptyIcon from "@assets/icon/kuroom-icon/kuroom-gray.svg";
-
-import { getSharingRanking } from "@apis/home";
+import Button from "@components/Button/Button";
 import Header from "@components/Header/Header";
-// import Button from "@components/Button/Button";
-import { RankListType } from "@/shared/types";
+import Loading from "@components/Loading/Loading";
+import { useFriendListQuery, useUserSharingRankingQuery } from "@/queries";
 
 // import ShareBottomSheet from "./components/ShareBottomSheet/ShareBottomSheet";
-import styles from "./MyLocationRanking.module.css";
-import Button from "@/shared/components/Button/Button";
 
-const dummyFriendRanking = [
-  {
-    id: 1,
-    nickname: "쿠룸",
-  },
-  {
-    id: 2,
-    nickname: "쿠룸쿠룸",
-  },
-];
+import styles from "./MyLocationRanking.module.css";
 
 const MyLocationRanking = () => {
   const navigate = useNavigate();
 
-  const [myRankData, setMyRankData] = useState<RankListType[]>([]);
+  const { userRankingData, isPendingUserRankingData } =
+    useUserSharingRankingQuery();
+  const { friendListData, isPendingFriendList } = useFriendListQuery();
 
-  // const [isSharedSheetOpen, setIsSharedSheetOpen] = useState(false);
-  // const [isSheetVisible, setIsSheetVisible] = useState(false);
-
-  const getMyLocationRanking = async () => {
-    try {
-      const response = await getSharingRanking();
-      console.log(response);
-      setMyRankData(response);
-    } catch (error) {
-      console.error("내 장소 랭킹 조회 중 에러", error);
-    }
-  };
-
-  const handleNavToFriendRanking = (nickname: string) => {
-    navigate("friendlocationranking", { state: { nickname: nickname } });
+  const handleNavToFriendRanking = (nickname: string, friendId: number) => {
+    navigate("friendlocationranking", {
+      state: { nickname, friendId: String(friendId) },
+    });
   };
 
   const handleToAddFriendPage = () => {
     navigate("/friendadd");
   };
 
+  const getRankIcon = (index: number) => {
+    switch (index) {
+      case 0:
+        return rank1Icon;
+      case 1:
+        return rank2Icon;
+      case 2:
+        return rank3Icon;
+      default:
+        return;
+    }
+  };
+
+  // TODO: 추후 기능 추가
+  // const [isSharedSheetOpen, setIsSharedSheetOpen] = useState(false);
+  // const [isSheetVisible, setIsSheetVisible] = useState(false);
   // const openBottomSheet = () => {
   //   console.log("공유하기");
   //   setIsSheetVisible(true); // 먼저 보여주기
@@ -62,50 +56,51 @@ const MyLocationRanking = () => {
   //   setTimeout(() => setIsSheetVisible(false), 300); // 0.3초 후 제거
   // };
 
-  useEffect(() => {
-    getMyLocationRanking();
-  }, []);
+  if (isPendingFriendList || isPendingUserRankingData) {
+    return <Loading />;
+  }
 
   return (
     <div>
       <Header>내 장소 랭킹</Header>
       <div className={styles.PageContentWrapper}>
         <div className={styles.MyRankingContainer}>
-          {myRankData.length === 0 && (
+          {userRankingData && userRankingData.length === 0 ? (
             <div className={styles.EmptyViewContainer}>
               <img src={kuroomEmptyIcon} className={styles.EmptyIcon} />
               <span className={styles.EmptyText}>
                 아직 위치를 공유하지 않았어요.
               </span>
             </div>
-          )}
-          {myRankData.map((item, index) => (
-            <div key={index} className={styles.EachRankingContainer}>
-              <img
-                className={styles.RankIcon}
-                src={
-                  index === 0 ? rank1Icon : index === 1 ? rank2Icon : rank3Icon
-                }
-                alt="랭킹 아이콘"
-              />
-              <div className={styles.EachRankingContentWrapper}>
-                <div className={styles.EachRankLocationNameWrapper}>
-                  {item.name.map((location) => (
-                    <span key={location} className={styles.EachRankLocation}>
-                      {location}
-                    </span>
-                  ))}
+          ) : (
+            // TODO: 우선 3위까지만. 추후 변동 가능
+            userRankingData &&
+            userRankingData.slice(0, 3).map((item, index) => (
+              <div key={index} className={styles.EachRankingContainer}>
+                <img
+                  className={styles.RankIcon}
+                  src={getRankIcon(index)}
+                  alt="랭킹 아이콘"
+                />
+                <div className={styles.EachRankingContentWrapper}>
+                  <div className={styles.EachRankLocationNameWrapper}>
+                    {item.name.map((location) => (
+                      <span key={location} className={styles.EachRankLocation}>
+                        {location}
+                      </span>
+                    ))}
+                  </div>
+                  <span className={styles.EachRankCount}>
+                    {item.sharingCount}회
+                  </span>
                 </div>
-                <span className={styles.EachRankCount}>
-                  {item.sharingCount}회
-                </span>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
         <div className={styles.FriendRankingContainer}>
           <span className={styles.FriendRankingTitle}>친구 랭킹</span>
-          {dummyFriendRanking.length !== 0 ? (
+          {friendListData && friendListData.length === 0 ? (
             // TODO: 디자인 변경 가능성 있음
             <div className={styles.EmptyViewContainer}>
               <div className={styles.EmtpyFriendWrapper}>
@@ -117,15 +112,18 @@ const MyLocationRanking = () => {
             </div>
           ) : (
             <div className={styles.FriendWrapper}>
-              {dummyFriendRanking.map((friend) => (
-                <button
-                  key={friend.id}
-                  className={styles.FriendNickname}
-                  onClick={() => handleNavToFriendRanking(friend.nickname)}
-                >
-                  {friend.nickname}
-                </button>
-              ))}
+              {friendListData &&
+                friendListData.map((friend) => (
+                  <button
+                    key={friend.id}
+                    className={styles.FriendNickname}
+                    onClick={() =>
+                      handleNavToFriendRanking(friend.nickname, friend.id)
+                    }
+                  >
+                    {friend.nickname}
+                  </button>
+                ))}
             </div>
           )}
         </div>

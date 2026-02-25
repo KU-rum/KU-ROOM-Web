@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { toast, ToastOptions } from "react-toastify";
 import CustomToast from "../components/custom-toast/CustomToast";
 
@@ -6,21 +6,23 @@ const TOAST_CONTAINER_SELECTOR = ".Toastify__toast-container";
 const TOAST_SELECTOR = ".Toastify__toast";
 
 const useToast = () => {
-  const toastOptions: ToastOptions = {
-    position: "bottom-center",
-    icon: false,
-    closeButton: false,
-    autoClose: 2000,
-    hideProgressBar: true,
-    style: {
-      background: "transparent",
-      boxShadow: "none",
-      padding: 0,
-      display: "flex",
-      justifyContent: "center",
-      marginBottom: "90px",
-    },
-  };
+  const toastOptions = useMemo<ToastOptions>(() => {
+    return {
+      position: "bottom-center",
+      icon: false,
+      closeButton: false,
+      autoClose: 2000,
+      hideProgressBar: true,
+      style: {
+        background: "transparent",
+        boxShadow: "none",
+        padding: 0,
+        display: "flex",
+        justifyContent: "center",
+        marginBottom: "90px",
+      },
+    };
+  }, []);
 
   useEffect(() => {
     const handlePointerDown = (e: PointerEvent) => {
@@ -46,15 +48,22 @@ const useToast = () => {
     };
   }, []);
 
-  return {
-    info: (message: string) =>
+  const info = useCallback(
+    (message: string) =>
       toast.info(<CustomToast message={message} />, toastOptions),
-    error: (message: string) =>
+    [toastOptions],
+  );
+
+  const error = useCallback(
+    (message: string) =>
       toast.error(
         <CustomToast message={message} isError={true} />,
-        toastOptions
+        toastOptions,
       ),
-  };
+    [toastOptions],
+  );
+
+  return useMemo(() => ({ info, error }), [info, error]);
 };
 
 export default useToast;

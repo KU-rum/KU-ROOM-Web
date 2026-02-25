@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import "./BottomSheet.css";
+import styles from "./BottomSheet.module.css";
 
 interface BottomSheetProps {
   isOpen: boolean;
@@ -40,13 +40,13 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
   };
 
   return (
-    <div className="bottom-sheet-container">
-      <div className="bottom-sheet-overlay" onClick={onClose}></div>
-      <div className="bottom-sheet">
-        <div className="bottom-sheet-indicator"></div>
-        <div className="bottom-sheet-header">
-          <h3 className="bottom-sheet-title">{title}</h3>
-          <button className="bottom-sheet-close" onClick={onClose}>
+    <div className={styles["bottom-sheet-container"]}>
+      <div className={styles["bottom-sheet-overlay"]} onClick={onClose}></div>
+      <div className={styles["bottom-sheet"]}>
+        <div className={styles["bottom-sheet-indicator"]}></div>
+        <div className={styles["bottom-sheet-header"]}>
+          <h3 className={styles["bottom-sheet-title"]}>{title}</h3>
+          <button className={styles["bottom-sheet-close"]} onClick={onClose}>
             <svg
               width="24"
               height="24"
@@ -64,16 +64,16 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
             </svg>
           </button>
         </div>
-        <div className="bottom-sheet-content">{children}</div>
+        <div className={styles["bottom-sheet-content"]}>{children}</div>
         <button
-          className={`apply-button ${selectedItem ? "active" : ""}`}
+          className={`${styles["apply-button"]} ${selectedItem ? styles.active : ""}`}
           onClick={handleApply}
           disabled={!selectedItem}
         >
           적용하기
         </button>
       </div>
-      <div className="bottom-sheet-shadow" />
+      <div className={styles["bottom-sheet-shadow"]} />
     </div>
   );
 };

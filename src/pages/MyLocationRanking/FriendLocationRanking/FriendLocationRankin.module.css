@@ -34,3 +34,24 @@
   font-size: 16px;
   font-weight: 500;
 }
+
+.EmptyViewContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 170px;
+}
+.EmptyIcon {
+  width: 50px;
+  height: 50px;
+  padding: 15px 10px;
+  box-sizing: border-box;
+}
+.EmptyText {
+  color: #b0bac3;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 140%;
+}

@@ -1,0 +1,128 @@
+.bottom-sheet-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.bottom-sheet-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.bottom-sheet {
+  position: relative;
+  background-color: white;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 16px;
+  padding-bottom: 28px;
+  animation: slide-up 0.3s ease-out;
+  height: 70dvh;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.bottom-sheet-indicator {
+  width: 45px;
+  height: 5px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  margin: 0 auto 36px auto;
+}
+
+.bottom-sheet-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.bottom-sheet-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  color: black;
+}
+
+.bottom-sheet-close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #495057;
+  padding: 0;
+  display: none;
+}
+
+.bottom-sheet-content {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  padding-bottom: 30px;
+}
+
+.apply-button-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  background-color: white;
+  z-index: 10;
+}
+
+.apply-button {
+  width: 100%;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.apply-button.active {
+  background-color: #009733;
+  cursor: pointer;
+}
+
+.apply-button:disabled {
+  background-color: #ced5db;
+  cursor: not-allowed;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.bottom-sheet-shadow {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  height: 100px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #fff 32.5%);
+}

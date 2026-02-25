@@ -1,5 +1,5 @@
 import React from "react";
-import "./Button.css";
+import styles from "./Button.module.css";
 interface ButtonProps {
   children: React.ReactNode;
   onClick: () => void;
@@ -18,7 +18,7 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       type="button"
-      className={`button ${variant} ${disabled ? "disabled" : ""} ${size}`}
+      className={`${styles.button} ${styles[variant]} ${disabled ? styles.disabled : ""} ${size ? styles[size] : ""}`}
       onClick={onClick}
       disabled={disabled}
     >

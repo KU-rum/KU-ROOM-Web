@@ -1,0 +1,69 @@
+.profile-setting {
+  background-color: #f8f9fc;
+  padding: 0 28px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.profile-setting-header {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.profile-setting-title {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 42px;
+  margin-top: 75px;
+}
+
+.text-primary {
+  color: #009733;
+}
+
+.profile-setting-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.profile-setting-button {
+  margin-top: auto;
+  padding: 24px 0 50px 0;
+  max-width: 100%;
+}
+
+.profile-setting-select-list {
+  overflow-y: auto;
+}
+
+/* 애니메이션 효과 추가 */
+.profile-setting-form > * {
+  animation: fade-in 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ErrorMsg {
+  margin-top: -20px;
+  margin-bottom: 15px;
+  color: #ff4a4a;
+  font-size: 12px;
+  font-weight: 700;
+}

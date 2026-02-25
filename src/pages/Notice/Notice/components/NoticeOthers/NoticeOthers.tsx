@@ -4,14 +4,14 @@ import { useNoticeOthers } from "../../hooks/use-notice-others";
 import styles from "./NoticeOthers.module.css";
 
 export default function NoticeOthers() {
-  const { noticeOtehrsData, isPending } = useNoticeOthers();
+  const { noticeOthersData, isPending } = useNoticeOthers();
 
   const handleNoticeLink = (url: string) => {
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
-  const othersList = noticeOtehrsData
-    ? [...NOTICE_OTHERS, ...noticeOtehrsData]
+  const othersList = noticeOthersData
+    ? [...NOTICE_OTHERS, ...noticeOthersData]
     : NOTICE_OTHERS;
 
   return (

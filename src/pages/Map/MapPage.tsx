@@ -2,17 +2,16 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 
-import {
-  checkIsSharedApi,
-  getCategoryLocationsApi,
-  // getUserShareLocation,
-} from "@apis/map";
+import { MarkerData, MapSearchResult, PlaceData } from "@apis/types";
 import DefaultProfileImg from "@assets/defaultProfileImg.svg";
-import myTrackingIcon from "@assets/map/tomylocation.svg";
-import shareLocationIcon from "@assets/map/shareLocation.svg";
-import unshareLocationIcon from "@assets/map/shareLocationWhite.svg";
 import BottomBar from "@components/BottomBar/BottomBar";
 import ShareLocationModal from "@components/ShareLocationModal/ShareLocationModal";
+import { isMyLocationInSchool } from "@utils/mapRangeUtils";
+import {
+  useCategoryLocationsQuery,
+  useCheckShareStatusQuery,
+  useLocationDetailQuery,
+} from "@/queries";
 
 import styles from "./MapPage.module.css";
 import MapSearchBar from "./components/MapSearchBar/MapSearchBar";
@@ -21,11 +20,9 @@ import KuroomMap from "./components/KuroomMap";
 import MapSearch from "./components/MapSearch/MapSearch";
 import LocationsBottomSheet from "./components/LocationsBottomSheet/LocationsBottomSheet";
 import FocusedLocationBottomSheet from "./components/FocusedLocationBottomSheet/FocusedLocationBottomSheet";
-import { isMyLocationInSchool } from "@utils/mapRangeUtils";
-import { MapSearchResult, MarkerData } from "@/shared/types/mapTypes";
+
 import {
   clearAllMarkers,
-  focusDetailLocationMarker,
   makeFocusMarker,
   makeMarkerIcon,
   renderedMarkers,
@@ -35,20 +32,13 @@ import {
 import SearchResultHeader from "./components/MapSearch/SearchResultHeader";
 import { MapLayoutContext } from "./layout/MapLayout";
 import { getCategoryEnum } from "./utils/category-chip";
+import LocationTrackingButton from "./components/LocationTrackingButton/LocationTrackingButton";
+import LocationShareButton from "./components/LocationShareButton/LocationShareButton";
+import { CATEGORY_CHIPS } from "./constant/MapData";
 
-const includeBottomSheetList = [
-  "건물",
-  "단과대",
-  "K-Cube",
-  "K-Hub",
-  "편의점",
-  "레스티오",
-  "1847",
-  "학생식당",
-  "기숙사",
-  "은행",
-  "우체국",
-];
+const INCLUDE_BOTTOM_SHEET_LIST: string[] = CATEGORY_CHIPS.filter(
+  (chip) => chip.title !== "친구",
+).map((chip) => chip.title);
 
 // TODO: 전체 랭킹 페이지에서 돌아왔을 때 마커 포커스 및 해당 마커를 가운데로 정렬하는 기능 추가 필요
 
@@ -56,7 +46,6 @@ const MapPage = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const {
-    // ================== 상태 ==================
     isTracking,
     visibleBottomSheet,
     isExpandedSheet,
@@ -64,20 +53,16 @@ const MapPage = () => {
     isExpandedFocusedSheet,
     selectedCategoryLocations,
     detailLocationData,
+    detailLocationPlaceId,
     searchMode,
     isInSchool,
     ableToShare,
-    isSharedLocation,
-    locationSharedRefreshKey,
     selectedCategoryTitle,
     selectedCategoryEnum,
     modalState,
-    currentLocation,
-    nearLocation,
     markers,
     markerFlag,
     mapInstanceRef,
-
     setIsTracking,
     setVisibleBottomSheet,
     setIsExpandedSheet,
@@ -85,65 +70,38 @@ const MapPage = () => {
     setIsExpandedFocusedSheet,
     setSelectedCategoryLocations,
     setDetailLocationData,
+    setDetailLocationPlaceId,
     setSearchMode,
     setIsInSchool,
-    // setAbleToShare,
-    setIsSharedLocation,
-    setLocationSharedRefreshKey,
     setSelectedCategoryTitle,
     setSelectedCategoryEnum,
     setModalState,
-    setCurrentLocation,
-    // setNearLocation,
     setMarkers,
     setMarkerFlag,
   } = useOutletContext<MapLayoutContext>();
 
-  // 서버로부터 데이터 fetching ***********************************************
-  // 현재 내 위치 공유 상태 확인 함수
-  const getIsMySharedInfo = async () => {
-    try {
-      const response = await checkIsSharedApi();
-      // console.log("현재 내 위치 공유 상태 : ", response);
-      setIsSharedLocation(response.isActive);
-    } catch (error) {
-      console.error("위치 공유 상태 확인 실패 : ", error);
-    }
-  };
+  const { isSharedLocation, isPendingShareStatus, isErrorShareStatus } =
+    useCheckShareStatusQuery();
 
-  // 현재 위치에 따른 가까운 건물 받아오기
-  // const getNearBuildingToShare = async () => {
-  //   try {
-  //     const response = await getUserShareLocation(
-  //       currentLocation!.latitude,
-  //       currentLocation!.longitude
-  //     );
-  //     // console.log(response);
-  //     setNearLocation(response);
-  //     setAbleToShare(true);
-  //   } catch (error) {
-  //     setAbleToShare(false);
-  //     console.error("가장 가까운 위치 조회 실패 : ", error);
-  //   }
-  // };
+  const { categoryLocations } = useCategoryLocationsQuery(selectedCategoryEnum);
+  const { locationDetailData } = useLocationDetailQuery(detailLocationPlaceId);
 
-  // 친구 제외 카테고리 칩을 눌렀을 때 서버에 카테고리 ENUM 을 이용하여 요청
-  const getCategoryLocations = async (selectedCategory: string) => {
-    try {
-      const locations = await getCategoryLocationsApi(selectedCategory);
-      setSelectedCategoryLocations(locations);
-    } catch (error) {
-      console.error(error);
-      alert("서버 상태 또는 네트워크에 문제가 있습니다.");
-    }
-  };
+  useEffect(() => {
+    if (categoryLocations) setSelectedCategoryLocations(categoryLocations);
+  }, [categoryLocations, setSelectedCategoryLocations]);
+
+  useEffect(() => {
+    if (locationDetailData) setDetailLocationData(locationDetailData);
+  }, [locationDetailData, setDetailLocationData]);
 
   // 이벤트 핸들러 함수 *******************************************************
   const resetSelectSearch = () => {
     setSearchMode(false);
     setDetailLocationData(null);
+    setDetailLocationPlaceId(undefined);
     setSelectedCategoryTitle("");
     setSelectedCategoryEnum("");
+    setSelectedCategoryLocations([]);
     setMarkerFlag(0);
     setMarkers([]);
     setIsExpandedSheet(false);
@@ -152,6 +110,7 @@ const MapPage = () => {
     setVisibleBottomSheet(false);
     setIsExpandedFocusedSheet(false);
     clearAllMarkers();
+    navigate(location.pathname);
   };
 
   const onClickGoBackButton = () => {
@@ -159,39 +118,39 @@ const MapPage = () => {
       setIsExpandedSheet(false);
       setIsExpandedFocusedSheet(false);
     } else if (hasFocusedMarker && selectedCategoryLocations) {
-      // console.log("여기", selectedCategoryLocations);
       setIsTracking(false);
       resetFocusedMarker(setHasFocusedMarker);
       setDetailLocationData(null);
+      setDetailLocationPlaceId(undefined);
     } else {
       resetSelectSearch();
     }
   };
 
-  // 위치 공유 모달에 사용할 가까운 위치 타이틀 받아오기
+  // 위치 공유 관련
   const handleShareLocation = () => {
-    // getNearBuildingToShare();
     if (isSharedLocation) {
       setModalState(true);
     } else {
       navigate("/share-location");
     }
   };
+
   // 시트에서 위치 클릭 시 이동하는 로직
-  const clickToLocationMarker = (location: string) => {
+  const clickBottomSheetToLocationMarker = (location: PlaceData) => {
     if (!isExpandedSheet) return;
     // 다음 frame에 마커 포커스하기
     const target = renderedMarkers.find(
-      ({ marker }) => marker.getTitle() === location
+      ({ marker }) => marker.getTitle() === location.name,
     );
     if (target && mapInstanceRef.current) {
-      setHasFocusedMarker(true);
       makeFocusMarker(
+        location.placeId,
         mapInstanceRef.current,
         target.marker,
         setIsTracking,
         setHasFocusedMarker,
-        setDetailLocationData
+        setDetailLocationPlaceId,
       );
     }
 
@@ -203,23 +162,18 @@ const MapPage = () => {
     setSelectedCategoryTitle(title);
     const name = getCategoryEnum(title);
     if (!name) {
-      return console.error("잘못된 칩 클릭");
+      return null;
     }
     setSelectedCategoryEnum(name);
-    console.log(title);
     setIsTracking(false);
   };
 
   // 검색 결과를 클릭 시에 마커 찍기
   const clickSearchResultToMarker = (searchResult: MapSearchResult) => {
+    setSelectedCategoryLocations([]);
     setSelectedCategoryTitle(searchResult.name);
     const markerIcon = makeMarkerIcon("default");
-    if (
-      mapInstanceRef.current &&
-      setIsTracking &&
-      setHasFocusedMarker &&
-      setDetailLocationData
-    ) {
+    if (mapInstanceRef.current && setIsTracking && setHasFocusedMarker) {
       renderMarkers(
         mapInstanceRef.current,
         [
@@ -234,7 +188,7 @@ const MapPage = () => {
         searchResult.name,
         setIsTracking,
         setHasFocusedMarker,
-        setDetailLocationData
+        setDetailLocationPlaceId,
       );
     }
   };
@@ -246,23 +200,14 @@ const MapPage = () => {
     }
 
     // 현재 내 위치가 학교 내부인지 검증
-    isMyLocationInSchool(setIsInSchool, setCurrentLocation);
+    return isMyLocationInSchool(setIsInSchool);
   }, []);
-
-  // 사이드 이펙트 (useEffect) *********************************************
-  useEffect(() => {
-    // console.log("위치공유 상태는?:", isSharedLocation);
-    // 현재 내 위치 공유 상태 확인
-    getIsMySharedInfo();
-  }, [locationSharedRefreshKey]);
 
   useEffect(() => {
     if (!detailLocationData) {
       setMarkers([]);
       return;
     }
-    setVisibleBottomSheet(true);
-    setHasFocusedMarker(true);
     // 마커 아이콘 반영
     const markerIcon = makeMarkerIcon("default");
     setMarkers([
@@ -282,14 +227,19 @@ const MapPage = () => {
       renderedMarkers.length > 0 &&
       mapInstanceRef.current
     ) {
-      focusDetailLocationMarker(
-        mapInstanceRef.current,
-        detailLocationData,
-        selectedCategoryLocations,
-        setIsTracking,
-        setHasFocusedMarker,
-        setDetailLocationData
+      const target = renderedMarkers.find(
+        ({ marker }) => marker.getTitle() === detailLocationData.name,
       );
+      if (target) {
+        makeFocusMarker(
+          detailLocationData.placeId,
+          mapInstanceRef.current,
+          target.marker,
+          setIsTracking,
+          setHasFocusedMarker,
+          setDetailLocationPlaceId,
+        );
+      }
     }
   }, [renderedMarkers]);
 
@@ -300,7 +250,6 @@ const MapPage = () => {
       return;
     }
 
-    getCategoryLocations(selectedCategoryEnum);
     if (selectedCategoryTitle !== "친구") {
       setVisibleBottomSheet(true);
     }
@@ -312,13 +261,13 @@ const MapPage = () => {
       const placeMarkers: MarkerData[] = selectedCategoryLocations.map(
         (item) => ({
           placeId: item.placeId,
-          markerIcon: item.friends[0].profileURL || DefaultProfileImg,
+          markerIcon: item.friends[0]?.profileUrl || DefaultProfileImg,
           name: item.name,
           latitude: item.latitude,
           longitude: item.longitude,
           isFriendMarker: true,
           numOfFriends: item.friends.length,
-        })
+        }),
       );
       setMarkers(placeMarkers);
       setMarkerFlag((prev) => prev + 1);
@@ -331,22 +280,18 @@ const MapPage = () => {
           name: item.name,
           latitude: item.latitude,
           longitude: item.longitude,
-        })
+        }),
       );
       setMarkers(placeMarkers);
       setMarkerFlag((prev) => prev + 1);
     }
   }, [selectedCategoryLocations]);
 
-  if (isInSchool) {
-    // vercel 배포 오류 해결 위해.
-  }
-
   return (
     <div>
       <KuroomMap
         height={
-          includeBottomSheetList.includes(selectedCategoryTitle) ||
+          INCLUDE_BOTTOM_SHEET_LIST.includes(selectedCategoryTitle) ||
           selectedCategoryTitle === ""
             ? "calc(100vh - 92px)"
             : "100vh"
@@ -358,7 +303,7 @@ const MapPage = () => {
         selectedCategoryTitle={selectedCategoryTitle}
         setIsTracking={setIsTracking}
         setHasFocusedMarker={setHasFocusedMarker}
-        setDetailLocationData={setDetailLocationData}
+        setDetailLocationPlaceId={setDetailLocationPlaceId}
       />
 
       {/* 검색 모드일 때 MapSearch만 덮어씌우기 */}
@@ -404,59 +349,22 @@ const MapPage = () => {
               <MapCategoryChip
                 handleSelectCategoryChip={handleSelectCategoryChip}
               />
-              {/* 내 위치 추적 아이콘 */}
-              <button
-                className={styles.TrackingIcon}
-                onClick={() => setIsTracking(true)}
-              >
-                <img
-                  src={myTrackingIcon}
-                  alt="위치 추적 아이콘"
-                  style={{ filter: isTracking ? "none" : "grayscale(100%)" }}
-                />
-              </button>
-              {/* 학교 내부에서만 보이도록 하기! */}
-              {/* 내 위치 공유 버튼 */}
-              {/* {isInSchool && currentLocation !== null && (
-                <button
-                  className={styles.SharedLocationButton}
-                  onClick={handleShareLocation}
-                >
-                  <img src={shareLocationIcon} alt="위치 공유 아이콘" />
-                  {isSharedLocation ? (
-                    <span className={styles.SharingText}>내 위치 공유 중</span>
-                  ) : (
-                    <span className={styles.SharingText}>내 위치 공유</span>
-                  )}
-                </button>
-              )} */}
-              {/* 현재 위치를 가져온 다음에만 렌더링 되도록 */}
-              {currentLocation !== null &&
-                (isSharedLocation ? (
-                  <button
-                    className={styles.UnsharedLocationButton}
-                    onClick={handleShareLocation}
-                  >
-                    <img
-                      src={unshareLocationIcon}
-                      alt="위치 공유 해제 아이콘"
-                    />
-                    <span>내 위치 공유 중</span>
-                  </button>
-                ) : (
-                  <button
-                    className={styles.SharedLocationButton}
-                    onClick={handleShareLocation}
-                  >
-                    <img src={shareLocationIcon} alt="위치 공유 아이콘" />
-                    <span>내 위치 공유</span>
-                  </button>
-                ))}
+              <LocationTrackingButton
+                isTracking={isTracking}
+                handleTrackingLocation={() => setIsTracking(true)}
+              />
+              <LocationShareButton
+                isSharedLocation={isSharedLocation}
+                isPendingShareStatus={isPendingShareStatus}
+                isErrorShareStatus={isErrorShareStatus}
+                isInSchool={isInSchool}
+                handleShareLocation={handleShareLocation}
+              />
             </>
           )}
         </>
       )}
-      {(includeBottomSheetList.includes(selectedCategoryTitle) ||
+      {(INCLUDE_BOTTOM_SHEET_LIST.includes(selectedCategoryTitle) ||
         selectedCategoryTitle === "") && (
         <>
           <LocationsBottomSheet
@@ -465,7 +373,7 @@ const MapPage = () => {
             isExpandedSheet={isExpandedSheet}
             hasFocusedMarker={hasFocusedMarker}
             setIsExpandedSheet={setIsExpandedSheet}
-            clickToLocationMarker={clickToLocationMarker}
+            clickBottomSheetToLocationMarker={clickBottomSheetToLocationMarker}
           />
           <BottomBar />
         </>
@@ -481,11 +389,7 @@ const MapPage = () => {
         modalState={modalState}
         isSharedLocation={isSharedLocation}
         ableToShare={ableToShare}
-        nearLocation={nearLocation}
         setModalState={setModalState}
-        refreshSharedStatus={() =>
-          setLocationSharedRefreshKey((prev) => prev + 1)
-        }
       />
     </div>
   );

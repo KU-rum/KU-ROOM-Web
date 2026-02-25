@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { Coordinate, DetailPlaceData, MarkerData } from "@/shared/types";
+import { Coordinate, MarkerData } from "@apis/types";
 
 import {
   myLocationTracking,
@@ -20,7 +20,7 @@ interface MapProps {
   draggable?: boolean;
   zoomable?: boolean;
   setHasFocusedMarker?: (value: boolean) => void;
-  setDetailLocationData?: (value: DetailPlaceData | null) => void;
+  setDetailLocationPlaceId?: (value?: number) => void;
   handleCenterChanged?: (coord: Coordinate) => void;
 }
 
@@ -39,7 +39,7 @@ const KuroomMap = ({
   draggable = true,
   zoomable = true,
   setHasFocusedMarker,
-  setDetailLocationData,
+  setDetailLocationPlaceId,
   handleCenterChanged,
 }: MapProps) => {
   // 로컬 상태 ***************************************************************
@@ -127,7 +127,7 @@ const KuroomMap = ({
       setIsTracking &&
       markers &&
       setHasFocusedMarker &&
-      setDetailLocationData
+      setDetailLocationPlaceId
     ) {
       renderMarkers(
         mapInstance.current,
@@ -135,7 +135,7 @@ const KuroomMap = ({
         selectedCategoryTitle!,
         setIsTracking,
         setHasFocusedMarker,
-        setDetailLocationData,
+        setDetailLocationPlaceId,
       );
     }
   }, [markerFlag]);

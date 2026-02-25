@@ -45,6 +45,10 @@
   font-style: normal;
   font-weight: 600;
   line-height: 120%;
+  width: 49px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .ArrowButton {
   padding: 10px 0 10px 15px;
@@ -81,6 +85,12 @@
   gap: 7px;
   justify-content: center;
   align-items: center;
+  width: 49px;
+}
+.ProfileImage {
+  width: 49px;
+  height: 49px;
+  border-radius: 999px;
 }
 .LearnMoreWrapper {
   display: flex;

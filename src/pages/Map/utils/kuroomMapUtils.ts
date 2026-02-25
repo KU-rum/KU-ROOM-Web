@@ -1,5 +1,3 @@
-import { getLocationDetailData } from "@apis/map";
-
 import myMarkerIcon from "@assets/map/mylocationMarker.svg";
 import focusedMarkerIcon from "@assets/map/focusedMarker.png";
 import collegeMarker from "@assets/map/markers/collegeMarker.svg";
@@ -7,12 +5,13 @@ import buildingMarker from "@assets/map/markers/buildingMarker.svg";
 import kcubekhubMarker from "@assets/map/markers/kcubekhubMarker.svg";
 import storeMarker from "@assets/map/markers/storeMarker.svg";
 import cafeMarker from "@assets/map/markers/cafeMarker.svg";
+import copyRoomMarker from "@assets/map/markers/copyRoomMarker.svg";
 import restaurantMarker from "@assets/map/markers/restaurantMarker.svg";
 import dormitoryMarker from "@assets/map/markers/dormitoryMarker.svg";
 import bankMarker from "@assets/map/markers/bankMarker.svg";
 import postMarker from "@assets/map/markers/postMarker.svg";
 import defaultMarker from "@assets/map/defaultMarkerIcon.svg";
-import { DetailPlaceData, MarkerData, PlaceData } from "@/shared/types";
+import { MarkerData } from "@apis/types";
 
 interface KuroomMarker {
   marker: naver.maps.Marker;
@@ -38,10 +37,10 @@ export const makeMarkerIcon = (category: string): string => {
       return kcubekhubMarker;
     case "편의점":
       return storeMarker;
-    case "레스티오":
+    case "카페":
       return cafeMarker;
-    case "1847":
-      return cafeMarker;
+    case "복사실":
+      return copyRoomMarker;
     case "학생식당":
       return restaurantMarker;
     case "기숙사":
@@ -60,7 +59,7 @@ export function renderMarkers(
   selectedCategoryTitle: string,
   setIsTracking: (value: boolean) => void,
   setHasFocusedMarker: (value: boolean) => void,
-  setDetailLocationData: (value: DetailPlaceData) => void
+  setDetailLocationPlaceId: (value?: number) => void,
 ): void {
   // 기존 마커 제거
   renderedMarkers.forEach(({ marker }) => marker.setMap(null));
@@ -97,10 +96,10 @@ export function renderMarkers(
             width: 50px;
             height: 50px;
             border: 3px solid #fff;
-            border-radius: 50px;
+            border-radius: 999px;
             box-shadow: 0 0 4px rgba(0,0,0,0.25);
           ">
-            <img src="${markerIcon}" alt="friend" style="width: 100%; height: 100%; object-fit: cover;" />
+            <img src="${markerIcon}" alt="friend" style="width: 100%; height: 100%; object-fit: cover; border-radius: 999px;" />
             <div style="
               position: absolute; top: -10px; right: -10px; display: flex; 
               width: 25px; height: 25px; justify-content: center;
@@ -121,12 +120,13 @@ export function renderMarkers(
 
       window.naver.maps.Event.addListener(marker, "click", () => {
         makeFocusMarker(
+          placeId,
           map,
           marker,
           setIsTracking,
           setHasFocusedMarker,
-          setDetailLocationData,
-          isFriendMarker
+          setDetailLocationPlaceId,
+          isFriendMarker,
         );
       });
 
@@ -137,7 +137,7 @@ export function renderMarkers(
         isFriendMarker,
         numOfFriends,
       });
-    }
+    },
   );
 
   // 마커가 하나뿐일 경우 자동 포커스 처리
@@ -145,11 +145,12 @@ export function renderMarkers(
     // 강제로 delay를 주어 렌더링이 보장된 후 중심 이동되게 함.
     setTimeout(() => {
       makeFocusMarker(
+        markers[0].placeId,
         map,
         renderedMarkers[0].marker,
         setIsTracking,
         setHasFocusedMarker,
-        setDetailLocationData
+        setDetailLocationPlaceId,
       );
     }, 10);
   }
@@ -174,32 +175,26 @@ export function renderMarkers(
 
 // 특정 마커 포커스
 async function makeFocusMarker(
+  placeId: number,
   map: naver.maps.Map,
   marker: naver.maps.Marker,
   setIsTracking: (value: boolean) => void,
   setHasFocusedMarker: (value: boolean) => void,
-  setDetailLocationData: (value: DetailPlaceData) => void,
-  isFriendMarker?: boolean
+  setDetailLocationPlaceId: (value?: number) => void,
+  isFriendMarker?: boolean,
 ) {
   const position = marker.getPosition() as naver.maps.LatLng;
   // 위치를 아래로 조금 내리기 위해 위도를 조정
   const adjustedPosition = new naver.maps.LatLng(
     position.lat() - 0.001,
-    position.lng()
+    position.lng(),
   );
 
   map.setCenter(adjustedPosition);
   map.setZoom(17);
   setIsTracking(false);
 
-  const placeId = (marker as any).placeId;
-
-  try {
-    const response = await getLocationDetailData(placeId);
-    setDetailLocationData(response);
-  } catch (error) {
-    console.error("디테일 위치 정보 가져오기 mapUtils에서 오류 : ", error);
-  }
+  setDetailLocationPlaceId(placeId);
 
   focusedMarker = marker; // 현재 포커스 마커 기억
   setHasFocusedMarker(true); // 포커스 되었음을 알림
@@ -251,7 +246,7 @@ async function makeFocusMarker(
               border-radius: 50px;
               box-shadow: 0 0 4px rgba(0,0,0,0.25);
             ">
-              <img src="${originalIcon}" alt="friend" style="width: 100%; height: 100%; object-fit: cover;" />
+              <img src="${originalIcon}" alt="friend" style="width: 100%; height: 100%; object-fit: cover; border-radius: 999px;" />
               <div style="
                 position: absolute; top: -10px; right: -10px; display: flex; 
                 width: 25px; height: 25px; justify-content: center;
@@ -265,62 +260,17 @@ async function makeFocusMarker(
           m.setIcon({ url: originalIcon });
         }
       }
-    }
+    },
   );
-}
-
-/**
- * detailLocationData가 있다면 selectedCategoryLocations에서
- * 해당 마커를 찾아 포커스하고 지도 중심을 해당 마커로 이동시키는 함수
- */
-export function focusDetailLocationMarker(
-  map: naver.maps.Map,
-  detailLocationData: DetailPlaceData | null,
-  selectedCategoryLocations: PlaceData[],
-  setIsTracking: (value: boolean) => void,
-  setHasFocusedMarker: (value: boolean) => void,
-  setDetailLocationData: (value: DetailPlaceData) => void
-) {
-  if (!map || !detailLocationData) return;
-
-  // renderedMarkers에서 detailLocationData.name과 같은 마커 찾기
-  const target = renderedMarkers.find(
-    ({ marker }) => marker.getTitle() === detailLocationData.name
-  );
-
-  if (target) {
-    makeFocusMarker(
-      map,
-      target.marker,
-      setIsTracking,
-      setHasFocusedMarker,
-      setDetailLocationData,
-      target.isFriendMarker
-    );
-  } else {
-    // 아직 렌더링된 마커가 없을 경우 (예: selectedCategoryLocations만 있는 경우)
-    const candidate = selectedCategoryLocations.find(
-      (place) => place.name === detailLocationData.name
-    );
-
-    if (candidate) {
-      const position = new window.naver.maps.LatLng(
-        candidate.latitude,
-        candidate.longitude
-      );
-      map.setCenter(position);
-      map.setZoom(17);
-    }
-  }
 }
 
 // 포커스된 마커 원래 상태로 되돌리는 함수
 export function resetFocusedMarker(
-  setHasFocusedMarker: (value: boolean) => void
+  setHasFocusedMarker: (value: boolean) => void,
 ) {
   if (focusedMarker) {
     const target = renderedMarkers.find(
-      ({ marker }) => marker === focusedMarker
+      ({ marker }) => marker === focusedMarker,
     );
     if (target) {
       if (target.isFriendMarker) {
@@ -335,7 +285,7 @@ export function resetFocusedMarker(
               box-shadow: 0 0 4px rgba(0,0,0,0.25);
               z-index: 500;
             ">
-              <img src="${target.originalIcon}" alt="friend" style="width: 100%; height: 100%; object-fit: cover;" />
+              <img src="${target.originalIcon}" alt="friend" style="width: 100%; height: 100%; object-fit: cover; border-radius: 999px;" />
               <div style="
                 position: absolute; top: -10px; right: -10px; display: flex; 
                 width: 25px; height: 25px; justify-content: center;
@@ -360,7 +310,7 @@ export function myLocationTracking(
   map: naver.maps.Map,
   setCurrentLatLng: any,
   markerRef: React.MutableRefObject<any>,
-  isTrackingRef: React.MutableRefObject<boolean>
+  isTrackingRef: React.MutableRefObject<boolean>,
 ) {
   const watchId = navigator.geolocation.watchPosition(
     (position) => {
@@ -405,8 +355,8 @@ export function myLocationTracking(
     {
       enableHighAccuracy: true, // 정확도 향상
       maximumAge: 100, // 캐시 X
-      timeout: 10000, // 타임아웃 5초
-    }
+      timeout: 10000, // 타임아웃 10초
+    },
   );
 
   // 언마운트 시 추적 종료
@@ -419,7 +369,7 @@ export function myLocationTracking(
 export function noTracking(
   map: naver.maps.Map,
   setIsTracking: (value: boolean) => void,
-  isTrackingRef: React.MutableRefObject<boolean>
+  isTrackingRef: React.MutableRefObject<boolean>,
 ) {
   const disableTracking = () => {
     setIsTracking(false);

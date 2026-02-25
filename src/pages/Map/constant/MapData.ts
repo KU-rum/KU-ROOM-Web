@@ -3,13 +3,14 @@ import buildingChip from "@assets/map/chips/buildingChip.svg";
 import kcubehubChip from "@assets/map/chips/kcubehubChip.svg";
 import storeChip from "@assets/map/chips/storeChip.svg";
 import cafeChip from "@assets/map/chips/cafeChip.svg";
+import copyRoomChip from "@assets/map/chips/copyRoomChip.svg";
 import restaurantChip from "@assets/map/chips/restaurantChip.svg";
 import collegeChip from "@assets/map/chips/collegeChip.svg";
 import dormitoryChip from "@assets/map/chips/dormitoryChip.svg";
 import bankChip from "@assets/map/chips/bankChip.svg";
 import postChip from "@assets/map/chips/postChip.svg";
 // 카테고리 칩
-const CategoryChips = [
+const CATEGORY_CHIPS = [
   {
     title: "친구",
     icon: friendChip,
@@ -35,12 +36,12 @@ const CategoryChips = [
     icon: storeChip,
   },
   {
-    title: "레스티오",
+    title: "카페",
     icon: cafeChip,
   },
   {
-    title: "1847",
-    icon: cafeChip,
+    title: "복사실",
+    icon: copyRoomChip,
   },
   {
     title: "학생식당",
@@ -58,6 +59,6 @@ const CategoryChips = [
     title: "우체국",
     icon: postChip,
   },
-];
+] as const;
 
-export { CategoryChips };
+export { CATEGORY_CHIPS };

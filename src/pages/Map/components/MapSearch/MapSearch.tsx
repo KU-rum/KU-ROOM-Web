@@ -5,13 +5,11 @@ import arrowBack from "@assets/nav/arrowback.svg";
 import deleteIcon from "@assets/icon/deleteIcon.svg";
 import noResultIcon from "@assets/icon/noResultSearch.svg";
 import kuroomEmptyIcon from "@assets/icon/kuroom-icon/kuroom-gray.svg";
-import { MapSearchResult } from "@/shared/types";
+import { MapSearchResult } from "@apis/types";
 
-import { useSearchLocationQuery } from "../../hooks/use-search-location-query";
-import { useLocationKeyword } from "../../hooks/use-location-keyword";
 import styles from "./MapSearch.module.css";
+import { useMapSearchMutation, useMapSearchQuery } from "@/queries";
 
-// const dummyLocationData = ["레스티오", "1847", "신공학관"];
 interface MapSearchProps {
   setSearchMode: (value: boolean) => void;
   clickSearchResultToMarker: (value: MapSearchResult) => void;
@@ -28,10 +26,10 @@ const MapSearch: React.FC<MapSearchProps> = ({
     isPendingSearch,
     recentLocationKeyword,
     isPendingRecentSearch,
-  } = useSearchLocationQuery(searchText);
+  } = useMapSearchQuery(searchText);
 
-  const { saveLocationKeyword, deleteRecentKeyword, deleteAllRecentKeyword } =
-    useLocationKeyword();
+  const { saveMapSearch, deleteMapRecentSearch, deleteAllMapRecentSearch } =
+    useMapSearchMutation();
 
   const searchFocusRef = useRef<HTMLInputElement>(null);
 
@@ -48,19 +46,19 @@ const MapSearch: React.FC<MapSearchProps> = ({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (searchText.trim() === "") setSearchText("");
     if (e.key === "Enter" && searchText.trim() !== "") {
-      saveLocationKeyword(searchText);
+      saveMapSearch(searchText);
     }
   };
 
   const doAgainRecentSearch = (name: string) => {
     setSearchText(name);
-    saveLocationKeyword(name);
+    saveMapSearch(name);
   };
 
   const handleClickLocation = (location: MapSearchResult) => {
     setSearchMode(false);
     clickSearchResultToMarker(location);
-    saveLocationKeyword(location.name);
+    saveMapSearch(location.name);
   };
 
   return (
@@ -102,7 +100,7 @@ const MapSearch: React.FC<MapSearchProps> = ({
               <span className={styles.RecentSearchTitle}>최근 검색어</span>
               <button
                 className={styles.RecentSearchDelete}
-                onClick={() => deleteAllRecentKeyword()}
+                onClick={() => deleteAllMapRecentSearch()}
               >
                 검색어 기록 전체 삭제
               </button>
@@ -120,7 +118,7 @@ const MapSearch: React.FC<MapSearchProps> = ({
                     alt="검색어 지우기"
                     onClick={(e) => {
                       e.stopPropagation();
-                      deleteRecentKeyword(item.placeHistoryId);
+                      deleteMapRecentSearch(item.placeHistoryId);
                     }}
                     style={{ padding: "2px 5px" }}
                   />

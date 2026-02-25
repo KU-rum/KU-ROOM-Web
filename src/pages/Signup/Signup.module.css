@@ -1,7 +1,7 @@
 .PageWrapper {
   display: flex;
   flex-direction: column;
-  padding: 9px 28px 11px 28px;
+  padding: 0 28px;
   min-height: 100vh;
   max-width: 100%;
   /* align-items: center; */
@@ -15,8 +15,11 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 692px;
-  margin-top: 10px;
+  flex: 1;
+}
+.PageTitle {
+  margin-top: 75px;
+  margin-bottom: 29px;
 }
 .PageTitle,
 .ErrorMsg,
@@ -39,7 +42,7 @@
 .ButtonStyle {
   position: absolute;
   width: 100%;
-  bottom: 0;
+  bottom: 50px;
 }
 .CheckDupBtn,
 .AvailableBtn {

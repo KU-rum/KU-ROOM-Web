@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import TopIcon from "@components/TopIcon";
 import Button from "@components/Button/Button";
+import Header from "@components/Header/Header";
 
 import AgreementLabel from "./components/agreement/AgreementLabel";
 import styles from "./Agreement.module.css";
@@ -45,47 +45,55 @@ const Agreement: React.FC = () => {
     });
   };
 
+  // TODO: 헤더 사용하는 것으로 바꾸기
   return (
-    <div className={styles.PageWrapper}>
-      <div className={styles.MainArea}>
-        <TopIcon />
-        <h1 className={styles.PageTitle}>
-          회원가입을 위한
-          <br />
-          약관에 동의해주세요
-        </h1>
-        <AgreementLabel
-          checked={allAgree}
-          onChange={handleAllAgreeChange}
-          bold={true}
-        >
-          약관 전체동의
-        </AgreementLabel>
-        <div className={styles.Line} />
-        <div style={{ display: "flex", flexDirection: "column", gap: "17px" }}>
-          <AgreementLabel checked={age14} onChange={handleAge14Change}>
-            [필수] 만 14세 이상이며 이용 약관에 동의합니다.
-          </AgreementLabel>
+    <>
+      <Header onlyIcon={true} />
+      <div className={styles.PageWrapper}>
+        <div className={styles.MainArea}>
+          <h1 className={styles.PageTitle}>
+            회원가입을 위한
+            <br />
+            약관에 동의해주세요
+          </h1>
           <AgreementLabel
-            checked={privacyInfo}
-            onChange={handlePrivacyInfoChange}
+            checked={allAgree}
+            onChange={handleAllAgreeChange}
+            bold={true}
           >
-            [필수] 개인정보 처리방침에 동의합니다.
+            약관 전체동의
           </AgreementLabel>
-          <AgreementLabel checked={marketing} onChange={handleMarketingChange}>
-            [선택] 광고 및 마케팅 수신에 동의합니다.
-          </AgreementLabel>
-        </div>
-        <div className={styles.ButtonStyle}>
-          <Button
-            onClick={handleCompleteSignup}
-            disabled={!age14 || !privacyInfo}
+          <div className={styles.Line} />
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "17px" }}
           >
-            프로필 설정하기
-          </Button>
+            <AgreementLabel checked={age14} onChange={handleAge14Change}>
+              [필수] 만 14세 이상이며 이용 약관에 동의합니다.
+            </AgreementLabel>
+            <AgreementLabel
+              checked={privacyInfo}
+              onChange={handlePrivacyInfoChange}
+            >
+              [필수] 개인정보 처리방침에 동의합니다.
+            </AgreementLabel>
+            <AgreementLabel
+              checked={marketing}
+              onChange={handleMarketingChange}
+            >
+              [선택] 광고 및 마케팅 수신에 동의합니다.
+            </AgreementLabel>
+          </div>
+          <div className={styles.ButtonStyle}>
+            <Button
+              onClick={handleCompleteSignup}
+              disabled={!age14 || !privacyInfo}
+            >
+              프로필 설정하기
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

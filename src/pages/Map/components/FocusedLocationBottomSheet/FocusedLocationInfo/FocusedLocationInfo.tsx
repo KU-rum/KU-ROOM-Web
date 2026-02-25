@@ -6,10 +6,11 @@ import Rank1Icon from "@assets/icon/ranking/rank1.png";
 import Rank2Icon from "@assets/icon/ranking/rank2.png";
 import Rank3Icon from "@assets/icon/ranking/rank3.png";
 import ArrowRight from "@assets/nav/arrowRight.svg";
-import { DetailPlaceData } from "@/shared/types";
+import { DetailPlaceData } from "@apis/types";
+import { useLocationTop3RankQuery } from "@/queries";
+import Loading from "@components/Loading/Loading";
 
 import styles from "./FocusedLocationInfo.module.css";
-import { useLocationTopRank } from "@/pages/Map/LocationTotalRank/hooks/use-location-top-rank";
 
 interface FocusedLocationInfo {
   detailInfo: DetailPlaceData;
@@ -24,20 +25,17 @@ const FocusedLocationInfo: React.FC<FocusedLocationInfo> = ({
 }) => {
   const navigate = useNavigate();
 
-  const { top3RankData, isTop3Pending } = useLocationTopRank(
-    detailInfo?.placeId,
+  const { top3RankData, isTop3Pending } = useLocationTop3RankQuery(
+    detailInfo.placeId,
   );
 
   const handleNavigateToTotalRank = () => {
     if (!detailInfo) return;
-    navigate(
-      `/map/location-total-rank/${encodeURIComponent(detailInfo.name)}`,
-      { state: { placeId: detailInfo.placeId } },
-    );
+    navigate(`/map/location-total-rank/${encodeURIComponent(detailInfo.name)}`);
   };
 
   if (isTop3Pending) {
-    return <div>Loading...</div>;
+    return <Loading type="section" sectionHeight={400} />;
   }
 
   return (
@@ -94,7 +92,7 @@ const FocusedLocationInfo: React.FC<FocusedLocationInfo> = ({
                     >
                       <img
                         className={styles.FriendProfileImg}
-                        src={friend.profileURL ?? DefaultProfileImg}
+                        src={friend.profileUrl ?? DefaultProfileImg}
                         alt={friend.nickname}
                       />
                       <span className={styles.FriendNickname}>
