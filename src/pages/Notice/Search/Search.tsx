@@ -64,7 +64,7 @@ const Search = () => {
     const allNotices = [...popularNoticesData, ...searchResult];
     const notice = allNotices.find((n) => n.id === noticeId);
     if (notice?.link) {
-      window.open(notice.link, "_blank");
+      window.open(notice.link, "_blank", "noopener,noreferrer");
     }
   };
 
