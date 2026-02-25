@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { getBookmarksApi, removeBookmarkApi } from "@apis/notice";
+import { getBookmarksApi, removeBookmarkApi, type NoticeResponse } from "@apis/notice";
 import { transformBookmarkToNotice } from "@pages/Notice/Bookmark/utils/bookmarkTransform";
 import { BOOKMARK_QUERY_KEY } from "@/queryKey";
 import useToast from "@hooks/use-toast";
@@ -17,7 +17,7 @@ export const useBookmarksQuery = () => {
     refetch: refetchBookmarks,
   } = useQuery({
     queryKey: BOOKMARK_QUERY_KEY.LIST,
-    queryFn: async () => {
+    queryFn: async (): Promise<NoticeResponse[]> => {
       const apiData = await getBookmarksApi();
       return transformBookmarkToNotice(apiData);
     },

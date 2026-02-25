@@ -15,6 +15,7 @@ import {
   getNoticeOthersApi,
   addBookmarkApi,
   removeBookmarkApi,
+  type NoticeResponse,
 } from "@apis/notice";
 import { decodeBase64ToUTF8 } from "@/shared/utils/base64";
 import { getCategoryId } from "@constant/categoryMapping";
@@ -60,7 +61,7 @@ export const useNoticeDetailQuery = (
     error: noticeDetailError,
   } = useQuery({
     queryKey: NOTICE_QUERY_KEY.DETAIL(id),
-    queryFn: async () => {
+    queryFn: async (): Promise<NoticeResponse> => {
       const detailData = await getNoticeDetailApi(id!);
       const decodedContent = decodeBase64ToUTF8(detailData.content);
 
@@ -160,7 +161,7 @@ export const usePopularNoticesQuery = () => {
     isError: isErrorPopularNotices,
   } = useQuery({
     queryKey: NOTICE_QUERY_KEY.POPULAR,
-    queryFn: async () => {
+    queryFn: async (): Promise<NoticeResponse[]> => {
       const response = await getPopularNoticesApi();
       return response.data;
     },
@@ -187,7 +188,7 @@ export const usePrimaryNoticesQuery = () => {
     isError: isErrorPrimaryNotices,
   } = useQuery({
     queryKey: NOTICE_QUERY_KEY.PRIMARY,
-    queryFn: async () => {
+    queryFn: async (): Promise<NoticeResponse[]> => {
       const response = await getPrimaryNoticesApi();
       return response.data;
     },
