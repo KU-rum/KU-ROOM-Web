@@ -60,7 +60,7 @@ export const useNoticeDetailQuery = (
     isError: isErrorNoticeDetail,
     error: noticeDetailError,
   } = useQuery({
-    queryKey: NOTICE_QUERY_KEY.DETAIL(id),
+    queryKey: NOTICE_QUERY_KEY.DETAIL(id, category),
     queryFn: async (): Promise<NoticeResponse> => {
       const detailData = await getNoticeDetailApi(id!);
       const decodedContent = decodeBase64ToUTF8(detailData.content);
@@ -113,7 +113,7 @@ export const useNoticeDetailQuery = (
 };
 
 // 북마크 토글 (공지사항 상세에서 사용)
-export const useNoticeBookmarkMutation = (id: string | undefined) => {
+export const useNoticeBookmarkMutation = (id: string | undefined, category: string | undefined) => {
   const toast = useToast();
   const qc = useQueryClient();
 
@@ -137,7 +137,7 @@ export const useNoticeBookmarkMutation = (id: string | undefined) => {
     },
     onSuccess: (result) => {
       // 상세 캐시 업데이트 (재요청 없이 즉시 반영)
-      qc.setQueryData(NOTICE_QUERY_KEY.DETAIL(id), (prev: any) =>
+      qc.setQueryData(NOTICE_QUERY_KEY.DETAIL(id, category), (prev: any) =>
         prev ? { ...prev, ...result } : prev,
       );
       // 북마크 목록 캐시 무효화

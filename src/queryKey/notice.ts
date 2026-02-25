@@ -1,6 +1,6 @@
 export const NOTICE_QUERY_KEY = {
   LIST: (categoryId: string) => ["notices", "list", categoryId],
-  DETAIL: (id: string | undefined) => ["notices", "detail", id],
+  DETAIL: (id: string | undefined, category?: string) => ["notices", "detail", id, category],
   POPULAR: ["notices", "popular"],
   PRIMARY: ["notices", "primary"],
   OTHERS: ["notices", "others"],
