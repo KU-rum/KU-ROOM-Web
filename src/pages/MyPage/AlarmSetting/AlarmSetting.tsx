@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 
 import useToast from "@hooks/use-toast";
-import { getKeywords, registerKeyword } from "@apis/search";
+import { getKeywordsApi, registerKeywordApi } from "@apis/notice";
 import Header from "@components/Header/Header";
 import Loading from "@components/Loading/Loading";
 
@@ -31,8 +31,8 @@ const AlarmSetting = () => {
       hasLoadedKeywords.current = true;
 
       try {
-        const keywordList = await getKeywords();
-        setKeywords(keywordList.map((keyword) => ({ keyword })));
+        const keywordList = await getKeywordsApi();
+        setKeywords(keywordList.map((keyword: string) => ({ keyword })));
       } catch (error) {
         console.error("키워드 조회 실패:", error);
       }
@@ -47,7 +47,7 @@ const AlarmSetting = () => {
 
   const handleDeleteKeyword = async (target: string) => {
     try {
-      await registerKeyword(target);
+      await registerKeywordApi(target);
       setKeywords((prev) => prev.filter((k) => k.keyword !== target));
       toast.info("키워드가 삭제되었어요");
     } catch (error) {

@@ -17,8 +17,7 @@ const Notice = () => {
       : NOTICE_CONFIG.DEFAULT_TAB;
   });
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const { notices, loading, hasMore, loadNoticesByCategory, loadMoreNotices } =
-    useNotices();
+  const { notices, loading, hasMore, loadMoreNotices } = useNotices(activeTab);
   const { tabsRef, indicatorStyle } = useTabIndicator(activeTab, NOTICE_TABS);
   const { loadMoreRef } = useInfiniteScroll({
     onLoadMore: loadMoreNotices,
@@ -31,9 +30,7 @@ const Notice = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = 0;
     }
-    loadNoticesByCategory(activeTab);
     localStorage.setItem(NOTICE_CONFIG.LAST_TAB_STORAGE_KEY, activeTab);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   return (

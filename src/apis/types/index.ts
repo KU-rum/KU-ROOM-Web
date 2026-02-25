@@ -90,3 +90,30 @@ export type {
   MapRecentSearchData,
   MapRecentSearchResponse,
 } from "./map";
+
+export type {
+  NoticeResponse,
+  PageableSort,
+  Pageable,
+  NoticeListResponse,
+  NoticeListParams,
+  NoticeDetailData,
+  NoticeDetailApiResponse,
+  NoticeListApiResponse,
+  DepartmentUrlData,
+  NoticeOthersResponse,
+} from "./notice";
+
+export type {
+  BookmarkResponse,
+  BookmarkListApiResponse,
+  AddBookmarkData,
+  AddBookmarkApiResponse,
+} from "./bookmark";
+
+export type {
+  SearchNoticesParams,
+  KeywordListApiResponse,
+  RecentSearch,
+  RecentSearchListApiResponse,
+} from "./search";

@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
 import Header from "@components/Header/Header";
-import useToast from "@/shared/hooks/use-toast";
 
 import { SearchInput } from "./Components/SearchInput";
 import { SearchHistory } from "./Components/SearchHistory";
@@ -12,189 +11,64 @@ import { NotificationBadge } from "./Components/NotificationBadge";
 import { LoadingState } from "../components/NoticeList/components/LoadingState/LoadingState";
 import { EmptyState } from "../components/NoticeList/components/EmptyState/EmptyState";
 import {
-  registerKeyword,
-  getKeywords,
-  searchNotices,
-  getRecentSearches,
-  deleteRecentSearch,
-  deleteAllRecentSearches,
-  saveRecentSearch,
-  type RecentSearch,
-} from "../../../apis/search";
-import { getPopularNotices, getPrimaryNotices } from "../../../apis/notice";
-import type { NoticeResponse } from "@apis/notice";
+  usePopularNoticesQuery,
+  useSearchNoticesQuery,
+  useRecentSearchesQuery,
+  useKeywordsQuery,
+  useRecentSearchMutation,
+  useKeywordMutation,
+} from "@/queries";
 import styles from "./Search.module.css";
 
-const Search: React.FC = () => {
-  const toast = useToast();
+const Search = () => {
   const [searchText, setSearchText] = useState("");
-  const [popularNotices, setPopularNotices] = useState<NoticeResponse[]>([]);
-  const [primaryNotices, setPrimaryNotices] = useState<NoticeResponse[]>([]);
-  const [filteredNotices, setFilteredNotices] = useState<NoticeResponse[]>([]);
-  const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
-  const [subscribedKeywords, setSubscribedKeywords] = useState<string[]>([]);
-  const [isLoadingPopular, setIsLoadingPopular] = useState(false);
-  const [isLoadingPrimary, setIsLoadingPrimary] = useState(false);
-  const [isLoadingSearch, setIsLoadingSearch] = useState(false);
-  const hasLoadedData = useRef(false);
 
-  useEffect(() => {
-    const loadData = async () => {
-      if (hasLoadedData.current) return;
-      hasLoadedData.current = true;
+  // 데이터 조회 쿼리
+  const { popularNoticesData = [], isPendingPopularNotices } =
+    usePopularNoticesQuery();
+  const { searchResult, isPendingSearch } =
+    useSearchNoticesQuery(searchText);
+  const { recentSearchesData = [] } = useRecentSearchesQuery();
+  const { keywordsData = [] } = useKeywordsQuery();
 
-      try {
-        // 키워드 조회
-        const keywords = await getKeywords();
-        setSubscribedKeywords(keywords);
-
-        // 최근 검색어 조회
-        try {
-          const searches = await getRecentSearches(20);
-          setRecentSearches(searches);
-        } catch (error) {
-          console.error("최근 검색어 조회 실패:", error);
-        }
-
-        // 북마크 기준 인기 공지사항 조회
-        setIsLoadingPopular(true);
-        try {
-          const popular = await getPopularNotices();
-          setPopularNotices(popular);
-        } catch (error) {
-          console.error("인기 공지사항 조회 실패:", error);
-          toast.error("인기 공지를 불러오지 못했어요");
-        } finally {
-          setIsLoadingPopular(false);
-        }
-
-        // 주요 공지사항 조회
-        setIsLoadingPrimary(true);
-        try {
-          const primary = await getPrimaryNotices();
-          setPrimaryNotices(primary);
-        } catch (error) {
-          console.error("주요 공지사항 조회 실패:", error);
-          toast.error("주요 공지를 불러오지 못했어요");
-        } finally {
-          setIsLoadingPrimary(false);
-        }
-      } catch (error) {
-        console.error("데이터 로드 실패:", error);
-      }
-    };
-
-    loadData();
-  }, [toast]);
-
-  useEffect(() => {
-    if (!searchText) {
-      setFilteredNotices([]);
-      return;
-    }
-
-    const debounceTimer = setTimeout(async () => {
-      setIsLoadingSearch(true);
-      try {
-        const response = await searchNotices({ keyword: searchText });
-        setFilteredNotices(response.content);
-      } catch (error) {
-        console.error("검색 실패:", error);
-        toast.error("검색에 실패했어요");
-        setFilteredNotices([]);
-      } finally {
-        setIsLoadingSearch(false);
-      }
-    }, 500);
-
-    return () => clearTimeout(debounceTimer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchText]);
+  // 뮤테이션
+  const { saveSearch, deleteSearch, deleteAllSearches } =
+    useRecentSearchMutation();
+  const { toggleKeyword } = useKeywordMutation();
 
   const handleTagClick = (tag: string) => {
     setSearchText(tag);
+    saveSearch(tag);
   };
 
-  const handleRemoveSearchTerm = async (term: string) => {
-    const searchToDelete = recentSearches.find((search) => search.keyword === term);
-    if (!searchToDelete) return;
-
-    try {
-      await deleteRecentSearch(searchToDelete.id);
-      setRecentSearches((prev) => prev.filter((search) => search.keyword !== term));
-    } catch (error) {
-      console.error("최근 검색어 삭제 실패:", error);
-      toast.error("검색어 삭제에 실패했어요");
+  const handleRemoveSearchTerm = (term: string) => {
+    const target = recentSearchesData.find((s) => s.keyword === term);
+    if (target) {
+      deleteSearch(target.id);
     }
   };
 
   const handleSelectSearchTerm = (term: string) => {
     setSearchText(term);
+    saveSearch(term);
   };
 
-  const handleSearch = async (text: string) => {
+  const handleSearch = (text: string) => {
     setSearchText(text);
-
-    if (text) {
-      try {
-        await saveRecentSearch(text);
-        const searches = await getRecentSearches(20);
-        setRecentSearches(searches);
-      } catch (error) {
-        console.error("최근 검색어 저장 실패:", error);
-      }
+    if (text.trim()) {
+      saveSearch(text);
     }
   };
 
   const navigateToNoticeDetail = (noticeId: number) => {
-    const allNotices = [
-      ...popularNotices,
-      ...primaryNotices,
-      ...filteredNotices,
-    ];
+    const allNotices = [...popularNoticesData, ...searchResult];
     const notice = allNotices.find((n) => n.id === noticeId);
     if (notice?.link) {
-      window.open(notice.link, "_blank");
+      window.open(notice.link, "_blank", "noopener,noreferrer");
     }
   };
 
-  const handleToggleNotification = async (keyword: string) => {
-    try {
-      const response = await registerKeyword(keyword);
-
-      if (response.code === 200) {
-        const isRemoving = subscribedKeywords.includes(keyword);
-
-        setSubscribedKeywords((prev) => {
-          if (prev.includes(keyword)) {
-            return prev.filter((k) => k !== keyword);
-          }
-          return [...prev, keyword];
-        });
-
-        if (isRemoving) {
-          toast.info("키워드 알림이 해제되었어요");
-        } else {
-          toast.info("키워드 알림이 등록되었어요");
-        }
-      }
-    } catch (error) {
-      console.error("키워드 등록/해제 실패:", error);
-      toast.error("키워드 설정에 실패했어요");
-    }
-  };
-
-  const handleClearHistory = async () => {
-    try {
-      await deleteAllRecentSearches();
-      setRecentSearches([]);
-    } catch (error) {
-      console.error("최근 검색어 전체 삭제 실패:", error);
-      toast.error("검색어 삭제에 실패했어요");
-    }
-  };
-
-  const isSearching = searchText.length > 0;
+  const isSearching = searchText.trim().length > 0;
 
   return (
     <div className={styles.container}>
@@ -209,10 +83,10 @@ const Search: React.FC = () => {
       {!isSearching ? (
         <>
           <SearchHistory
-            searchTerms={recentSearches.map((search) => search.keyword)}
+            searchTerms={recentSearchesData.map((s) => s.keyword)}
             onRemoveTerm={handleRemoveSearchTerm}
             onSelectTerm={handleSelectSearchTerm}
-            onClearHistory={handleClearHistory}
+            onClearHistory={deleteAllSearches}
           />
 
           <h2 className={styles.sectionTitle}>추천 검색어</h2>
@@ -230,45 +104,32 @@ const Search: React.FC = () => {
           />
 
           <h2 className={styles.sectionTitle}>인기 공지</h2>
-          {isLoadingPopular ? (
+          {isPendingPopularNotices ? (
             <LoadingState />
-          ) : popularNotices.length === 0 ? (
+          ) : popularNoticesData.length === 0 ? (
             <EmptyState message="인기 공지가 없어요" />
           ) : (
             <NoticeList
-              notices={popularNotices}
+              notices={popularNoticesData}
               onItemClick={(noticeId: number) =>
                 navigateToNoticeDetail(noticeId)
               }
             />
           )}
 
-          <h2 className={styles.sectionTitle}>주요 공지</h2>
-          {isLoadingPrimary ? (
-            <LoadingState />
-          ) : primaryNotices.length === 0 ? (
-            <EmptyState message="주요 공지가 없어요" />
-          ) : (
-            <NoticeList
-              notices={primaryNotices}
-              onItemClick={(noticeId: number) =>
-                navigateToNoticeDetail(noticeId)
-              }
-            />
-          )}
-          <div className={styles.bottomSpacer} />
+<div className={styles.bottomSpacer} />
         </>
       ) : (
         <>
           <NotificationBadge
             keyword={searchText}
-            isSubscribed={subscribedKeywords.includes(searchText)}
-            onToggle={() => handleToggleNotification(searchText)}
+            isSubscribed={keywordsData.includes(searchText)}
+            onToggle={() => toggleKeyword(searchText)}
           />
           <SearchResult
-            filteredNotices={filteredNotices}
+            filteredNotices={searchResult}
             onItemClick={navigateToNoticeDetail}
-            isLoading={isLoadingSearch}
+            isLoading={isPendingSearch}
           />
         </>
       )}
