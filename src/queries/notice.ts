@@ -127,7 +127,7 @@ export const useNoticeBookmarkMutation = (id: string | undefined, category: stri
       bookmarkId?: number;
       noticeId: number;
     }) => {
-      if (isBookMarked && bookmarkId) {
+      if (isBookMarked && bookmarkId !== undefined) {
         await removeBookmarkApi(bookmarkId);
         return { isBookMarked: false, bookmarkId: undefined };
       } else {
