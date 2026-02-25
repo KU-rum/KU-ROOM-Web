@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 import Header from "@components/Header/Header";
@@ -21,13 +22,13 @@ import {
 import styles from "./Search.module.css";
 
 const Search = () => {
+  const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
 
   // 데이터 조회 쿼리
   const { popularNoticesData = [], isPendingPopularNotices } =
     usePopularNoticesQuery();
-  const { searchResult, isPendingSearch } =
-    useSearchNoticesQuery(searchText);
+  const { searchResult, isPendingSearch } = useSearchNoticesQuery(searchText);
   const { recentSearchesData = [] } = useRecentSearchesQuery();
   const { keywordsData = [] } = useKeywordsQuery();
 
@@ -63,8 +64,8 @@ const Search = () => {
   const navigateToNoticeDetail = (noticeId: number) => {
     const allNotices = [...popularNoticesData, ...searchResult];
     const notice = allNotices.find((n) => n.id === noticeId);
-    if (notice?.link) {
-      window.open(notice.link, "_blank", "noopener,noreferrer");
+    if (notice) {
+      navigate(`/notice/${notice.categoryName}/${notice.id}`);
     }
   };
 
@@ -117,7 +118,7 @@ const Search = () => {
             />
           )}
 
-<div className={styles.bottomSpacer} />
+          <div className={styles.bottomSpacer} />
         </>
       ) : (
         <>

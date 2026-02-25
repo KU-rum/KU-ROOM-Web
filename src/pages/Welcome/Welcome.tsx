@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import fanfareIcon from "@assets/icon/firecracker.png";
+import fanfareIcon from "@assets/icon/회원가입완료.gif";
 import Button from "@components/Button/Button";
 
 import styles from "./Welcome.module.css";
