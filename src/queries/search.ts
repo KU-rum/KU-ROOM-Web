@@ -18,15 +18,16 @@ import useToast from "@hooks/use-toast";
 export const useSearchNoticesQuery = (keyword: string) => {
   const toast = useToast();
   const debouncedKeyword = useDebounce(keyword, 500);
+  const trimmedKeyword = debouncedKeyword.trim();
 
   const {
     data: searchData,
     isPending: isPendingSearch,
     isError: isErrorSearch,
   } = useQuery({
-    queryKey: SEARCH_QUERY_KEY.RESULTS(debouncedKeyword),
-    queryFn: () => searchNoticesApi({ keyword: debouncedKeyword }),
-    enabled: !!debouncedKeyword.trim(),
+    queryKey: SEARCH_QUERY_KEY.RESULTS(trimmedKeyword),
+    queryFn: () => searchNoticesApi({ keyword: trimmedKeyword }),
+    enabled: !!trimmedKeyword,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
   });
@@ -41,7 +42,7 @@ export const useSearchNoticesQuery = (keyword: string) => {
 
   return {
     searchResult,
-    isPendingSearch: isPendingSearch && !!debouncedKeyword.trim(),
+    isPendingSearch: isPendingSearch && !!trimmedKeyword,
     isErrorSearch,
   };
 };
