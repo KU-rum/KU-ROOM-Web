@@ -12,7 +12,6 @@ import { LoadingState } from "../components/NoticeList/components/LoadingState/L
 import { EmptyState } from "../components/NoticeList/components/EmptyState/EmptyState";
 import {
   usePopularNoticesQuery,
-  usePrimaryNoticesQuery,
   useSearchNoticesQuery,
   useRecentSearchesQuery,
   useKeywordsQuery,
@@ -27,8 +26,6 @@ const Search = () => {
   // 데이터 조회 쿼리
   const { popularNoticesData = [], isPendingPopularNotices } =
     usePopularNoticesQuery();
-  const { primaryNoticesData = [], isPendingPrimaryNotices } =
-    usePrimaryNoticesQuery();
   const { searchResult, isPendingSearch } =
     useSearchNoticesQuery(searchText);
   const { recentSearchesData = [] } = useRecentSearchesQuery();
@@ -62,7 +59,7 @@ const Search = () => {
   };
 
   const navigateToNoticeDetail = (noticeId: number) => {
-    const allNotices = [...popularNoticesData, ...primaryNoticesData, ...searchResult];
+    const allNotices = [...popularNoticesData, ...searchResult];
     const notice = allNotices.find((n) => n.id === noticeId);
     if (notice?.link) {
       window.open(notice.link, "_blank");
@@ -118,20 +115,7 @@ const Search = () => {
             />
           )}
 
-          <h2 className={styles.sectionTitle}>주요 공지</h2>
-          {isPendingPrimaryNotices ? (
-            <LoadingState />
-          ) : primaryNoticesData.length === 0 ? (
-            <EmptyState message="주요 공지가 없어요" />
-          ) : (
-            <NoticeList
-              notices={primaryNoticesData}
-              onItemClick={(noticeId: number) =>
-                navigateToNoticeDetail(noticeId)
-              }
-            />
-          )}
-          <div className={styles.bottomSpacer} />
+<div className={styles.bottomSpacer} />
         </>
       ) : (
         <>
