@@ -116,17 +116,9 @@ export const useKeywordMutation = () => {
 
   const { mutate: toggleKeyword } = useMutation({
     mutationFn: (keyword: string) => registerKeywordApi(keyword),
-    onSuccess: (_, keyword) => {
-      // 현재 캐시 상태를 기준으로 토글 처리
-      qc.setQueryData<string[]>(SEARCH_QUERY_KEY.KEYWORDS, (prev = []) => {
-        const isSubscribed = prev.includes(keyword);
-        if (isSubscribed) {
-          toast.info("키워드 알림이 해제되었어요");
-          return prev.filter((k) => k !== keyword);
-        }
-        toast.info("키워드 알림이 등록되었어요");
-        return [...prev, keyword];
-      });
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: SEARCH_QUERY_KEY.KEYWORDS });
+      toast.info("키워드 설정이 반영되었어요");
     },
     onError: () => {
       toast.error("키워드 설정에 실패했어요");
