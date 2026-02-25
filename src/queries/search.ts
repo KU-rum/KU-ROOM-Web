@@ -9,7 +9,7 @@ import {
   saveRecentSearchApi,
   deleteRecentSearchApi,
   deleteAllRecentSearchesApi,
-} from "@apis/search";
+} from "@apis/notice";
 import useDebounce from "@hooks/use-debounce";
 import { SEARCH_QUERY_KEY } from "@/queryKey";
 import useToast from "@hooks/use-toast";

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 
 import useToast from "@hooks/use-toast";
-import { getKeywordsApi, registerKeywordApi } from "@apis/search";
+import { getKeywordsApi, registerKeywordApi } from "@apis/notice";
 import Header from "@components/Header/Header";
 import Loading from "@components/Loading/Loading";
 

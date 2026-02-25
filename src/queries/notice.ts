@@ -13,8 +13,9 @@ import {
   getPopularNoticesApi,
   getPrimaryNoticesApi,
   getNoticeOthersApi,
+  addBookmarkApi,
+  removeBookmarkApi,
 } from "@apis/notice";
-import { addBookmarkApi, removeBookmarkApi } from "@apis/bookmark";
 import { decodeBase64ToUTF8 } from "@/shared/utils/base64";
 import { getCategoryId } from "@constant/categoryMapping";
 import { NOTICE_QUERY_KEY, BOOKMARK_QUERY_KEY } from "@/queryKey";
