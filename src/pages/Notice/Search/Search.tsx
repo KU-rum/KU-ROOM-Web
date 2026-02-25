@@ -53,7 +53,7 @@ const Search = () => {
 
   const handleSearch = (text: string) => {
     setSearchText(text);
-    if (text) {
+    if (text.trim()) {
       saveSearch(text);
     }
   };
@@ -66,7 +66,7 @@ const Search = () => {
     }
   };
 
-  const isSearching = searchText.length > 0;
+  const isSearching = searchText.trim().length > 0;
 
   return (
     <div className={styles.container}>
