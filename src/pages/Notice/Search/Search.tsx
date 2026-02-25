@@ -38,6 +38,7 @@ const Search = () => {
 
   const handleTagClick = (tag: string) => {
     setSearchText(tag);
+    saveSearch(tag);
   };
 
   const handleRemoveSearchTerm = (term: string) => {
@@ -49,6 +50,7 @@ const Search = () => {
 
   const handleSelectSearchTerm = (term: string) => {
     setSearchText(term);
+    saveSearch(term);
   };
 
   const handleSearch = (text: string) => {
