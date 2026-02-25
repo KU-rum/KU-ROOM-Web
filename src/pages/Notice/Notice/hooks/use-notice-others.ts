@@ -4,7 +4,7 @@ export const useNoticeOthers = () => {
   const { noticeOthersData, isPendingNoticeOthers } = useNoticeOthersQuery();
 
   return {
-    noticeOtehrsData: noticeOthersData,
+    noticeOthersData: noticeOthersData,
     isPending: isPendingNoticeOthers,
   };
 };
