@@ -48,5 +48,8 @@ function linkify(text: string) {
 }
 
 export const usePlaceInfoLink = (info: string) => {
-  return useMemo(() => linkify(info), [info]);
+  return useMemo(() => {
+    if (!info) return [];
+    return linkify(info);
+  }, [info]);
 };
