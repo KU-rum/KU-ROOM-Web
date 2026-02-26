@@ -80,3 +80,5 @@ export {
   useRecentSearchMutation,
   useKeywordMutation,
 } from "./search";
+
+export { useBannersQuery } from "./banner";
