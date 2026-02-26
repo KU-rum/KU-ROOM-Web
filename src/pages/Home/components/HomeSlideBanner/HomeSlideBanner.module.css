@@ -21,10 +21,19 @@
 .BannerImg {
   border-radius: 10px;
   width: 349px;
-  height: auto;
+  height: 171px;
   scroll-snap-align: center; /* 각 이미지를 스냅 포인트로 설정 */
   scroll-snap-stop: always;
   flex-shrink: 0; /* 이미지가 줄어들지 않게 */
+}
+.Skeleton {
+  border-radius: 10px;
+  width: 349px;
+  height: 171px;
+  background-color: #e3e7eb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .DotsWrapper {
   display: flex;
@@ -44,4 +53,13 @@
   width: 22px;
   border-radius: 5px;
   background-color: #009733;
+}
+
+.SkeletonText,
+.ErrorText {
+  color: #b0bac3;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 140%;
 }

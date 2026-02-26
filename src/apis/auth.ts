@@ -1,4 +1,3 @@
-// tanstack query 리팩토링 완료
 // Auth 관련 api
 import axiosInstance from "./axiosInstance";
 import {

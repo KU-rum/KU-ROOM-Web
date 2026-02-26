@@ -1,4 +1,3 @@
-// tanstack query 리팩토링 완료
 // 랭킹 관련 api
 import axiosInstance from "./axiosInstance";
 import { PAGE_SIZE } from "@constant/page";

@@ -117,3 +117,5 @@ export type {
   RecentSearch,
   RecentSearchListApiResponse,
 } from "./search";
+
+export type { Banner, GetBannersResponse } from "./banner";

@@ -1,4 +1,3 @@
-// tanstack query 리팩토링 완료
 // 단과대 및 학과 조회 api
 import axiosInstance from "./axiosInstance";
 import {
