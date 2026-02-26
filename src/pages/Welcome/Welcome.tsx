@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import fanfareIcon from "@assets/icon/회원가입완료.gif";
+import fanfareIcon from "@assets/icon/welcome.gif";
 import Button from "@components/Button/Button";
 
 import styles from "./Welcome.module.css";
@@ -20,7 +20,8 @@ const WelcomePage: React.FC = () => {
         <h1 className={styles["welcome-page-title"]}>
           회원가입을 완료하였습니다.
           <br />
-          <span className={styles["text-primary"]}>쿠룸</span>에 오신 걸 환영합니다.
+          <span className={styles["text-primary"]}>쿠룸</span>에 오신 걸
+          환영합니다.
         </h1>
       </div>
 
