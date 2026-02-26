@@ -86,9 +86,7 @@ const HomeSildeBanner = () => {
 
         {!isPendingBanner && isErrorBanner && (
           <div className={styles.Skeleton}>
-            <span className={styles.ErrorText}>
-              배너를 불러오지 못했어요 😭
-            </span>
+            <span className={styles.ErrorText}>배너를 불러오지 못했어요</span>
           </div>
         )}
 
