@@ -57,19 +57,25 @@ const HomeSildeBanner = () => {
 
   const handleToBannerLink = (bannerLink: string) => {
     if (!bannerLink) return;
-    window.open(bannerLink, "_blank", "noopener,noreferrer");
+    try {
+      const url = new URL(bannerLink);
+      if (!["http:", "https:"].includes(url.protocol)) return;
+      window.open(url.toString(), "_blank", "noopener,noreferrer");
+    } catch {
+      return;
+    }
   };
 
   // 3초 간격 자동 슬라이드
   useEffect(() => {
-    if (!bannerData) return;
+    if (!bannerData?.length) return;
     const interval = setInterval(() => {
       const next = (currentIndex + 1) % bannerData.length;
       handleBannerMove(next);
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [currentIndex, handleBannerMove, bannerData]);
+  }, [currentIndex, handleBannerMove, bannerData?.length]);
 
   return (
     <div className={styles.HomeSlideBannerWrapper}>
