@@ -1,4 +1,3 @@
-// tanstack query 리팩토링 완료
 // 친구 되기 전 유저 관련 api
 
 import axiosInstance from "./axiosInstance";

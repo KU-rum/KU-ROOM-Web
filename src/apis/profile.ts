@@ -1,4 +1,3 @@
-// tanstack query 리팩토링 완료
 // 유저의 프로필과 관련된 api
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
