@@ -9,9 +9,9 @@ import ArrowRight from "@assets/nav/arrowRight.svg";
 import { DetailPlaceData } from "@apis/types";
 import { useLocationTop3RankQuery } from "@/queries";
 import Loading from "@components/Loading/Loading";
+import { usePlaceInfoLink } from "@pages/Map/hooks/usePlaceInfoLink";
 
 import styles from "./FocusedLocationInfo.module.css";
-import { usePlaceInfoLink } from "@/pages/Map/hooks/usePlaceInfoLink";
 
 interface FocusedLocationInfo {
   detailInfo: DetailPlaceData;
