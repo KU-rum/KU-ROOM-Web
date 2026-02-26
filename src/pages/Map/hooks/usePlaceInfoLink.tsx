@@ -3,7 +3,14 @@ import { ReactNode, useMemo } from "react";
 const URL_REGEX = /\bhttps?:\/\/[^\s<>()]+/gi;
 
 function trimTrailingPunct(url: string) {
-  return url.replace(/[)\]}>,.;:"'!?]+$/g, "");
+  let cleaned = url.replace(/[}\]>,.;:"'!?]+$/g, "");
+  while (cleaned.endsWith(")")) {
+    const open = (cleaned.match(/\(/g) ?? []).length;
+    const close = (cleaned.match(/\)/g) ?? []).length;
+    if (close > open) cleaned = cleaned.slice(0, -1);
+    else break;
+  }
+  return cleaned;
 }
 
 function linkify(text: string) {
