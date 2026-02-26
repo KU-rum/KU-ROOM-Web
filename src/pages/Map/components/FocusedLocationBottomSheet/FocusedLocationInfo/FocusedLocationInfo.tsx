@@ -9,6 +9,7 @@ import ArrowRight from "@assets/nav/arrowRight.svg";
 import { DetailPlaceData } from "@apis/types";
 import { useLocationTop3RankQuery } from "@/queries";
 import Loading from "@components/Loading/Loading";
+import { usePlaceInfoLink } from "@pages/Map/hooks/usePlaceInfoLink";
 
 import styles from "./FocusedLocationInfo.module.css";
 
@@ -28,6 +29,8 @@ const FocusedLocationInfo: React.FC<FocusedLocationInfo> = ({
   const { top3RankData, isTop3Pending } = useLocationTop3RankQuery(
     detailInfo.placeId,
   );
+
+  const parsedInfo = usePlaceInfoLink(detailInfo.content);
 
   const handleNavigateToTotalRank = () => {
     if (!detailInfo) return;
@@ -114,7 +117,7 @@ const FocusedLocationInfo: React.FC<FocusedLocationInfo> = ({
                   !isExpandedFocusedSheet ? styles.InfoContentClamp : ""
                 }`}
               >
-                {detailInfo.content}
+                {parsedInfo}
               </span>
             </div>
           </div>
