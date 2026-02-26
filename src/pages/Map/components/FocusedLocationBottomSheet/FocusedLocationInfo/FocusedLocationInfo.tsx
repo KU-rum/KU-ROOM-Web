@@ -111,13 +111,13 @@ const FocusedLocationInfo: React.FC<FocusedLocationInfo> = ({
                 isExpandedFocusedSheet ? styles.InfoWrapperOpen : ""
               }`}
             >
-              <span className={styles.InfoTitle}>정보 테스트</span>
+              <span className={styles.InfoTitle}>정보</span>
               <div
                 className={`${styles.InfoContent} ${
                   !isExpandedFocusedSheet ? styles.InfoContentClamp : ""
                 }`}
               >
-                {parsedInfo}
+                {isExpandedFocusedSheet ? parsedInfo : detailInfo.content}
               </div>
             </div>
           </div>
