@@ -112,13 +112,13 @@ const FocusedLocationInfo: React.FC<FocusedLocationInfo> = ({
               }`}
             >
               <span className={styles.InfoTitle}>정보</span>
-              <span
+              <div
                 className={`${styles.InfoContent} ${
                   !isExpandedFocusedSheet ? styles.InfoContentClamp : ""
                 }`}
               >
                 {parsedInfo}
-              </span>
+              </div>
             </div>
           </div>
         </>
