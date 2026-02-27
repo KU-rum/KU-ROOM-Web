@@ -53,3 +53,17 @@
 .HomeNoticeContent:last-child {
   border-bottom: none;
 }
+
+.ErrorEmptyContainer {
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.ErrorEmptyText {
+  color: #b0bac3;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 140%;
+}

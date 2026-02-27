@@ -11,7 +11,7 @@ import Loading from "@components/Loading/Loading";
 
 import HomeMenu from "./components/HomeMenu/HomeMenu";
 import HomeMiniMap from "./components/HomeMiniMap/HomeMiniMap";
-import HomeSildeBanner from "./components/HomeSlideBanner/HomeSildeBanner";
+import HomeSlideBanner from "./components/HomeSlideBanner/HomeSlideBanner";
 import FriendLocation from "./components/FriendLocation/FriendLocation";
 import HomeRanking from "./components/HomeRanking/HomeRanking";
 import HomeNotice from "./components/HomeNotice/HomeNotice";
@@ -56,7 +56,7 @@ const Home = () => {
         홈
       </Header>
       <div className={styles.HomeContentWrapper}>
-        <HomeSildeBanner />
+        <HomeSlideBanner />
         <HomeMenu />
         <HomeMiniMap
           isSharedLocation={isSharedLocation}
