@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useRef, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import styles from "./HomeSlideBanner.module.css";
 import { useBannersQuery } from "@/queries";
@@ -11,6 +11,13 @@ const HomeSlideBanner = () => {
   const { bannerData, isPendingBanner, isErrorBanner } = useBannersQuery();
 
   const hasBanners = !!bannerData?.length;
+  const bannerVersionKey = useMemo(
+    () =>
+      (bannerData ?? [])
+        .map((banner) => `${banner.bannerId}:${banner.bannerImageUrl}`)
+        .join("|"),
+    [bannerData],
+  );
 
   const currentDeviceWidth = window.innerWidth > 600 ? 600 : window.innerWidth;
 
@@ -79,7 +86,7 @@ const HomeSlideBanner = () => {
 
   useEffect(() => {
     setLoadedBannerIds(new Set());
-  }, [bannerData]);
+  }, [bannerVersionKey]);
 
   useEffect(() => {
     if (!bannerData?.length) return;
@@ -131,6 +138,7 @@ const HomeSlideBanner = () => {
                     src={banner.bannerImageUrl}
                     alt={`배너-${banner.bannerId}`}
                     onLoad={() => handleBannerImageLoad(banner.bannerId)}
+                    onError={() => handleBannerImageLoad(banner.bannerId)}
                     decoding="async"
                   />
                 </button>
