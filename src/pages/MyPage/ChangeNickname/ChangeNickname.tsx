@@ -70,11 +70,11 @@ const ChangeNickname = () => {
           onChange={handleInputNicknameChange}
         />
         {!isNicknameValid && newNickname && (
-          <span className="ErrorMsg">
+          <span className={styles.ErrorMsg}>
             한글 또는 영어 포함 2자 이상 10자 이내로 입력해주세요.
           </span>
         )}
-        {errorMsg && <span className="ErrorMsg">{errorMsg}</span>}
+        {errorMsg && <span className={styles.ErrorMsg}>{errorMsg}</span>}
         <div className={styles.ButtonWrapper}>
           <Button
             onClick={handleChangeNickname}
