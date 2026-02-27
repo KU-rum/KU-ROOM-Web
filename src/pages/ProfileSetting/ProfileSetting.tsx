@@ -214,7 +214,7 @@ const ProfileSetting: React.FC = () => {
               errorMessage="유효하지 않은 학번입니다."
             />
           )}
-          <div className="profile-setting-button">
+          <div className={styles["profile-setting-button"]}>
             <Button onClick={handleSubmit} disabled={!isProfileComplete}>
               다음으로
             </Button>
@@ -232,7 +232,7 @@ const ProfileSetting: React.FC = () => {
           {isPendingCollegesData ? (
             <Loading type="section" sectionHeight={250} />
           ) : (
-            <div className="profile-setting-select-list">
+            <div className={styles["profile-setting-select-list"]}>
               {collegesData &&
                 collegesData.map((item) => (
                   <SelectItem
@@ -257,7 +257,7 @@ const ProfileSetting: React.FC = () => {
           {isPendingDepartmentsData ? (
             <Loading type="section" sectionHeight={250} />
           ) : (
-            <div className="profile-setting-select-list">
+            <div className={styles["profile-setting-select-list"]}>
               {selectedCollege &&
                 departmentsData &&
                 departmentsData.map((item) => (
