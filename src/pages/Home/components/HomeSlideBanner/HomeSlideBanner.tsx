@@ -1,23 +1,16 @@
-﻿import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+﻿import { useCallback, useEffect, useRef, useState } from "react";
 
 import styles from "./HomeSlideBanner.module.css";
 import { useBannersQuery } from "@/queries";
 
 const HomeSlideBanner = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [loadedBannerIds, setLoadedBannerIds] = useState<Set<number>>(new Set());
+  const [loadedBannerUrls, setLoadedBannerUrls] = useState<Set<string>>(new Set());
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const { bannerData, isPendingBanner, isErrorBanner } = useBannersQuery();
 
   const hasBanners = !!bannerData?.length;
-  const bannerVersionKey = useMemo(
-    () =>
-      (bannerData ?? [])
-        .map((banner) => `${banner.bannerId}:${banner.bannerImageUrl}`)
-        .join("|"),
-    [bannerData],
-  );
 
   const currentDeviceWidth = window.innerWidth > 600 ? 600 : window.innerWidth;
 
@@ -74,19 +67,40 @@ const HomeSlideBanner = () => {
     }
   };
 
-  const handleBannerImageLoad = useCallback((bannerId: number) => {
-    setLoadedBannerIds((prev) => {
-      if (prev.has(bannerId)) return prev;
+  const handleBannerImageLoad = useCallback((bannerImageUrl: string) => {
+    setLoadedBannerUrls((prev) => {
+      if (prev.has(bannerImageUrl)) return prev;
 
       const next = new Set(prev);
-      next.add(bannerId);
+      next.add(bannerImageUrl);
       return next;
     });
   }, []);
 
   useEffect(() => {
-    setLoadedBannerIds(new Set());
-  }, [bannerVersionKey]);
+    if (!bannerData?.length) return;
+
+    const preloadImages = bannerData.map((banner) => {
+      const image = new Image();
+      image.src = banner.bannerImageUrl;
+
+      if (image.complete && image.naturalWidth > 0) {
+        handleBannerImageLoad(banner.bannerImageUrl);
+      } else {
+        image.onload = () => handleBannerImageLoad(banner.bannerImageUrl);
+        image.onerror = () => handleBannerImageLoad(banner.bannerImageUrl);
+      }
+
+      return image;
+    });
+
+    return () => {
+      preloadImages.forEach((image) => {
+        image.onload = null;
+        image.onerror = null;
+      });
+    };
+  }, [bannerData, handleBannerImageLoad]);
 
   useEffect(() => {
     if (!bannerData?.length) return;
@@ -121,7 +135,7 @@ const HomeSlideBanner = () => {
         {!isPendingBanner && !isErrorBanner && hasBanners && (
           <>
             {bannerData!.map((banner) => {
-              const isLoaded = loadedBannerIds.has(banner.bannerId);
+              const isLoaded = loadedBannerUrls.has(banner.bannerImageUrl);
 
               return (
                 <button
@@ -137,8 +151,8 @@ const HomeSlideBanner = () => {
                     }`}
                     src={banner.bannerImageUrl}
                     alt={`배너-${banner.bannerId}`}
-                    onLoad={() => handleBannerImageLoad(banner.bannerId)}
-                    onError={() => handleBannerImageLoad(banner.bannerId)}
+                    onLoad={() => handleBannerImageLoad(banner.bannerImageUrl)}
+                    onError={() => handleBannerImageLoad(banner.bannerImageUrl)}
                     decoding="async"
                   />
                 </button>
