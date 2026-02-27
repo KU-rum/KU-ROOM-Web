@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./HomeSlideBanner.module.css";
 import { useBannersQuery } from "@/queries";
 
-const HomeSildeBanner = () => {
+const HomeSlideBanner = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -92,7 +92,7 @@ const HomeSildeBanner = () => {
 
         {!isPendingBanner && isErrorBanner && (
           <div className={styles.Skeleton}>
-            <span className={styles.ErrorText}>배너를 불러오지 못했어요</span>
+            <span className={styles.ErrorText}>배너를 불러오지 못했어요.</span>
           </div>
         )}
 
@@ -143,4 +143,4 @@ const HomeSildeBanner = () => {
   );
 };
 
-export default HomeSildeBanner;
+export default HomeSlideBanner;
