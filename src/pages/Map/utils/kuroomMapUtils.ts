@@ -88,6 +88,32 @@ export function renderMarkers(
         title,
       };
 
+      markerOptions.icon = {
+        content: `
+        <div style="display: flex; flex-direction: column; align-items: center; margin-top:-25px; z-index:10000">
+          <img src="${markerIcon}" width="80" height="80" />
+          <span style="
+            padding: 5px 7px;
+            border-radius: 5px;
+            background: white;
+            box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.25);
+            margin-top: -4px;
+            color: #000;
+            text-align: center;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: normal;
+            white-space: nowrap;
+            word-break: keep-all;         
+            overflow-wrap: normal;   
+            text-align: center;
+          ">
+            ${title}
+          </span>
+        </div>`,
+      };
+
       if (isFriendMarker && numOfFriends !== undefined) {
         markerOptions.icon = {
           content: `
@@ -111,7 +137,28 @@ export function renderMarkers(
         };
       } else {
         markerOptions.icon = {
-          url: markerIcon,
+          content: `
+            <div style="display: flex; flex-direction: column; align-items: center; margin-top:-25px; z-index:10000">
+              <img src="${markerIcon}" width="26" height="26" />
+              <span style="
+                color: #000;
+                text-align: center;
+                font-size: 12px;
+                font-weight: 700;
+                line-height: normal;
+                white-space: nowrap;
+                word-break: keep-all;         
+                overflow-wrap: normal;   
+                text-align: center;
+                text-shadow:
+                  -1px -1px 0 #fff,
+                  1px -1px 0 #fff,
+                  -1px  1px 0 #fff,
+                  1px  1px 0 #fff;
+              ">
+                ${title}
+              </span>
+            </div>`,
         };
       }
 
@@ -257,7 +304,30 @@ async function makeFocusMarker(
             anchor: new naver.maps.Point(20, 20),
           });
         } else {
-          m.setIcon({ url: originalIcon });
+          m.setIcon({
+            content: `
+              <div style="display: flex; flex-direction: column; align-items: center; margin-top:-25px; z-index:10000">
+                <img src="${originalIcon}" width="26" height="26" />
+                <span style="
+                  color: #000;
+                  text-align: center;
+                  font-size: 12px;
+                  font-weight: 700;
+                  line-height: normal;
+                  white-space: nowrap;
+                  word-break: keep-all;         
+                  overflow-wrap: normal;   
+                  text-align: center;
+                  text-shadow:
+                    -1px -1px 0 #fff,
+                    1px -1px 0 #fff,
+                    -1px  1px 0 #fff,
+                    1px  1px 0 #fff;
+                ">
+                  ${m.getTitle()}
+                </span>
+              </div>`,
+          });
         }
       }
     },
