@@ -15,11 +15,21 @@ import {
   getNoticeOthersApi,
   addBookmarkApi,
   removeBookmarkApi,
+  getBookmarksApi,
+  searchNoticesApi,
+  getKeywordsApi,
+  getRecentSearchesApi,
+  registerKeywordApi,
+  saveRecentSearchApi,
+  deleteRecentSearchApi,
+  deleteAllRecentSearchesApi,
   type NoticeResponse,
 } from "@apis/notice";
 import { decodeBase64ToUTF8 } from "@/shared/utils/base64";
 import { getCategoryId } from "@constant/categoryMapping";
-import { NOTICE_QUERY_KEY, BOOKMARK_QUERY_KEY } from "@/queryKey";
+import { transformBookmarkToNotice } from "@pages/Notice/Bookmark/utils/bookmarkTransform";
+import { NOTICE_QUERY_KEY, BOOKMARK_QUERY_KEY, SEARCH_QUERY_KEY } from "@/queryKey";
+import useDebounce from "@hooks/use-debounce";
 import useToast from "@hooks/use-toast";
 
 const NOTICE_PAGE_SIZE = 20;
@@ -227,4 +237,164 @@ export const useNoticeOthersQuery = () => {
   }, [isErrorNoticeOthers, toast]);
 
   return { noticeOthersData, isPendingNoticeOthers, isErrorNoticeOthers };
+};
+
+// 북마크 목록 조회
+export const useBookmarksQuery = () => {
+  const toast = useToast();
+
+  const {
+    data: bookmarksData,
+    isPending: isPendingBookmarks,
+    isError: isErrorBookmarks,
+    refetch: refetchBookmarks,
+  } = useQuery({
+    queryKey: BOOKMARK_QUERY_KEY.LIST,
+    queryFn: async (): Promise<NoticeResponse[]> => {
+      const apiData = await getBookmarksApi();
+      return transformBookmarkToNotice(apiData);
+    },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 15,
+  });
+
+  useEffect(() => {
+    if (isErrorBookmarks) {
+      toast.error("북마크 데이터를 불러오는데 실패했습니다.");
+    }
+  }, [isErrorBookmarks, toast]);
+
+  return { bookmarksData, isPendingBookmarks, isErrorBookmarks, refetchBookmarks };
+};
+
+// 북마크 삭제 (북마크 목록 페이지에서 사용)
+export const useRemoveBookmarkMutation = () => {
+  const toast = useToast();
+  const qc = useQueryClient();
+
+  const { mutate: removeBookmarkItem } = useMutation({
+    mutationFn: (bookmarkId: number) => removeBookmarkApi(bookmarkId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: BOOKMARK_QUERY_KEY.LIST });
+    },
+    onError: () => {
+      toast.error("북마크 삭제에 실패했습니다.");
+    },
+  });
+
+  return { removeBookmarkItem };
+};
+
+// 공지사항 검색 (디바운싱 적용)
+export const useSearchNoticesQuery = (keyword: string) => {
+  const toast = useToast();
+  const debouncedKeyword = useDebounce(keyword, 500);
+  const trimmedKeyword = debouncedKeyword.trim();
+
+  const {
+    data: searchData,
+    isPending: isPendingSearch,
+    isError: isErrorSearch,
+  } = useQuery({
+    queryKey: SEARCH_QUERY_KEY.RESULTS(trimmedKeyword),
+    queryFn: () => searchNoticesApi({ keyword: trimmedKeyword }),
+    enabled: !!trimmedKeyword,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
+  });
+
+  useEffect(() => {
+    if (isErrorSearch) {
+      toast.error("검색에 실패했어요");
+    }
+  }, [isErrorSearch, toast]);
+
+  const searchResult = searchData?.content ?? [];
+
+  return {
+    searchResult,
+    isPendingSearch: isPendingSearch && !!trimmedKeyword,
+    isErrorSearch,
+  };
+};
+
+// 최근 검색어 목록
+export const useRecentSearchesQuery = () => {
+  const { data: recentSearchesData } = useQuery({
+    queryKey: SEARCH_QUERY_KEY.RECENT,
+    queryFn: () => getRecentSearchesApi(20),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+  });
+
+  return { recentSearchesData };
+};
+
+// 키워드 알림 목록
+export const useKeywordsQuery = () => {
+  const { data: keywordsData } = useQuery({
+    queryKey: SEARCH_QUERY_KEY.KEYWORDS,
+    queryFn: () => getKeywordsApi(),
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 30,
+  });
+
+  return { keywordsData };
+};
+
+// 최근 검색어 저장/삭제 뮤테이션
+export const useRecentSearchMutation = () => {
+  const toast = useToast();
+  const qc = useQueryClient();
+
+  const { mutate: saveSearch } = useMutation({
+    mutationFn: (keyword: string) => saveRecentSearchApi(keyword),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: SEARCH_QUERY_KEY.RECENT });
+    },
+    onError: () => {
+      toast.error("검색어 저장에 실패했어요");
+    },
+  });
+
+  const { mutate: deleteSearch } = useMutation({
+    mutationFn: (id: number) => deleteRecentSearchApi(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: SEARCH_QUERY_KEY.RECENT });
+    },
+    onError: () => {
+      toast.error("검색어 삭제에 실패했어요");
+    },
+  });
+
+  const { mutate: deleteAllSearches } = useMutation({
+    mutationFn: () => deleteAllRecentSearchesApi(),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: SEARCH_QUERY_KEY.RECENT });
+    },
+    onError: () => {
+      toast.error("검색어 삭제에 실패했어요");
+    },
+  });
+
+  return { saveSearch, deleteSearch, deleteAllSearches };
+};
+
+// 키워드 알림 토글 뮤테이션
+export const useKeywordMutation = () => {
+  const toast = useToast();
+  const qc = useQueryClient();
+
+  const { mutate: toggleKeyword } = useMutation({
+    mutationFn: (keyword: string) => registerKeywordApi(keyword),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: SEARCH_QUERY_KEY.KEYWORDS });
+      toast.info("키워드 설정이 반영되었어요");
+    },
+    onError: () => {
+      toast.error("키워드 설정에 실패했어요");
+    },
+  });
+
+  return { toggleKeyword };
 };
