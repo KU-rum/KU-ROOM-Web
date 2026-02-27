@@ -123,7 +123,7 @@ export const useNoticeDetailQuery = (
 };
 
 // 북마크 토글 (공지사항 상세에서 사용)
-export const useNoticeBookmarkMutation = (id: string | undefined, category: string | undefined) => {
+export const useNoticeBookmarkMutation = (id: string | undefined) => {
   const toast = useToast();
   const qc = useQueryClient();
 
@@ -146,9 +146,17 @@ export const useNoticeBookmarkMutation = (id: string | undefined, category: stri
       }
     },
     onSuccess: (result) => {
-      // 상세 캐시 업데이트 (재요청 없이 즉시 반영)
-      qc.setQueryData(NOTICE_QUERY_KEY.DETAIL(id, category), (prev: any) =>
-        prev ? { ...prev, ...result } : prev,
+      // 동일 공지의 모든 카테고리 키 캐시에 북마크 상태 즉시 반영
+      // 북마크 페이지(/notice/:id)와 공지 목록(/notice/:category/:id)은 경로가 달라 쿼리 키가 다르게 생성되므로
+      // predicate로 id가 일치하는 모든 detail 캐시를 한 번에 갱신
+      qc.setQueriesData(
+        {
+          predicate: (query) => {
+            const key = query.queryKey as unknown[];
+            return key[0] === "notices" && key[1] === "detail" && key[2] === id;
+          },
+        },
+        (prev: any) => (prev ? { ...prev, ...result } : prev),
       );
       // 북마크 목록 캐시 무효화
       qc.invalidateQueries({ queryKey: BOOKMARK_QUERY_KEY.LIST });

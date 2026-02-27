@@ -5,7 +5,7 @@ export const useNoticeDetail = (
   category: string | undefined,
 ) => {
   const { noticeDetailData, isPendingNoticeDetail, isErrorNoticeDetail } = useNoticeDetailQuery(id, category);
-  const { toggleBookmark } = useNoticeBookmarkMutation(id, category);
+  const { toggleBookmark } = useNoticeBookmarkMutation(id);
 
   const handleBookmarkToggle = () => {
     if (!noticeDetailData) return;
