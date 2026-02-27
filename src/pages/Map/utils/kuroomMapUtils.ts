@@ -88,32 +88,6 @@ export function renderMarkers(
         title,
       };
 
-      markerOptions.icon = {
-        content: `
-        <div style="display: flex; flex-direction: column; align-items: center; margin-top:-25px; z-index:10000">
-          <img src="${markerIcon}" width="80" height="80" />
-          <span style="
-            padding: 5px 7px;
-            border-radius: 5px;
-            background: white;
-            box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.25);
-            margin-top: -4px;
-            color: #000;
-            text-align: center;
-            font-size: 14px;
-            font-style: normal;
-            font-weight: 700;
-            line-height: normal;
-            white-space: nowrap;
-            word-break: keep-all;         
-            overflow-wrap: normal;   
-            text-align: center;
-          ">
-            ${title}
-          </span>
-        </div>`,
-      };
-
       if (isFriendMarker && numOfFriends !== undefined) {
         markerOptions.icon = {
           content: `
@@ -124,6 +98,7 @@ export function renderMarkers(
             border: 3px solid #fff;
             border-radius: 999px;
             box-shadow: 0 0 4px rgba(0,0,0,0.25);
+            transform: translate(-50%, -100%);
           ">
             <img src="${markerIcon}" alt="friend" style="width: 100%; height: 100%; object-fit: cover; border-radius: 999px;" />
             <div style="
@@ -133,12 +108,12 @@ export function renderMarkers(
             ">${numOfFriends}</div>
           </div>
         `,
-          anchor: new naver.maps.Point(20, 20),
         };
       } else {
         markerOptions.icon = {
           content: `
-            <div style="display: flex; flex-direction: column; align-items: center; margin-top:-25px; z-index:10000">
+            <div style="display: flex; flex-direction: column; align-items: center; margin-top:-25px; z-index:10000;
+            transform: translate(-50%, 0);">
               <img src="${markerIcon}" width="26" height="26" />
               <span style="
                 color: #000;
@@ -173,7 +148,6 @@ export function renderMarkers(
           setIsTracking,
           setHasFocusedMarker,
           setDetailLocationPlaceId,
-          isFriendMarker,
         );
       });
 
@@ -228,7 +202,6 @@ async function makeFocusMarker(
   setIsTracking: (value: boolean) => void,
   setHasFocusedMarker: (value: boolean) => void,
   setDetailLocationPlaceId: (value?: number) => void,
-  isFriendMarker?: boolean,
 ) {
   const position = marker.getPosition() as naver.maps.LatLng;
   // 위치를 아래로 조금 내리기 위해 위도를 조정
@@ -249,7 +222,7 @@ async function makeFocusMarker(
   // HTMLIcon으로 스타일링 + 라벨링. 텍스트 스트로크 넣기
   marker.setIcon({
     content: `
-    <div style="display: flex; flex-direction: column; align-items: center; margin-top:-25px; z-index:10000">
+    <div style="display: flex; flex-direction: column; align-items: center; margin-top:-25px; z-index:10000; transform: translate(-50%, -50%);">
       <img src="${focusedMarkerIcon}" width="80" height="80" />
       <span style="
         padding: 5px 7px;
@@ -272,9 +245,6 @@ async function makeFocusMarker(
       </span>
     </div>
   `,
-    anchor: isFriendMarker
-      ? new naver.maps.Point(42, 45)
-      : new naver.maps.Point(15, 45),
   });
 
   marker.setZIndex(1000);
@@ -292,6 +262,7 @@ async function makeFocusMarker(
               border: 3px solid #fff;
               border-radius: 50px;
               box-shadow: 0 0 4px rgba(0,0,0,0.25);
+              transform: translate(-50%, -100%);
             ">
               <img src="${originalIcon}" alt="friend" style="width: 100%; height: 100%; object-fit: cover; border-radius: 999px;" />
               <div style="
@@ -301,12 +272,11 @@ async function makeFocusMarker(
               ">${numOfFriends ?? ""}</div>
             </div>
            `,
-            anchor: new naver.maps.Point(20, 20),
           });
         } else {
           m.setIcon({
             content: `
-              <div style="display: flex; flex-direction: column; align-items: center; margin-top:-25px; z-index:10000">
+              <div style="display: flex; flex-direction: column; align-items: center; margin-top:-25px; z-index:10000; transform: translate(-50%, 0);">
                 <img src="${originalIcon}" width="26" height="26" />
                 <span style="
                   color: #000;
@@ -354,6 +324,7 @@ export function resetFocusedMarker(
               border-radius: 50px;
               box-shadow: 0 0 4px rgba(0,0,0,0.25);
               z-index: 500;
+              transform: translate(-50%, -100%);
             ">
               <img src="${target.originalIcon}" alt="friend" style="width: 100%; height: 100%; object-fit: cover; border-radius: 999px;" />
               <div style="
@@ -363,12 +334,11 @@ export function resetFocusedMarker(
               ">${target.numOfFriends ?? ""}</div>
             </div>
           `,
-          anchor: new naver.maps.Point(20, 20),
         });
       } else {
         focusedMarker.setIcon({
           content: `
-              <div style="display: flex; flex-direction: column; align-items: center; margin-top:-25px; z-index:10000">
+              <div style="display: flex; flex-direction: column; align-items: center; margin-top:-25px; z-index:10000; transform: translate(-50%, 0);">
                 <img src="${target.originalIcon}" width="26" height="26" />
                 <span style="
                   color: #000;
