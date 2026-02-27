@@ -366,7 +366,30 @@ export function resetFocusedMarker(
           anchor: new naver.maps.Point(20, 20),
         });
       } else {
-        focusedMarker.setIcon({ url: target.originalIcon });
+        focusedMarker.setIcon({
+          content: `
+              <div style="display: flex; flex-direction: column; align-items: center; margin-top:-25px; z-index:10000">
+                <img src="${target.originalIcon}" width="26" height="26" />
+                <span style="
+                  color: #000;
+                  text-align: center;
+                  font-size: 12px;
+                  font-weight: 700;
+                  line-height: normal;
+                  white-space: nowrap;
+                  word-break: keep-all;         
+                  overflow-wrap: normal;   
+                  text-align: center;
+                  text-shadow:
+                    -1px -1px 0 #fff,
+                    1px -1px 0 #fff,
+                    -1px  1px 0 #fff,
+                    1px  1px 0 #fff;
+                ">
+                  ${target.marker.getTitle()}
+                </span>
+              </div>`,
+        });
       }
     }
 
