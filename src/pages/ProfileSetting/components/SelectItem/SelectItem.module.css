@@ -16,9 +16,9 @@
   
   .check-icon {
     color: #009733;
-    display: none;
+    visibility: hidden;
   }
-  
+
   .select-item.selected .check-icon {
-    display: block;
+    visibility: visible;
   }
