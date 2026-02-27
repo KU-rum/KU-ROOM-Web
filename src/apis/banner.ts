@@ -1,4 +1,3 @@
-// tanstack query 리팩토링 완료
 // 친구 관련 api
 import axiosInstance from "./axiosInstance";
 import { GetBannersResponse } from "./types";
