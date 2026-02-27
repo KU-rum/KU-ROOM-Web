@@ -1,9 +1,10 @@
-.HomeSlideBannerWrapper {
+﻿.HomeSlideBannerWrapper {
   display: flex;
   flex-direction: column;
   padding: 20px 0;
   gap: 15px;
 }
+
 .BannerImgWrapper {
   display: flex;
   flex-direction: row;
@@ -11,21 +12,50 @@
   overflow-x: auto;
   padding: 0 calc((100% - 349px) / 2);
 
-  scroll-snap-type: x mandatory; /* 스크롤 스냅 작동 */
-  -webkit-overflow-scrolling: touch; /* iOS에서 부드럽게 */
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
 }
+
 .BannerImgWrapper::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
 }
+
+.BannerButton {
+  position: relative;
+  width: 349px;
+  height: 171px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  flex-shrink: 0;
+}
+
 .BannerImg {
   border-radius: 10px;
   width: 349px;
   height: 171px;
-  scroll-snap-align: center; /* 각 이미지를 스냅 포인트로 설정 */
-  scroll-snap-stop: always;
-  flex-shrink: 0; /* 이미지가 줄어들지 않게 */
+  display: block;
+  transition: opacity 0.2s ease;
 }
+
+.BannerImgHidden {
+  opacity: 0;
+}
+
+.BannerImgVisible {
+  opacity: 1;
+}
+
+.BannerSkeleton {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background-color: #e3e7eb;
+}
+
 .Skeleton {
   border-radius: 10px;
   width: 349px;
@@ -35,12 +65,14 @@
   justify-content: center;
   align-items: center;
 }
+
 .DotsWrapper {
   display: flex;
   flex-direction: row;
   gap: 4px;
   justify-content: center;
 }
+
 .DotIndicator {
   width: 9px;
   height: 9px;

@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+﻿import { useCallback, useEffect, useRef, useState } from "react";
 
 import styles from "./HomeSlideBanner.module.css";
 import { useBannersQuery } from "@/queries";
 
 const HomeSlideBanner = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loadedBannerIds, setLoadedBannerIds] = useState<Set<number>>(new Set());
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const { bannerData, isPendingBanner, isErrorBanner } = useBannersQuery();
@@ -23,7 +24,7 @@ const HomeSlideBanner = () => {
     [currentDeviceWidth],
   );
 
-  // 스크롤이 끝났을 때 가장 가까운 배너로 강제 고정되도록 수정.
+  // scroll debounce timeout for snap behavior
   let scrollTimeout: ReturnType<typeof setTimeout>;
 
   const handleScroll = () => {
@@ -34,7 +35,6 @@ const HomeSlideBanner = () => {
     const adjustedScrollLeft = scrollLeft + sidePadding;
     const index = Math.round(adjustedScrollLeft / bannerWidth);
 
-    // 스크롤 도중 계속 호출되지 않도록 delay 보정
     clearTimeout(scrollTimeout);
     scrollTimeout = setTimeout(() => {
       handleBannerMove(index);
@@ -57,6 +57,7 @@ const HomeSlideBanner = () => {
 
   const handleToBannerLink = (bannerLink: string) => {
     if (!bannerLink) return;
+
     try {
       const url = new URL(bannerLink);
       if (!["http:", "https:"].includes(url.protocol)) return;
@@ -66,9 +67,23 @@ const HomeSlideBanner = () => {
     }
   };
 
-  // 3초 간격 자동 슬라이드
+  const handleBannerImageLoad = useCallback((bannerId: number) => {
+    setLoadedBannerIds((prev) => {
+      if (prev.has(bannerId)) return prev;
+
+      const next = new Set(prev);
+      next.add(bannerId);
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    setLoadedBannerIds(new Set());
+  }, [bannerData]);
+
   useEffect(() => {
     if (!bannerData?.length) return;
+
     const interval = setInterval(() => {
       const next = (currentIndex + 1) % bannerData.length;
       handleBannerMove(next);
@@ -86,7 +101,7 @@ const HomeSlideBanner = () => {
       >
         {isPendingBanner && (
           <div className={styles.Skeleton}>
-            <span className={styles.SkeletonText}>배너 불러오는 중..</span>
+            <span className={styles.SkeletonText}>배너를 불러오는 중이에요.</span>
           </div>
         )}
 
@@ -98,25 +113,35 @@ const HomeSlideBanner = () => {
 
         {!isPendingBanner && !isErrorBanner && hasBanners && (
           <>
-            {bannerData!.map((banner) => (
-              <button
-                key={banner.bannerId}
-                type="button"
-                onClick={() => handleToBannerLink(banner.bannerLink)}
-              >
-                <img
-                  className={styles.BannerImg}
-                  src={banner.bannerImageUrl}
-                  alt={`배너-${banner.bannerId}`}
-                />
-              </button>
-            ))}
+            {bannerData!.map((banner) => {
+              const isLoaded = loadedBannerIds.has(banner.bannerId);
+
+              return (
+                <button
+                  key={banner.bannerId}
+                  type="button"
+                  className={styles.BannerButton}
+                  onClick={() => handleToBannerLink(banner.bannerLink)}
+                >
+                  {!isLoaded && <div className={styles.BannerSkeleton} />}
+                  <img
+                    className={`${styles.BannerImg} ${
+                      isLoaded ? styles.BannerImgVisible : styles.BannerImgHidden
+                    }`}
+                    src={banner.bannerImageUrl}
+                    alt={`배너-${banner.bannerId}`}
+                    onLoad={() => handleBannerImageLoad(banner.bannerId)}
+                    decoding="async"
+                  />
+                </button>
+              );
+            })}
           </>
         )}
 
         {!isPendingBanner && !isErrorBanner && !hasBanners && (
           <div className={styles.Skeleton}>
-            <span className={styles.SkeletonText}>표시할 배너가 없어요</span>
+            <span className={styles.SkeletonText}>등록된 배너가 없어요.</span>
           </div>
         )}
       </div>
