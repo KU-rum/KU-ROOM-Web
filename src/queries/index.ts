@@ -69,16 +69,13 @@ export {
   usePopularNoticesQuery,
   usePrimaryNoticesQuery,
   useNoticeOthersQuery,
-} from "./notice";
-
-export { useBookmarksQuery, useRemoveBookmarkMutation } from "./bookmark";
-
-export {
+  useBookmarksQuery,
+  useRemoveBookmarkMutation,
   useSearchNoticesQuery,
   useRecentSearchesQuery,
   useKeywordsQuery,
   useRecentSearchMutation,
   useKeywordMutation,
-} from "./search";
+} from "./notice";
 
 export { useBannersQuery } from "./banner";
