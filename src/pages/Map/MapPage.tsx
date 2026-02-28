@@ -34,6 +34,7 @@ import { MapLayoutContext } from "./layout/MapLayout";
 import { getCategoryEnum } from "./utils/category-chip";
 import LocationTrackingButton from "./components/LocationTrackingButton/LocationTrackingButton";
 import LocationShareButton from "./components/LocationShareButton/LocationShareButton";
+import ToFriendAddButton from "./components/ToFriendAddButton/ToFriendAddButton";
 import { CATEGORY_CHIPS } from "./constant/MapData";
 
 const INCLUDE_BOTTOM_SHEET_LIST: string[] = CATEGORY_CHIPS.filter(
@@ -378,6 +379,7 @@ const MapPage = () => {
           <BottomBar />
         </>
       )}
+      {selectedCategoryTitle === "친구" && <ToFriendAddButton />}
       <FocusedLocationBottomSheet
         hasFocusedMarker={hasFocusedMarker}
         isExpandedFocusedSheet={isExpandedFocusedSheet}
