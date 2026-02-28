@@ -125,6 +125,9 @@ export function renderMarkers(
                 word-break: keep-all;         
                 overflow-wrap: normal;   
                 text-align: center;
+                max-width: 65px;           
+                overflow: hidden;       
+                text-overflow: ellipsis;  
                 text-shadow:
                   -1px -1px 0 #fff,
                   1px -1px 0 #fff,
@@ -288,6 +291,9 @@ async function makeFocusMarker(
                   word-break: keep-all;         
                   overflow-wrap: normal;   
                   text-align: center;
+                  max-width: 65px;           
+                  overflow: hidden;       
+                  text-overflow: ellipsis;  
                   text-shadow:
                     -1px -1px 0 #fff,
                     1px -1px 0 #fff,
@@ -350,6 +356,9 @@ export function resetFocusedMarker(
                   word-break: keep-all;         
                   overflow-wrap: normal;   
                   text-align: center;
+                  max-width: 65px;           
+                  overflow: hidden;       
+                  text-overflow: ellipsis;  
                   text-shadow:
                     -1px -1px 0 #fff,
                     1px -1px 0 #fff,
