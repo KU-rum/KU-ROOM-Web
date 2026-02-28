@@ -45,7 +45,7 @@ const FocusedLocationBottomSheet: React.FC<FocusedLocationBottomSheetProps> = ({
     setIsImageDetailMode(true);
   };
 
-  const handleImageImageLoad = useCallback((imageUrl: string) => {
+  const handleImageLoad = useCallback((imageUrl: string) => {
     setLoadedImageUrls((prev) => {
       if (prev.has(imageUrl)) return prev;
 
@@ -74,10 +74,10 @@ const FocusedLocationBottomSheet: React.FC<FocusedLocationBottomSheetProps> = ({
       image.src = placeImage;
 
       if (image.complete && image.naturalWidth > 0) {
-        handleImageImageLoad(placeImage);
+        handleImageLoad(placeImage);
       } else {
-        image.onload = () => handleImageImageLoad(placeImage);
-        image.onerror = () => handleImageImageLoad(placeImage);
+        image.onload = () => handleImageLoad(placeImage);
+        image.onerror = () => handleImageLoad(placeImage);
       }
 
       return image;
@@ -89,7 +89,7 @@ const FocusedLocationBottomSheet: React.FC<FocusedLocationBottomSheetProps> = ({
         image.onerror = null;
       });
     };
-  }, [detailLocationData?.imageUrls, handleImageImageLoad]);
+  }, [detailLocationData?.imageUrls, handleImageLoad]);
 
   // 바텀 시트 올리고 내리는 로직.
   useBottomSheetDrag({
@@ -161,8 +161,8 @@ const FocusedLocationBottomSheet: React.FC<FocusedLocationBottomSheetProps> = ({
                             }`}
                             src={imageUrl}
                             alt={`위치 관련 이미지-${index}`}
-                            onLoad={() => handleImageImageLoad(imageUrl)}
-                            onError={() => handleImageImageLoad(imageUrl)}
+                            onLoad={() => handleImageLoad(imageUrl)}
+                            onError={() => handleImageLoad(imageUrl)}
                           />
                         </div>
                       );

@@ -75,8 +75,6 @@
   width: calc(100% / 3 - 4px);
   border: 0;
   background: transparent;
-  scroll-snap-align: center;
-  scroll-snap-stop: always;
   flex-shrink: 0;
 }
 .SheetImgContainer:nth-child(3) {
