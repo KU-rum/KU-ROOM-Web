@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import useBottomSheetDrag from "@pages/Map/hooks/useBottomSheetDrag";
 import { DetailPlaceData } from "@apis/types";
@@ -29,6 +29,11 @@ const FocusedLocationBottomSheet: React.FC<FocusedLocationBottomSheetProps> = ({
   // 사진 자세히 보기 상태
   const [isImageDetailMode, setIsImageDetailMode] = useState(false);
   const [clickedIndex, setClickedIndex] = useState(0);
+  const [loadedImageUrls, setLoadedImageUrls] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const hasImages = !!detailLocationData?.imageUrls?.length;
 
   const handleCloseImageDetail = () => {
     setIsImageDetailMode(false);
@@ -40,12 +45,51 @@ const FocusedLocationBottomSheet: React.FC<FocusedLocationBottomSheetProps> = ({
     setIsImageDetailMode(true);
   };
 
+  const handleImageImageLoad = useCallback((imageUrl: string) => {
+    setLoadedImageUrls((prev) => {
+      if (prev.has(imageUrl)) return prev;
+
+      const next = new Set(prev);
+      next.add(imageUrl);
+      return next;
+    });
+  }, []);
+
   // 서버에 해당 장소 정보 요청
   useEffect(() => {
     if (sheetRef.current) {
       sheetRef.current.scrollTop = 0;
     }
   }, [detailLocationData]);
+
+  useEffect(() => {
+    setLoadedImageUrls(new Set());
+  }, [detailLocationData?.placeId]);
+
+  useEffect(() => {
+    if (!detailLocationData?.imageUrls?.length) return;
+
+    const preloadImages = detailLocationData.imageUrls.map((placeImage) => {
+      const image = new Image();
+      image.src = placeImage;
+
+      if (image.complete && image.naturalWidth > 0) {
+        handleImageImageLoad(placeImage);
+      } else {
+        image.onload = () => handleImageImageLoad(placeImage);
+        image.onerror = () => handleImageImageLoad(placeImage);
+      }
+
+      return image;
+    });
+
+    return () => {
+      preloadImages.forEach((image) => {
+        image.onload = null;
+        image.onerror = null;
+      });
+    };
+  }, [detailLocationData?.imageUrls, handleImageImageLoad]);
 
   // 바텀 시트 올리고 내리는 로직.
   useBottomSheetDrag({
@@ -96,20 +140,35 @@ const FocusedLocationBottomSheet: React.FC<FocusedLocationBottomSheetProps> = ({
                 setIsExpandedFocusedSheet={setIsExpandedFocusedSheet}
               />
             )}
-            {!isExpandedFocusedSheet && (
-              <div className={styles.SheetImgContainer}>
-                {/* 최대 3개까지만 보이도록 */}
-                {detailLocationData?.imageUrls
-                  .slice(0, 3)
-                  .map((item, index) => (
-                    <img
-                      className={styles.SheetImg}
-                      key={index}
-                      src={item}
-                      alt="위치 관련 이미지"
-                    />
-                  ))}
-              </div>
+            {!isExpandedFocusedSheet && hasImages && (
+              <>
+                <div className={styles.SheetImgWrapper}>
+                  {/* 최대 3개까지만 보이도록 */}
+                  {detailLocationData?.imageUrls
+                    .slice(0, 3)
+                    .map((imageUrl, index) => {
+                      const isLoaded = loadedImageUrls.has(imageUrl);
+                      return (
+                        <div key={index} className={styles.SheetImgContainer}>
+                          {!isLoaded && (
+                            <div className={styles.ImageSkeleton} />
+                          )}
+                          <img
+                            className={`${styles.SheetImg} ${
+                              isLoaded
+                                ? styles.SheetImgVisible
+                                : styles.SheetImgHidden
+                            }`}
+                            src={imageUrl}
+                            alt={`위치 관련 이미지-${index}`}
+                            onLoad={() => handleImageImageLoad(imageUrl)}
+                            onError={() => handleImageImageLoad(imageUrl)}
+                          />
+                        </div>
+                      );
+                    })}
+                </div>
+              </>
             )}
           </>
         )}

@@ -61,7 +61,7 @@
   top: 10px;
   z-index: 10; /* 다른 요소 위에 오도록 */
 }
-.SheetImgContainer {
+.SheetImgWrapper {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -70,14 +70,36 @@
   padding: 0 35px 20px 35px;
   box-sizing: border-box;
 }
-.SheetImg {
+.SheetImgContainer {
+  position: relative;
   width: calc(100% / 3 - 4px);
-  aspect-ratio: 1 / 1;
+  border: 0;
+  background: transparent;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  flex-shrink: 0;
 }
-/* 이건 그냥 예시 
-세번째 사진 약간 블러 처리 */
-.SheetImg:nth-child(3) {
+.SheetImgContainer:nth-child(3) {
   filter: grayscale(60%) opacity(0.3);
+}
+.SheetImg {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: block;
+  transition: opacity 0.2s ease;
+}
+.ImageSkeleton {
+  position: absolute;
+  inset: 0;
+  background-color: #e3e7eb;
+}
+
+.SheetImgHidden {
+  opacity: 0;
+}
+
+.SheetImgVisible {
+  opacity: 1;
 }
 
 .MyPageLoadingWrapper {
