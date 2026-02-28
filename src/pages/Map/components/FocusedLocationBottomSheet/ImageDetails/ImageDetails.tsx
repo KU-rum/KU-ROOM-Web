@@ -19,7 +19,7 @@ interface ImageDetailsProps {
 
 type SwipeDirection = "next" | "prev";
 
-const SWIPE_THRESHOLD = 100;
+const SWIPE_THRESHOLD = 70;
 const ZOOM_THRESHOLD = 1.1;
 const EDGE_THRESHOLD = 8;
 
