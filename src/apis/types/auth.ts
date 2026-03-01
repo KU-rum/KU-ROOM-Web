@@ -39,10 +39,6 @@ export interface WithdrawResponse extends ApiResponse {
   data: string;
 }
 
-export interface ReissueResponse extends ApiResponse {
-  data: TokenResponse;
-}
-
 export interface CreateSocialUserRequest {
   token: string;
   studentId: string;
