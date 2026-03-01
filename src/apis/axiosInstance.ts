@@ -1,6 +1,7 @@
 import axios, {
   AxiosError,
   AxiosRequestConfig,
+  AxiosResponse,
   InternalAxiosRequestConfig,
 } from "axios";
 
@@ -12,6 +13,46 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+type RetriableRequestConfig = AxiosRequestConfig & {
+  _retry?: boolean;
+};
+
+const REISSUE_PATH = "/auth/reissue";
+
+const isUnauthorizedStatus = (status?: number) => status === 401;
+const isUnauthorizedCode = (data: unknown) => {
+  if (!data || typeof data !== "object") return false;
+  const code = (data as { code?: number | string }).code;
+  return Number(code) === 401;
+};
+const isReissueRequest = (url?: string) => (url ?? "").includes(REISSUE_PATH);
+
+const moveToLogin = () => {
+  clearAuthStorage();
+  window.location.href = "/login";
+};
+
+const retryWithReissue = async (originalRequest: RetriableRequestConfig) => {
+  if (originalRequest._retry || isReissueRequest(originalRequest.url)) {
+    moveToLogin();
+    throw new Error("Unauthorized after retry");
+  }
+
+  originalRequest._retry = true;
+
+  try {
+    const newAccessToken = await reissueTokenApi();
+    originalRequest.headers = {
+      ...(originalRequest.headers ?? {}),
+      Authorization: `Bearer ${newAccessToken}`,
+    };
+    return axiosInstance(originalRequest);
+  } catch (error) {
+    moveToLogin();
+    throw error;
+  }
+};
 
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -25,56 +66,28 @@ axiosInstance.interceptors.request.use(
 );
 
 axiosInstance.interceptors.response.use(
-  async (response: any) => {
-    if (response.data.code === 401) {
-      const originalRequest = response.config as AxiosRequestConfig & {
-        _retry?: boolean;
-      };
-      try {
-        const newAccessToken = await reissueTokenApi();
-        const headers = {
-          ...originalRequest.headers,
-          Authorization: `Bearer ${newAccessToken}`,
-        };
-        return axiosInstance({ ...response.config, headers });
-      } catch (error: any) {
-        console.warn(
-          "재발급 실패 (기타 이유)",
-          error.response?.data || error.message,
-        );
-        throw error;
-      }
-    }
-    return response;
+  async (response: AxiosResponse) => {
+    if (!isUnauthorizedCode(response.data)) return response;
+
+    const originalRequest = response.config as RetriableRequestConfig;
+    return retryWithReissue(originalRequest);
   },
   async (error: AxiosError) => {
-    const status = error.response?.status;
-    const originalRequest = error.config as AxiosRequestConfig & {
-      _retry?: boolean;
-    };
+    const status = error.response?.status ?? error.status;
+    const originalRequest = error.config as RetriableRequestConfig | undefined;
 
-    // HTTP 401인 경우만 토큰 재발급 시도
-    if (status === 401 && originalRequest && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        const newAccessToken = await reissueTokenApi();
-
-        originalRequest.headers = {
-          ...(originalRequest.headers ?? {}),
-          Authorization: `Bearer ${newAccessToken}`,
-        };
-
-        return axiosInstance(originalRequest); // 원래 요청 재시도
-      } catch (e) {
-        return Promise.reject(e);
-      }
+    if (!isUnauthorizedStatus(status) || !originalRequest) {
+      return Promise.reject(error);
     }
 
-    return Promise.reject(error);
+    try {
+      return await retryWithReissue(originalRequest);
+    } catch (e) {
+      return Promise.reject(e);
+    }
   },
 );
-// 토큰 재발급 api
+
 interface ReissueResponse {
   code: number;
   status: string;
@@ -86,8 +99,12 @@ interface ReissueResponse {
     refreshExpireIn: number;
   };
 }
+
 export const reissueTokenApi = async (): Promise<string> => {
   const refreshToken = localStorage.getItem("refreshToken");
+  if (!refreshToken) {
+    throw new Error("No refresh token");
+  }
 
   try {
     const response = await axios.patch<ReissueResponse>(
@@ -95,26 +112,24 @@ export const reissueTokenApi = async (): Promise<string> => {
       { refreshToken },
     );
 
-    const tokenData = response.data.data;
-
-    // 이 조건이 중요: refreshToken은 있었지만, 만료되어 data 자체가 안 온 경우.
-    // refresh token에 문제가 있는 경우에는 로그인 화면으로 리다이렉트 해야한다.
-    if (!tokenData || !tokenData.accessToken) {
-      console.error(" refreshToken 만료 또는 재발급 실패 → 로그인 이동");
-      clearAuthStorage();
-      window.location.href = "/login";
-      throw new Error("refreshToken 만료");
+    if (
+      isUnauthorizedStatus(response.status) ||
+      isUnauthorizedCode(response.data)
+    ) {
+      throw new Error("Refresh token expired");
     }
 
-    // 정상적으로 accessToken 재발급됨
+    const tokenData = response.data?.data;
+    if (!tokenData?.accessToken || !tokenData?.refreshToken) {
+      throw new Error("Invalid reissue response");
+    }
+
     localStorage.setItem("accessToken", tokenData.accessToken);
     localStorage.setItem("refreshToken", tokenData.refreshToken);
-    console.log(" accessToken 재발급 성공");
 
     return tokenData.accessToken;
   } catch (err: any) {
-    console.warn("재발급 실패 (기타 이유)", err.response?.data || err.message);
-    clearAuthStorage();
+    console.warn("토큰 재발급 실패", err.response?.data || err.message);
     throw err;
   }
 };
