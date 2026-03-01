@@ -4,7 +4,6 @@ import {
   LoginResponse,
   LogoutResponse,
   WithdrawResponse,
-  ReissueResponse,
   CreateSocialUserRequest,
   SendEmailResponse,
   SignupRequest,
@@ -20,7 +19,6 @@ const LOGIN_API_URL = "/auth/login";
 const LOGOUT_API_URL = "/auth/logout";
 const WITHDRAW_API_URL = "/users/deactivate";
 const OAUTH_TOKEN_API_URL = "/auth/token";
-const REISSUE_TOKEN_API_URL = "/auth/reissue";
 const CREATE_SOCIAL_USER_API_URL = "/users/social";
 const SIGNUP_API_BASE_URL = "/users";
 const VERIFY_MAIL_API_URL = "/mails/auth-codes";
@@ -129,25 +127,4 @@ export const findIdFromEmailApi = async (email: string) => {
     params: { email },
   });
   return response.data;
-};
-
-// 토큰 재발급 api
-export const reissueTokenApi = async () => {
-  const refreshToken = localStorage.getItem("refreshToken");
-  if (!refreshToken) {
-    throw new Error("리프레시 토큰이 없습니다.");
-  }
-  try {
-    const response = await axiosInstance.patch<ReissueResponse>(
-      REISSUE_TOKEN_API_URL,
-      {
-        refreshToken,
-      },
-    );
-    return response.data.data;
-  } catch (error: any) {
-    throw new Error(
-      error.response?.data?.message || "토큰 재발급 중 오류 발생",
-    );
-  }
 };

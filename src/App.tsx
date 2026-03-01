@@ -1,12 +1,9 @@
-import { useEffect } from "react";
 import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
 } from "react-router-dom";
 import { shouldShowPwaGuide } from "@utils/pwaUtils";
-
-import { reissueTokenApi } from "@apis/axiosInstance";
 import Home from "@pages/Home/Home";
 import Notice from "@pages/Notice/Notice/Notice";
 import NoticeDetail from "@pages/Notice/NoticeDetail/NoticeDetail";
@@ -44,58 +41,22 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import { AuthLayout } from "@/layout/AuthLayout";
 
-// 인증이 불필요한 Public 경로 목록 (백그라운드 복귀 시 토큰 재발급 제외 대상)
-const PUBLIC_PATHS = [
-  "/login",
-  "/signup",
-  "/identityverification",
-  "/agreement",
-  "/profilesetting",
-  "/welcome",
-  "/findidpw",
-  "/social/callback",
-  "/pwa-guide",
-];
-
-// PWA 가이드 → 인증 순서로 분기 (PWA 가이드는 비로그인 상태에서도 표시되어야 함)
 const RootIndex = () => {
   if (shouldShowPwaGuide()) {
     return <Navigate to="/pwa-guide" replace />;
   }
-
-  const token = localStorage.getItem("accessToken");
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <Home />;
+  return <Navigate to="/home" replace />;
 };
 
 function App() {
-  // 백그라운드 복귀 시 인증된 페이지에서 Access Token 재발급
-  useEffect(() => {
-    const handleVisibilityChange = async () => {
-      const path = window.location.pathname;
-      if (
-        document.visibilityState === "visible" &&
-        path !== "/" &&
-        !PUBLIC_PATHS.some((p) => path.startsWith(p))
-      ) {
-        await reissueTokenApi();
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, []);
-
   const router = createBrowserRouter([
     {
       path: "/",
       children: [
-        // Public — 인증 불필요
+        {
+          index: true,
+          element: <RootIndex />,
+        },
         {
           path: "login",
           element: <Login />,
@@ -133,14 +94,12 @@ function App() {
           element: <PwaGuide />,
         },
         {
-          index: true,
-          element: <RootIndex />,
-        },
-
-        // Protected — AuthLayout으로 인증 보호
-        {
           element: <AuthLayout />,
           children: [
+            {
+              path: "home",
+              element: <Home />,
+            },
             {
               path: "alarm",
               element: <Alarm />,

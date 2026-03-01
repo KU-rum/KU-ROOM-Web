@@ -62,7 +62,6 @@ export type {
   LoginResponse,
   LogoutResponse,
   WithdrawResponse,
-  ReissueResponse,
   CreateSocialUserRequest,
   SendEmailResponse,
   SignupRequest,

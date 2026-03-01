@@ -43,7 +43,7 @@ const AlarmItem = ({ alarm }: AlarmItemProps) => {
         break;
       default:
         toast.error("잘못된 알림입니다.");
-        navigate("/");
+        navigate("/home");
     }
   };
   return (
