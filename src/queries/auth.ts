@@ -101,7 +101,7 @@ export const useLoginMutation = () => {
         }),
       );
       setUser({ ...userResponse, loginType: "email" });
-      navigate("/", { replace: true });
+      navigate("/home", { replace: true });
     },
   });
 
@@ -178,7 +178,7 @@ export const useGetTokenByTempMutation = () => {
       );
 
       setUser({ ...userResponse, loginType: "social" });
-      navigate("/", { replace: true });
+      navigate("/home", { replace: true });
     },
     onError: () => {
       navigate("/login");

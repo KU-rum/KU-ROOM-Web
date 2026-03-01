@@ -14,8 +14,8 @@ const BottomBar = () => {
   return (
     <div className={styles["bottom-bar-container"]}>
       <button
-        className={`${styles["nav-button-wrap"]} ${location.pathname === "/" ? styles.active : ""}`}
-        onClick={() => navigate("/")}
+        className={`${styles["nav-button-wrap"]} ${location.pathname === "/home" ? styles.active : ""}`}
+        onClick={() => navigate("/home")}
       >
         <img src={homenav} alt="홈" />
         <span className={styles["bottom-bar-text"]}>홈</span>
