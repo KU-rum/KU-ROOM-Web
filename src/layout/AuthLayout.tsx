@@ -2,39 +2,53 @@ import { reissueTokenApi } from "@apis/axiosInstance";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
-const REISSUE_COOLDOWN_MS = 3000;
+const REISSUE_MIN_INTERVAL_MS = 20 * 60 * 1000;
+const LAST_REISSUE_AT_KEY = "auth-last-reissue-at";
 
 export const AuthLayout = () => {
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(
     Boolean(localStorage.getItem("accessToken")),
   );
-  const isRefreshingRef = useRef(false);
-  const lastRefreshAttemptRef = useRef(0);
+  const inFlightReissueRef = useRef<Promise<boolean> | null>(null);
 
   const tryReissue = useCallback(async (): Promise<boolean> => {
     const refreshToken = localStorage.getItem("refreshToken");
     if (!refreshToken) return false;
+    const hasAccessToken = Boolean(localStorage.getItem("accessToken"));
 
-    const now = Date.now();
-    if (isRefreshingRef.current) {
-      return Boolean(localStorage.getItem("accessToken"));
-    }
-    if (now - lastRefreshAttemptRef.current < REISSUE_COOLDOWN_MS) {
-      return Boolean(localStorage.getItem("accessToken"));
+    // access token이 남아있고 최근 재발급이 15분 이내라면 재발급 호출을 생략한다.
+    if (hasAccessToken) {
+      const lastReissueAt = Number(
+        localStorage.getItem(LAST_REISSUE_AT_KEY) ?? 0,
+      );
+      if (
+        Number.isFinite(lastReissueAt) &&
+        Date.now() - lastReissueAt < REISSUE_MIN_INTERVAL_MS
+      ) {
+        return true;
+      }
     }
 
-    isRefreshingRef.current = true;
-    lastRefreshAttemptRef.current = now;
+    if (inFlightReissueRef.current) {
+      return inFlightReissueRef.current;
+    }
+
+    const reissueTask = (async () => {
+      try {
+        await reissueTokenApi();
+        setIsAuthenticated(true);
+        return true;
+      } catch {
+        return Boolean(localStorage.getItem("accessToken"));
+      }
+    })();
+    inFlightReissueRef.current = reissueTask;
 
     try {
-      await reissueTokenApi();
-      setIsAuthenticated(true);
-      return true;
-    } catch {
-      return false;
+      return await reissueTask;
     } finally {
-      isRefreshingRef.current = false;
+      inFlightReissueRef.current = null;
     }
   }, []);
 

@@ -18,7 +18,21 @@ type RetriableRequestConfig = AxiosRequestConfig & {
   _retry?: boolean;
 };
 
+interface ReissueResponse {
+  code: number;
+  status: string;
+  message: string;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+    accessExpireIn: number;
+    refreshExpireIn: number;
+  };
+}
+
 const REISSUE_PATH = "/auth/reissue";
+const AUTH_FAILURE_STATUS = new Set([401, 403]);
+const LAST_REISSUE_AT_KEY = "auth-last-reissue-at";
 
 const isUnauthorizedStatus = (status?: number) => status === 401;
 const isUnauthorizedCode = (data: unknown) => {
@@ -28,9 +42,59 @@ const isUnauthorizedCode = (data: unknown) => {
 };
 const isReissueRequest = (url?: string) => (url ?? "").includes(REISSUE_PATH);
 
+const getErrorStatus = (error: unknown) =>
+  (error as AxiosError | undefined)?.response?.status ??
+  (error as AxiosError | undefined)?.status;
+
+const getErrorCode = (error: unknown) => {
+  const data = (error as AxiosError | undefined)?.response?.data;
+  if (!data || typeof data !== "object") return undefined;
+  return Number((data as { code?: number | string }).code);
+};
+
+const shouldForceLogoutOnReissueError = (error: unknown) => {
+  const status = getErrorStatus(error);
+  const code = getErrorCode(error);
+  return (
+    AUTH_FAILURE_STATUS.has(status ?? -1) || AUTH_FAILURE_STATUS.has(code ?? -1)
+  );
+};
+
 const moveToLogin = () => {
   clearAuthStorage();
   window.location.href = "/login";
+};
+
+let reissuePromise: Promise<string> | null = null;
+
+const executeReissue = async (): Promise<string> => {
+  const refreshToken = localStorage.getItem("refreshToken");
+  if (!refreshToken) {
+    throw new Error("No refresh token");
+  }
+
+  const response = await axios.patch<ReissueResponse>(
+    `${import.meta.env.VITE_API_BASE_URL}/auth/reissue`,
+    { refreshToken },
+  );
+
+  if (
+    isUnauthorizedStatus(response.status) ||
+    isUnauthorizedCode(response.data)
+  ) {
+    throw new Error("Refresh token expired");
+  }
+
+  const tokenData = response.data?.data;
+  if (!tokenData?.accessToken || !tokenData?.refreshToken) {
+    throw new Error("Invalid reissue response");
+  }
+
+  localStorage.setItem("accessToken", tokenData.accessToken);
+  localStorage.setItem("refreshToken", tokenData.refreshToken);
+  localStorage.setItem(LAST_REISSUE_AT_KEY, String(Date.now()));
+
+  return tokenData.accessToken;
 };
 
 const retryWithReissue = async (originalRequest: RetriableRequestConfig) => {
@@ -49,7 +113,9 @@ const retryWithReissue = async (originalRequest: RetriableRequestConfig) => {
     };
     return axiosInstance(originalRequest);
   } catch (error) {
-    moveToLogin();
+    if (shouldForceLogoutOnReissueError(error)) {
+      moveToLogin();
+    }
     throw error;
   }
 };
@@ -88,46 +154,15 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-interface ReissueResponse {
-  code: number;
-  status: string;
-  message: string;
-  data: {
-    accessToken: string;
-    refreshToken: string;
-    accessExpireIn: number;
-    refreshExpireIn: number;
-  };
-}
-
 export const reissueTokenApi = async (): Promise<string> => {
-  const refreshToken = localStorage.getItem("refreshToken");
-  if (!refreshToken) {
-    throw new Error("No refresh token");
+  if (!reissuePromise) {
+    reissuePromise = executeReissue().finally(() => {
+      reissuePromise = null;
+    });
   }
 
   try {
-    const response = await axios.patch<ReissueResponse>(
-      `${import.meta.env.VITE_API_BASE_URL}/auth/reissue`,
-      { refreshToken },
-    );
-
-    if (
-      isUnauthorizedStatus(response.status) ||
-      isUnauthorizedCode(response.data)
-    ) {
-      throw new Error("Refresh token expired");
-    }
-
-    const tokenData = response.data?.data;
-    if (!tokenData?.accessToken || !tokenData?.refreshToken) {
-      throw new Error("Invalid reissue response");
-    }
-
-    localStorage.setItem("accessToken", tokenData.accessToken);
-    localStorage.setItem("refreshToken", tokenData.refreshToken);
-
-    return tokenData.accessToken;
+    return await reissuePromise;
   } catch (err: any) {
     console.warn("토큰 재발급 실패", err.response?.data || err.message);
     throw err;
